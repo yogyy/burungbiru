@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  color-scheme: dark;
+}
+
+.layout {
+  max-width: 68rem;
+  @apply mx-auto w-11/12;
+}
