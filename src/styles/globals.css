@@ -4,6 +4,7 @@
 
 html {
   color-scheme: dark;
+  @apply bg-zinc-800;
 }
 
 .layout {

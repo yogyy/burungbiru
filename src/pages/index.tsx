@@ -12,8 +12,8 @@ import {
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "Constantine" });
   const user = useUser();
+  const { data } = api.posts.getAll.useQuery();
 
   return (
     <>
@@ -26,6 +26,13 @@ const Home: NextPage = () => {
         <div className="">
           {!user.isSignedIn && <SignInButton />}
           {!!user.isSignedIn && <UserButton />}
+        </div>
+        <div className="">
+          {data?.map((post) => (
+            <div className="" key={post.id}>
+              {post.content}
+            </div>
+          ))}
         </div>
       </main>
     </>
