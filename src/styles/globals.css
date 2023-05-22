@@ -4,7 +4,10 @@
 
 html {
   color-scheme: dark;
-  @apply bg-zinc-800;
+}
+
+body {
+  @apply bg-zinc-800 text-slate-100;
 }
 
 .layout {
