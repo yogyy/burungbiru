@@ -7,10 +7,19 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
+import { useState } from "react";
 dayjs.extend(relativeTime);
 
 const CreateWizzardPost = () => {
+  const [input, setInput] = useState("");
   const { user } = useUser();
+  const ctx = api.useContext();
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      ctx.posts.getAll.invalidate();
+    },
+  });
   if (!user) return null;
 
   return (
@@ -29,9 +38,13 @@ const CreateWizzardPost = () => {
         type="text"
         placeholder="type something..."
         className="grow bg-transparent outline-none"
+        value={input}
+        disabled={isPosting}
         name=""
         id=""
+        onChange={(e) => setInput(e.target.value)}
       />
+      <button onClick={() => mutate({ content: input })}>Post</button>
     </div>
   );
 };
@@ -59,7 +72,7 @@ const PostView = (props: PostWithUser) => {
           </span>
           <span>{` · ${dayjs(post.createdAt).fromNow()}`}</span>
         </div>
-        <span>{post.content}</span>
+        <span className="text-xl">{post.content}</span>
       </div>
     </div>
   );
@@ -72,7 +85,7 @@ const Feed = () => {
 
   return (
     <div className="">
-      {[...data, ...data]?.map((fullPost) => (
+      {data.map((fullPost) => (
         <PostView {...fullPost} key={fullPost.post.id} />
       ))}
     </div>
