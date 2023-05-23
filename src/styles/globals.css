@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  @apply bg-zinc-800 text-slate-100;
+  @apply bg-dark text-slate-100;
 }
 
 .layout {
