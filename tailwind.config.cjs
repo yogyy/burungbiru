@@ -4,7 +4,9 @@ const config = {
   theme: {
     extend: {
       colors: {
-        dark: "#121212",
+        dark: "#010100",
+        border: "rgb(47, 51, 54)",
+        accent: "rgb(113, 118, 123)",
       },
     },
   },

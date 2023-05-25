@@ -28,7 +28,6 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     username,
   });
   if (!data) return <div className="">404</div>;
-  console.log(username);
 
   return (
     <>
@@ -63,7 +62,7 @@ import superjson from "superjson";
 import { PageLayout } from "~/components/layout";
 import Image from "next/image";
 import { LoadingPage } from "~/components/loading";
-import { PostView } from "~/components/postViewt";
+import { PostView } from "~/components/postView";
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = createProxySSGHelpers({

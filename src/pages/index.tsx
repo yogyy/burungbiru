@@ -9,7 +9,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { PageLayout } from "~/components/layout";
-import { PostView } from "~/components/postViewt";
+import { PostView } from "~/components/postView";
 
 const CreateWizzardPost = () => {
   const [input, setInput] = useState("");
@@ -32,7 +32,7 @@ const CreateWizzardPost = () => {
   if (!user) return null;
 
   return (
-    <div className="flex w-full items-center gap-4">
+    <div className="relative flex h-full w-full items-center gap-4">
       <Image
         width={56}
         height={56}
@@ -43,22 +43,22 @@ const CreateWizzardPost = () => {
       {/* <div className="flex h-14 w-14 items-center justify-center">
         <UserButton />
       </div> */}
-      <input
-        type="text"
+      <textarea
         placeholder="type something..."
-        className="grow bg-transparent outline-none"
+        className="h-max w-full min-w-0 resize-none overflow-hidden bg-transparent text-xl outline-none"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            if (input !== "") {
-              mutate({ content: input });
-            }
-          }
-        }}
+        // onKeyDown={(e) => {
+        //   if (e.key === "Enter") {
+        //     e.preventDefault();
+        //     if (input !== "") {
+        //       mutate({ content: input });
+        //     }
+        //   }
+        // }}
         disabled={isPosting}
       />
+
       {input !== "" && !isPosting && (
         <button
           disabled={isPosting}
@@ -94,12 +94,12 @@ const Feed = () => {
 const Home: NextPage = () => {
   const { user, isLoaded: userLoaded, isSignedIn } = useUser();
   api.posts.getAll.useQuery();
-
   if (!userLoaded) return <div />;
 
+  // console.log(user);
   return (
     <PageLayout>
-      <div className="flex border-b border-slate-400 p-4">
+      <div className="flex border-b border-border p-4">
         {!isSignedIn && <SignInButton />}
         {isSignedIn && <CreateWizzardPost />}
       </div>
