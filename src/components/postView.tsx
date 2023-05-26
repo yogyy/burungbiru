@@ -28,7 +28,7 @@ export const PostView = (props: PostWithUser) => {
       tabIndex={0}
       key={post.id}
       className={clsx(
-        checkUrl ? "" : "cursor-pointer hover:bg-white/5 active:bg-white/5",
+        checkUrl ? "" : "cursor-pointer hover:bg-white/5 focus:bg-white/5",
         "w-full border-b border-border px-4 outline-none transition-colors duration-200 ease-in-out"
       )}
       onClick={routeToPost}
@@ -68,7 +68,7 @@ const PostViewAll = ({ author, post }: PostWithUser) => {
             }`}
           </Link>
           <Link
-            className="ml-2 truncate font-thin text-accent outline-none focus-visible:invisible"
+            className="ml-2 truncate font-thin text-accent outline-none"
             href={`/@${
               author.username
                 ? author.username
