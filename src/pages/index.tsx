@@ -1,111 +1,77 @@
 import { type NextPage } from "next";
-import Head from "next/head";
-import { useUser, SignInButton, UserButton, SignedOut } from "@clerk/nextjs";
+import { useUser, SignInButton } from "@clerk/nextjs";
 
-import { RouterOutputs, api } from "~/utils/api";
-import Image from "next/image";
+import { api } from "~/utils/api";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
-import { useState } from "react";
-import { toast } from "react-hot-toast";
-import Link from "next/link";
 import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postView";
-
-const CreateWizzardPost = () => {
-  const [input, setInput] = useState("");
-  const { user } = useUser();
-  const ctx = api.useContext();
-  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
-    onSuccess: () => {
-      setInput("");
-      ctx.posts.getAll.invalidate();
-    },
-    onError: (e) => {
-      const errorMessage = e.data?.zodError?.fieldErrors.content;
-      if (errorMessage && errorMessage[0]) {
-        toast.error(errorMessage[0]);
-      } else {
-        toast.error("Failed to post! Please try again later.");
-      }
-    },
-  });
-  if (!user) return null;
-
-  return (
-    <div className="relative flex h-full w-full items-center gap-4">
-      <Image
-        width={56}
-        height={56}
-        src={user.profileImageUrl}
-        alt="Profile Image"
-        className="first-letter: h-14 w-14 rounded-full"
-      />
-      {/* <div className="flex h-14 w-14 items-center justify-center">
-        <UserButton />
-      </div> */}
-      <textarea
-        placeholder="type something..."
-        className="h-max w-full min-w-0 resize-none overflow-hidden bg-transparent text-xl outline-none"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        // onKeyDown={(e) => {
-        //   if (e.key === "Enter") {
-        //     e.preventDefault();
-        //     if (input !== "") {
-        //       mutate({ content: input });
-        //     }
-        //   }
-        // }}
-        disabled={isPosting}
-      />
-
-      {input !== "" && !isPosting && (
-        <button
-          disabled={isPosting}
-          onClick={() => mutate({ content: input })}
-          className="h-fit w-fit px-2.5 py-1"
-        >
-          Post
-        </button>
-      )}
-      {isPosting && (
-        <div className="flex items-center justify-center">
-          <LoadingSpinner size={20} />
-        </div>
-      )}
-    </div>
-  );
-};
+import { CreateWizzardPost } from "~/components/CreateWizzardPost";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 const Feed = () => {
   const { data, isLoading: postLoading } = api.posts.getAll.useQuery();
-  if (postLoading) return <LoadingPage />;
-  if (!data) return <div>Something went wrong! </div>;
 
   return (
-    <div className="">
-      {data.map((fullPost) => (
-        <PostView {...fullPost} key={fullPost.post.id} />
-      ))}
+    <div className="h-auto w-auto min-w-[670px]">
+      {postLoading ? (
+        <div className="flex h-screen items-center justify-center">
+          <LoadingSpinner size={60} />
+        </div>
+      ) : !data ? (
+        <div>Something went wrong! </div>
+      ) : (
+        data.map((fullPost) => (
+          <PostView {...fullPost} key={fullPost.post.id} />
+        ))
+      )}
     </div>
   );
 };
 
 const Home: NextPage = () => {
   const { user, isLoaded: userLoaded, isSignedIn } = useUser();
-  api.posts.getAll.useQuery();
   if (!userLoaded) return <div />;
 
-  // console.log(user);
   return (
-    <PageLayout>
-      <div className="flex border-b border-border p-4">
-        {!isSignedIn && <SignInButton />}
-        {isSignedIn && <CreateWizzardPost />}
+    <PageLayout className="flex-row gap-4">
+      <div className="flex flex-col border-x border-border md:max-w-2xl">
+        <div className="sticky top-0 h-full  w-full border-b border-border backdrop-blur-sm">
+          <nav className="my-3 h-[53px] px-3 text-[20px] font-semibold">
+            <h1>Beranda</h1>
+          </nav>
+          <div className="h-[53px]">dadad</div>
+        </div>
+        <div className="flex border-b border-border p-4">
+          {!isSignedIn && <SignInButton />}
+          {isSignedIn && <CreateWizzardPost />}
+        </div>
+        <Feed />
       </div>
-      <Feed />
+      {/* <section className="hidden w-[275px] lg:block">ddadd</section> */}
     </PageLayout>
   );
 };
 
 export default Home;
+
+{
+  /* <Tabs defaultValue="account" className="h-[53px] w-full">
+        <div className="my-3 h-[53px] px-3 text-[20px] font-semibold">
+          <h1>Beranda</h1>
+        </div>
+          <TabsList>
+            <TabsTrigger value="account">For You</TabsTrigger>
+            <TabsTrigger value="password">Following</TabsTrigger>
+          </TabsList>
+          <div className="flex border-b border-border p-4">
+            {!isSignedIn && <SignInButton />}
+            {isSignedIn && <CreateWizzardPost />}
+          </div>
+          <TabsContent value="account" className="">
+            <Feed />
+          </TabsContent>
+          <TabsContent value="password">
+            <p>not following anyone</p>
+          </TabsContent>
+        </Tabs> */
+}
