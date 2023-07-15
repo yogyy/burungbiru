@@ -1,13 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import { RouterOutputs } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
-import { useState } from "react";
 import { useRouter } from "next/router";
 import clsx from "clsx";
 import { ToolTip } from "./tooltip";
+import { DotMenu } from "./icons/dotmenu";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
+import { useUser } from "@clerk/nextjs";
+import type { MouseEventHandler } from "react";
 dayjs.extend(LocalizedFormat);
 
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
@@ -16,13 +20,34 @@ export const PostView = (props: PostWithUser) => {
   const { post, author } = props;
   const router = useRouter();
   const checkUrl = router.pathname.startsWith("/post");
+
+  const ctx = api.useContext();
+  const { mutate, isLoading: isPosting } = api.posts.deleteById.useMutation({
+    onSuccess: () => {
+      ctx.posts.getAll.invalidate();
+    },
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+      } else {
+        toast.error("Failed to post! Please try again later.");
+      }
+    },
+  });
+
+  const deletePost = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    mutate({ id: post.id });
+  };
   const routeToPost = () => {
     if (checkUrl) {
-      console.log(author);
+      null;
     } else {
       router.push(`/post/${post.id}`);
     }
   };
+
   return (
     <div
       tabIndex={0}
@@ -34,7 +59,7 @@ export const PostView = (props: PostWithUser) => {
       onClick={routeToPost}
     >
       {!checkUrl ? (
-        <PostViewAll author={author} post={post} />
+        <PostViewAll onClick={deletePost} author={author} post={post} />
       ) : (
         <PostViewDetail author={author} post={post} />
       )}
@@ -42,21 +67,29 @@ export const PostView = (props: PostWithUser) => {
   );
 };
 
-const PostViewAll = ({ author, post }: PostWithUser) => {
+interface PostViewAllProps extends PostWithUser {
+  onClick: MouseEventHandler<HTMLButtonElement>;
+}
+
+const PostViewAll: React.FC<PostViewAllProps> = ({ author, post, onClick }) => {
+  const { user } = useUser();
+
   return (
-    <div className="flex w-auto py-3">
-      <Image
-        width={56}
-        height={56}
-        draggable={false}
-        src={author.profileImg}
-        alt={`@${author.username || author.lastName}'s profile picture`}
-        className="first-letter mr-3 flex h-14 w-14 basis-12 flex-nowrap rounded-full"
-      />
+    <div className="relative flex w-full py-3">
+      <div className="mr-3 h-auto min-h-[3.5rem] min-w-[3.5rem] ">
+        <Image
+          width={56}
+          height={56}
+          draggable={false}
+          src={author.profileImg}
+          alt={`@${author.username || author.lastName}'s profile picture`}
+          className="first-letter flex basis-12 rounded-full"
+        />
+      </div>
       <div className="w-full flex-col">
-        <div className="flex w-full font-semibold text-accent">
+        <div className="flex w-full flex-wrap font-semibold text-accent">
           <Link
-            className="custom-underline focus:groupd-focus:bg-red-500 truncate font-semibold text-gray-200 "
+            className="custom-underline focus:groupd-focus:bg-red-500 truncate font-semibold text-gray-200"
             href={`/@${
               author.username
                 ? author.username
@@ -69,11 +102,7 @@ const PostViewAll = ({ author, post }: PostWithUser) => {
           </Link>
           <Link
             className="ml-2 truncate font-thin text-accent outline-none"
-            href={`/@${
-              author.username
-                ? author.username
-                : `${author.firstName}-${author.lastName}`
-            }`}
+            href={`/@${author.username ? author.username : author.id}`}
           >
             <span>
               {`@${
@@ -94,9 +123,23 @@ const PostViewAll = ({ author, post }: PostWithUser) => {
             ).format("DD MMM")}`}</time>
             <ToolTip tip={dayjs(post.createdAt).format("LT LL")} />
           </Link>
+
+          <div className="z-[2] ml-auto flex items-center justify-center rounded-full p-1 hover:bg-blue-600">
+            <button
+              onClick={
+                user?.id === author.id
+                  ? onClick
+                  : () => console.log("bukan author")
+              }
+            >
+              <DotMenu />
+            </button>
+          </div>
         </div>
         <div className="flex w-fit justify-start">
-          <p className="text-base">{post.content}</p>
+          <p className="whitespace-pre-line break-words text-base">
+            {post.content}
+          </p>
         </div>
       </div>
     </div>
@@ -105,7 +148,7 @@ const PostViewAll = ({ author, post }: PostWithUser) => {
 
 const PostViewDetail = ({ author, post }: PostWithUser) => {
   return (
-    <div className="">
+    <div className="w-full sm:max-w-[672px]">
       <div className="flex items-center gap-3">
         <Image
           width={56}

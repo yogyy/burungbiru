@@ -7,12 +7,14 @@ import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postView";
 import { CreateWizzardPost } from "~/components/CreateWizzardPost";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { useLoadingContext } from "~/context/context";
 
 const Feed = () => {
   const { data, isLoading: postLoading } = api.posts.getAll.useQuery();
 
+  // console.log(context);
   return (
-    <div className="h-auto w-auto min-w-[670px]">
+    <div className="h-auto w-full">
       {postLoading ? (
         <div className="flex h-screen items-center justify-center">
           <LoadingSpinner size={60} />
@@ -30,18 +32,27 @@ const Feed = () => {
 
 const Home: NextPage = () => {
   const { user, isLoaded: userLoaded, isSignedIn } = useUser();
+  // console.log(loading);
   if (!userLoaded) return <div />;
-
   return (
-    <PageLayout className="flex-row gap-4">
-      <div className="flex flex-col border-x border-border md:max-w-2xl">
-        <div className="sticky top-0 h-full  w-full border-b border-border backdrop-blur-sm">
-          <nav className="my-3 h-[53px] px-3 text-[20px] font-semibold">
+    <PageLayout className="">
+      <div className="flex w-full flex-col border-x border-border md:w-[42rem]">
+        <div className="sticky top-0 z-10 h-full w-full min-w-[300px] border-b border-border bg-dark/70 backdrop-blur-sm">
+          <nav className="flex h-[53px] items-center px-3 text-[20px] font-semibold">
             <h1>Beranda</h1>
           </nav>
-          <div className="h-[53px]">dadad</div>
+          <div className="flex h-[53px] items-center font-semibold">
+            <div className="relative flex h-full w-full flex-1 items-center justify-center hover:cursor-pointer hover:bg-white/10">
+              For You
+              <span className="absolute bottom-0 h-1 w-1/3 rounded-md bg-[#1D9BF0]" />
+            </div>
+            <div className="relative flex h-full w-full flex-1 items-center justify-center hover:cursor-pointer hover:bg-white/10">
+              For You
+            </div>
+          </div>
         </div>
-        <div className="flex border-b border-border p-4">
+        <div className="bg-blue-400"></div>
+        <div className="hidden border-b border-border p-4 min-[500px]:flex">
           {!isSignedIn && <SignInButton />}
           {isSignedIn && <CreateWizzardPost />}
         </div>

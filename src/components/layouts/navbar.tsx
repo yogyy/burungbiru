@@ -47,52 +47,48 @@ const Navbar = () => {
   const { signOut } = useClerk();
 
   let r = useRouter();
-  const matches = useMediaQuery("(min-width: 1280px)");
+  const matches = useMediaQuery("(min-width: 1024px)");
 
   return (
-    <div className="navbar">
-      <nav className="side-nav">
-        <div className="flex w-full flex-col items-center px-2">
-          <ul className="">
-            <li>
-              <div>
-                <Link href="/" className="nav-links">
-                  <LuTwitter className=" w-7 fill-[#D6D9DB] text-3xl" />
-                </Link>
-              </div>
+    <nav className="fixed flex h-full flex-col justify-between">
+      <div className="flex w-full flex-col items-center">
+        <ul className="">
+          <li>
+            <div>
+              <Link href="/" className="nav-links">
+                <LuTwitter className=" w-7 fill-[#F1F5F9] text-3xl" />
+              </Link>
+            </div>
+          </li>
+          {navLinks.map((link) => (
+            <li key={link.id}>
+              <Link className="nav-links" href={link.link}>
+                <span className="text-2xl">
+                  <link.icon
+                    className={cn(r.asPath === link.link && "fill-[#F1F5F9]")}
+                  />
+                </span>
+                <span className="mx-3 hidden text-xl lg:block">
+                  <p>{link.title}</p>
+                </span>
+              </Link>
             </li>
-            {navLinks.map((link) => (
-              <li key={link.id}>
-                <div>
-                  <Link className="nav-links" href={link.link}>
-                    <span className="text-2xl">
-                      <link.icon
-                        className={cn(
-                          r.asPath === link.link && "fill-[#F1F5F9]"
-                        )}
-                      />
-                    </span>
-                    <span className="mx-3 hidden text-xl xl:block">
-                      <p>{link.title}</p>
-                    </span>
-                  </Link>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <div className="flex w-full justify-center">
-            {matches ? (
-              <Button className="mt-3 w-10/12">Tweet</Button>
-            ) : (
-              <BtnShadcn className="mt-3 flex h-auto w-fit items-center rounded-full bg-[#1D9BF0] p-3 transition-all duration-300 hover:bg-[#1D9BF0]/80 focus-visible:bg-[#1D9BF0]/80">
-                <LuLeaf className="text-xl" />
-              </BtnShadcn>
-            )}
-          </div>
+          ))}
+        </ul>
+        <div className="flex w-full justify-center">
+          {matches ? (
+            <Button className="mt-3 w-10/12">Tweet</Button>
+          ) : (
+            <BtnShadcn className="mt-3 flex h-auto w-fit items-center rounded-full bg-[#1D9BF0] p-3 transition-all duration-300 hover:bg-[#1D9BF0]/80 focus-visible:bg-[#1D9BF0]/80">
+              <LuLeaf className="text-xl" />
+            </BtnShadcn>
+          )}
         </div>
+      </div>
+      <div className="flex w-full items-center justify-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <div className="flex w-fit items-center p-3 transition-all duration-300 hover:cursor-pointer hover:rounded-full hover:bg-border/30 lg:w-full">
+            <div className="flex w-fit items-center p-4 transition-all duration-300 hover:cursor-pointer hover:rounded-full hover:bg-border/30 lg:w-full">
               {user && (
                 <div className="flex h-full w-full justify-between">
                   <div className="flex items-center">
@@ -105,21 +101,21 @@ const Navbar = () => {
                         className="rounded-full"
                       />
                     </div>
-                    <div className="hidden xl:flex">
+                    <div className="hidden lg:flex">
                       <div className="mx-3 flex flex-col text-[15px]">
                         <span className="font-semibold">{user?.fullName}</span>
                         <span className="font-thin">@{user?.username}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="hidden place-items-end items-center xl:flex">
+                  <div className="hidden place-items-end items-center lg:flex">
                     <BiDotsHorizontalRounded className="place-content-end text-xl" />
                   </div>
                 </div>
               )}
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 bg-dark">
+          <DropdownMenuContent className="ml-4 w-56 bg-dark text-[#F1F5F9]">
             <DropdownMenuLabel>Add an existing account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut()}>
@@ -128,8 +124,8 @@ const Navbar = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 };
 
