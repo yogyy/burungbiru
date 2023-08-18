@@ -22,18 +22,15 @@ import Image from "next/image";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { Button } from "../button";
 import { Button as BtnShadcn } from "../ui/button";
-import { DropdownMenuDemo } from "./dropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { useMediaQuery } from "~/hooks/use-media-q";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const navLinks = [
   { id: 1, title: "Home", icon: LuBell, link: "/" },

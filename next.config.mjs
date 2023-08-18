@@ -36,7 +36,11 @@ const config = {
 
   reactStrictMode: true,
   images: {
-    domains: ["images.clerk.dev", "avatars.githubusercontent.com"],
+    domains: [
+      "images.clerk.dev",
+      "avatars.githubusercontent.com",
+      "lh3.googleusercontent.com",
+    ],
   },
 
   /**

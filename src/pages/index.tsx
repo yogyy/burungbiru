@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import { useUser, SignInButton } from "@clerk/nextjs";
 
 import { api } from "~/utils/api";
-import { LoadingPage, LoadingSpinner } from "~/components/loading";
+import { LoadingSpinner } from "~/components/loading";
 import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postView";
 import { CreateWizzardPost } from "~/components/CreateWizzardPost";
