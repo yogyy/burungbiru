@@ -21,7 +21,7 @@ export const PostView = (props: PostWithUser) => {
   const router = useRouter();
   const checkUrl = router.pathname.startsWith("/post");
 
-  const ctx = api.useContext();
+  const ctx = api.useUtils();
   const { mutate, isLoading: isPosting } = api.posts.deleteById.useMutation({
     onSuccess: () => {
       ctx.posts.getAll.invalidate();

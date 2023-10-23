@@ -1,4 +1,4 @@
-import { GetStaticProps, NextPage } from "next";
+import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import { appRouter } from "~/server/api/root";
 import { api } from "~/utils/api";
@@ -77,7 +77,6 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     </>
   );
 };
-import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { prisma } from "~/server/db";
 import superjson from "superjson";
 import { PageLayout } from "~/components/layout";
@@ -85,13 +84,10 @@ import Image from "next/image";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { PostView } from "~/components/postView";
 import ButtonBack from "~/components/ButtonBack";
+import { generateSSGHelper } from "~/server/helper/ssgHelper";
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const ssg = createProxySSGHelpers({
-    router: appRouter,
-    ctx: { prisma, userId: null },
-    transformer: superjson,
-  });
+  const ssg = generateSSGHelper();
 
   const slug = context.params?.slug;
 
@@ -109,7 +105,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   };
 };
 
-export const getStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths = async () => {
   return { paths: [], fallback: "blocking" };
 };
 

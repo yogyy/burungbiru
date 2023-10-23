@@ -36,13 +36,13 @@ export const CreateWizzardPost = () => {
   };
 
   return (
-    <div className="flex w-full flex-col gap-2 px-4 py-2">
+    <div className="flex w-full flex-col py-2">
       <div className="relative flex h-auto w-auto items-start gap-4">
         <Link href={user.username!}>
           <Image
             width={40}
             height={40}
-            src={user.profileImageUrl}
+            src={user.imageUrl}
             alt="Profile Image"
             className="rounded-full"
             draggable={false}
@@ -73,7 +73,7 @@ export const CreateWizzardPost = () => {
         onClick={() => mutate({ content: input })}
         className="self-end"
       >
-        {isPosting ? <LoadingSpinner size={20} /> : "Tweet"}
+        {isPosting ? <LoadingSpinner size={20} /> : "Post"}
       </Button>
     </div>
   );

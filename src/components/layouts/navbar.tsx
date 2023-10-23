@@ -47,13 +47,19 @@ const Navbar = () => {
   const matches = useMediaQuery("(min-width: 1024px)");
 
   return (
-    <nav className="fixed flex h-full flex-col justify-between">
+    <nav className="sticky top-0 flex h-screen flex-col justify-between">
       <div className="flex w-full flex-col items-center">
         <ul className="">
           <li>
             <div>
               <Link href="/" className="nav-links">
-                <LuTwitter className=" w-7 fill-[#F1F5F9] text-3xl" />
+                <img
+                  src="/favicon-32x32.png"
+                  width={28}
+                  height={28}
+                  alt="logo"
+                  draggable={false}
+                />
               </Link>
             </div>
           </li>

@@ -1,23 +1,33 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html {
-  color-scheme: dark;
-}
+@layer base {
+  :root {
+    --foreground: 200 7% 91%;
+    --background: 0 0% 0%;
+    --primary: 204 88% 53%;
+    --secondary: 220 12% 10%;
+  }
 
-body {
-  @apply bg-dark text-slate-100;
-}
+  html {
+    color-scheme: dark;
+  }
 
-@layer components {
-  .hover-animation {
-    @apply transition-colors duration-200;
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: "Open Sans", sans-serif;
+    font-feature-settings: "abvm";
   }
   .layout {
     max-width: 68rem;
     @apply mx-auto w-11/12;
   }
+}
+
+@layer components {
   .navbar {
     @apply relative hidden h-full w-20 justify-end sm:flex lg:w-[260px];
   }
@@ -37,9 +47,5 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     word-wrap: break-word;
-  }
-
-  .custom-underline {
-    @apply hover-animation underline decoration-transparent outline-none transition [text-decoration-thickness:1px] hover:decoration-inherit focus-visible:decoration-inherit;
   }
 }
