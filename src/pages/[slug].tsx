@@ -47,7 +47,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         <title>{data.username}</title>
       </Head>
       <PageLayout className="">
-        <div className="flex w-full flex-col border-x border-border md:w-[42rem]">
+        <div className="flex w-full flex-col border-x border-border md:w-[600px]">
           <div className="sticky top-0 z-10 flex h-14 w-full items-center bg-dark/70 px-4 font-semibold backdrop-blur-md md:max-w-2xl">
             <div className="w-16">
               <ButtonBack />
@@ -71,17 +71,14 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
           }`}</div>
           <div className="w-full border-b border-border" />
           <ProfileFeed userId={data.id} />
-          <ProfileFeed userId={data.id} />
         </div>
       </PageLayout>
     </>
   );
 };
-import { prisma } from "~/server/db";
-import superjson from "superjson";
 import { PageLayout } from "~/components/layout";
 import Image from "next/image";
-import { LoadingPage, LoadingSpinner } from "~/components/loading";
+import { LoadingSpinner } from "~/components/loading";
 import { PostView } from "~/components/postView";
 import ButtonBack from "~/components/ButtonBack";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";

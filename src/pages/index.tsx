@@ -2,34 +2,15 @@ import { type NextPage } from "next";
 import { useUser, SignInButton } from "@clerk/nextjs";
 
 import { api } from "~/utils/api";
-import { LoadingSpinner } from "~/components/loading";
 import { PageLayout } from "~/components/layout";
-import { PostView } from "~/components/postView";
 import { CreateWizzardPost } from "~/components/CreateWizzardPost";
-import { LuTwitter } from "react-icons/lu";
 import Image from "next/image";
-
-const Feed = () => {
-  const { data, isLoading: postLoading } = api.posts.getAll.useQuery();
-
-  return (
-    <div className="h-auto w-full">
-      {postLoading && (
-        <div className="flex h-screen items-center justify-center">
-          <LoadingSpinner size={60} />
-        </div>
-      )}
-      {!data && <div>Something went wrong! </div>}
-      {data &&
-        data.map((fullPost) => (
-          <PostView {...fullPost} key={fullPost.post.id} />
-        ))}
-    </div>
-  );
-};
+import Feed from "~/components/layouts/feed";
 
 const Home: NextPage = () => {
   const { isLoaded: userLoaded, isSignedIn } = useUser();
+  const { data, isLoading: postLoading } = api.posts.getAll.useQuery();
+
   if (!userLoaded)
     return (
       <div className="flex h-screen w-screen items-center justify-center">
@@ -42,9 +23,10 @@ const Home: NextPage = () => {
         />
       </div>
     );
+
   return (
-    <PageLayout className="flex justify-between">
-      <div className="flex w-full max-w-[42rem] flex-shrink flex-col border-x border-border">
+    <PageLayout className="flex">
+      <div className="flex w-full max-w-[600px] flex-shrink flex-col border-x border-border">
         <div className="sticky top-0 z-10 h-full w-full min-w-[300px] border-b border-border bg-dark/70 backdrop-blur-sm">
           <nav className="flex h-[53px] items-center px-3 text-[20px] font-semibold">
             <h1>Beranda</h1>
@@ -61,10 +43,10 @@ const Home: NextPage = () => {
         </div>
         <div className="bg-blue-400"></div>
         <div className="hidden border-b border-border px-4 min-[500px]:flex">
-          {!isSignedIn && <SignInButton />}
-          {isSignedIn && <CreateWizzardPost />}
+          {!isSignedIn && <SignInButton mode="modal" />}
+          {isSignedIn && postLoading === false ? <CreateWizzardPost /> : null}
         </div>
-        <Feed />
+        {!!data && <Feed post={data} postLoading={postLoading} />}{" "}
       </div>
     </PageLayout>
   );
