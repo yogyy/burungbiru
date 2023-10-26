@@ -27,6 +27,12 @@ const config = {
     defaultLocale: "en",
   },
 
+  modularizeImports: {
+    "react-icons": {
+      transform: "react-icons/{{member}}",
+    },
+  },
+
   typescript: {
     ignoreBuildErrors: true,
   },
