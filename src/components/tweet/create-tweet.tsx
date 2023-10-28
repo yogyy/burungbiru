@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { LoadingSpinner } from "../loading";
 import { toast } from "react-hot-toast";
 import { useRef, useState, useEffect } from "react";
 import { api } from "~/utils/api";
@@ -7,10 +6,15 @@ import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { LuChevronDown } from "react-icons/lu";
+import { Emoji, Gif, Globe, Location, Media, Poll, Schedule } from "../icons";
 
 export const CreateTweet = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [input, setInput] = useState("");
+  const [showBadge, setShowBadge] = useState(false);
+
   const { user } = useUser();
   const ctx = api.useUtils();
   const {
@@ -67,11 +71,21 @@ export const CreateTweet = () => {
           />
         </Link>
         <div className="h-full w-full">
+          <div className={cn("w-full pb-3", showBadge ? "block" : "hidden")}>
+            <Badge
+              variant="outline"
+              className={cn(
+                "flex h-[24px] w-fit min-w-[24px] items-center rounded-full border-accent bg-background font-sans text-sm text-primary hover:bg-primary/25"
+              )}
+            >
+              Everyone <LuChevronDown size={20} className="ml-1" />
+            </Badge>
+          </div>
           <textarea
             ref={textareaRef}
             placeholder="What's happening?"
             className={cn(
-              "flex h-10 max-h-[35rem] w-full flex-1 resize-none bg-transparent text-xl outline-none",
+              "flex h-10 max-h-[35rem] w-full flex-1 resize-none bg-transparent pt-3 text-xl leading-6 text-fuchsia-50 outline-none placeholder:font-thin",
               isSuccess && "h-min",
               textareaRef.current?.value.length === 300 && "bg-red-500/80"
             )}
@@ -81,6 +95,7 @@ export const CreateTweet = () => {
             onChange={(e) => {
               setInput(e.target.value);
             }}
+            onMouseDown={() => setShowBadge(true)}
             // onKeyDown={(e) => {
             //   if (e.key === "Enter") {
             //     e.preventDefault();
@@ -90,21 +105,73 @@ export const CreateTweet = () => {
             //   }
             // }}
             disabled={isPosting}
-          />
+          >
+            adasd
+          </textarea>
+          <div className="-ml-[8px] -mt-2 pb-3">
+            <span className="flex h-6 w-fit items-center rounded-full px-3 font-sans font-semibold text-primary hover:bg-primary/10 [&>svg>path]:fill-primary [&>svg]:mr-1 [&>svg]:w-4">
+              <Globe /> Everyone can reply
+            </span>
+          </div>
         </div>
       </div>
-      <Button
-        disabled={
-          isPosting || input === "" || textareaRef.current?.value.length === 300
-        }
-        onClick={(e) => {
-          e.preventDefault();
-          mutate({ content: input });
-        }}
-        className="self-end rounded-full bg-primary text-[15px] font-[600] leading-5"
-      >
-        {isPosting ? <LoadingSpinner size={20} /> : "Post"}
-      </Button>
+      <hr className="ml-10" />
+      <div className="mt-2 flex justify-between">
+        <div className={cn("ml-10 flex gap-1.5")}>
+          <CreateTweetAction />
+        </div>
+        <Button
+          type="submit"
+          disabled={
+            isPosting ||
+            input.length <= 0 ||
+            textareaRef.current?.value.length === 300
+          }
+          onClick={(e) => {
+            if (input.length >= 1) {
+              e.preventDefault();
+              mutate({ content: input });
+            } else {
+              return null;
+            }
+          }}
+          className={cn(
+            "h-9 self-end rounded-full font-sans text-[15px] font-[600] leading-5 disabled:opacity-60"
+          )}
+        >
+          Post
+        </Button>
+      </div>
     </div>
+  );
+};
+
+const ButtonAction = [
+  { name: "Media", icon: Media },
+  { name: "GIF", icon: Gif },
+  { name: "Poll", icon: Poll },
+  { name: "Emoji", icon: Emoji },
+  { name: "Schedule", icon: Schedule },
+  { name: "Location", icon: Location },
+];
+
+const CreateTweetAction = () => {
+  return (
+    <>
+      {ButtonAction.map((btn) => (
+        <button
+          key={btn.name}
+          type="button"
+          className={cn(
+            "inline-flex h-8 w-8 items-center justify-center rounded-full fill-primary text-primary transition-colors duration-200 hover:bg-primary/25",
+            "last:opacity-60 last:hover:bg-transparent"
+          )}
+        >
+          <span className="w-5 fill-primary">
+            <btn.icon />
+          </span>
+        </button>
+      ))}
+    </>
   );
 };
