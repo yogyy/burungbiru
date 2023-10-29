@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
+@use "fonts";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,41 +11,43 @@
     --secondary: 220 12% 10%;
   }
 
+  * {
+    border-color: rgb(47, 51, 54);
+  }
+
   html {
     color-scheme: dark;
   }
 
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    font-family: "Open Sans", sans-serif;
-    font-feature-settings: "abvm";
-  }
-  .layout {
-    max-width: 68rem;
-    @apply mx-auto w-11/12;
+    @apply bg-background font-twitter-chirp text-[15px] leading-5 text-foreground;
   }
 }
 
 @layer components {
-  .navbar {
-    @apply relative hidden h-full w-20 justify-end sm:flex lg:w-[260px];
-  }
-  .side-nav {
-    @apply fixed left-0 top-0 z-10 mb-3 ml-auto hidden h-full w-16 flex-grow flex-col place-content-end items-center justify-between self-end min-[500px]:flex sm:w-20 lg:w-fit;
-  }
-  .nav-links {
-    @apply flex w-fit items-center rounded-full p-3 transition-all duration-300 hover:bg-border/30;
-  }
-
-  .bott-nav {
-    @apply fixed bottom-0 left-0 w-full;
-  }
-
-  .t3text {
-    width: 200px; /* Adjust the width as needed */
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .content-post {
+    --tw-text-opacity: 1;
+    color: rgb(231 233 234 / var(--tw-text-opacity));
+    font-size: 15px;
+    line-height: 1.25rem;
     word-wrap: break-word;
+    word-break: break-all;
+    overflow-wrap: break-word;
+  }
+
+  .post-detail .content-post {
+    font-size: 17px;
+    line-height: 1.5rem;
+  }
+
+  .image-tweet {
+    background-image: url("/images-test/b.jpg");
+    background-position: center;
+    background-size: cover;
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    z-index: -1;
+    padding-bottom: 56.25%;
   }
 }
