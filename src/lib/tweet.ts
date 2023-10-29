@@ -13,21 +13,18 @@ export const tweetTime = (date: Date) => {
   const currentTime = dayjs();
   const tweetDate = dayjs(date);
 
-  const secondsDiff = currentTime.diff(tweetDate, "second");
+  const secondsDiff = currentTime.diff(date, "second");
 
-  if (secondsDiff >= 60) {
-    const minutesDiff = currentTime.diff(tweetDate, "minute");
-
-    if (minutesDiff >= 60) {
+  switch (true) {
+    case secondsDiff <= 60:
+      return `${currentTime.diff(tweetDate, "second")}s`;
+    case secondsDiff <= 3600:
+      return `${currentTime.diff(tweetDate, "minute")}s`;
+    default:
       const hoursDiff = currentTime.diff(tweetDate, "hour");
       if (hoursDiff >= 24) {
         return tweetDate.format("DD MMM");
       }
       return `${hoursDiff}h`;
-    }
-
-    return `${minutesDiff}m`;
   }
-
-  return `${secondsDiff}s`;
 };
