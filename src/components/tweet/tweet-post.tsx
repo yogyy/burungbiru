@@ -7,14 +7,18 @@ import { cn } from "~/lib/utils";
 import { renderText } from "~/lib/tweet";
 import { TweetTitle } from "./tweet-title";
 import { TweetText } from "./tweet-text";
+import { TweetAction } from "./tweet-action";
 dayjs.extend(LocalizedFormat);
 
-export type TweetType = RouterOutputs["posts"]["getAll"][number] &
-  React.HTMLAttributes<HTMLDivElement>;
+type VariantTweet = "default" | "details";
 
-export const PostView: React.FC<TweetType> = ({
+export type TweetType = RouterOutputs["posts"]["getAll"][number] &
+  React.HTMLAttributes<HTMLDivElement> & { variant?: VariantTweet };
+
+export const TweetPost: React.FC<TweetType> = ({
   post,
   author,
+  variant = "default",
   className,
   ...props
 }) => {
@@ -29,7 +33,7 @@ export const PostView: React.FC<TweetType> = ({
       )}
       {...props}
     >
-      <div className="relative flex w-full py-3">
+      <div className="relative flex w-full pt-3">
         <div className="mr-3 h-auto w-10 flex-shrink-0 basis-10">
           <Image
             width={40}
@@ -40,8 +44,13 @@ export const PostView: React.FC<TweetType> = ({
             className="first-letter flex basis-12 rounded-full"
           />
         </div>
-        <div className="relative w-full flex-col overflow-hidden">
-          <TweetTitle author={author} post={post} user={user} />
+        <div className="relative w-full flex-col overflow-hidden pb-3">
+          <TweetTitle
+            variant={variant}
+            author={author}
+            post={post}
+            user={user}
+          />
           <div className="flex w-fit justify-start">
             <TweetText content={renderText(post.content)} />
           </div>
@@ -49,13 +58,14 @@ export const PostView: React.FC<TweetType> = ({
             <div className="relative mt-3 w-fit items-start overflow-hidden rounded-2xl border">
               <div className="relative h-full w-full max-w-full transition-colors duration-200 hover:bg-secondary">
                 <img
-                  src="https://pbs.twimg.com/media/Fw6FEJ3akAEpLAX?format=webp&name=small"
+                  src="https://pbs.twimg.com/media/F9iEb7LbkAAHnw3?format=webp&name=medium"
                   alt="test"
                   className="max-h-[510px] w-full object-cover xs:min-w-[382.5px] "
                 />
               </div>
             </div>
           </div>
+          <TweetAction />
         </div>
       </div>
     </div>
