@@ -2,6 +2,7 @@ import type { PropsWithChildren, ReactNode } from "react";
 import { Toaster } from "react-hot-toast";
 import Navbar from "./layouts/navbar";
 import { cn } from "~/lib/utils";
+import { RightAside } from "./layouts/aside";
 
 export const PageLayout = ({
   children,
@@ -18,17 +19,26 @@ export const PageLayout = ({
       <main className={cn("relative w-full md:w-auto", className)}>
         <div className="flex w-full flex-shrink justify-between md:w-[600px] lg:w-[920px] xl:w-[990px]">
           {children}
-          <aside className="sticky top-5 mr-2.5 hidden h-[100.5vh] lg:block lg:w-[290px] xl:w-[350px]">
-            <div className="">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas,
-              aperiam placeat, in quisquam nisi et id accusamus voluptatibus
-              perferendis a voluptate officiis veniam. Quos vero, commodi
-              nesciunt blanditiis nulla ut maxime.
-            </div>
-          </aside>
+          <RightAside />
         </div>
       </main>
-      <Toaster position="top-right" />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          position: "bottom-center",
+          icon: null,
+          style: {
+            backgroundColor: "hsl(var(--primary))",
+            color: "hsl(var(--foreground))",
+          },
+          error: {
+            style: {
+              backgroundColor: "hsl(var(--desctructive) / .9)",
+            },
+            position: "top-center",
+          },
+        }}
+      />
     </div>
   );
 };
