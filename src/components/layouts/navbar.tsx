@@ -14,7 +14,7 @@ import { Button } from "../ui/button";
 import { Tweet } from "../icons";
 import { navbarLink } from "~/constant";
 import Logo from "../icons/navbar-icon/logo.svg";
-import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { TbDots } from "react-icons/tb";
 
 const Navbar = () => {
   const { user } = useUser();
@@ -95,7 +95,7 @@ const Navbar = () => {
                       />
                     </div>
                     <div className="hidden h-[41.06px] xl:flex">
-                      <div className="mx-3 flex flex-col">
+                      <div className="mx-3 flex flex-col items-start">
                         <span className="text-base font-semibold leading-5">
                           {user?.fullName}
                         </span>
@@ -106,7 +106,10 @@ const Navbar = () => {
                     </div>
                   </div>
                   <div className="hidden place-items-end items-center xl:flex">
-                    <BiDotsHorizontalRounded className="place-content-end text-xl" />
+                    <TbDots
+                      size={18.75}
+                      className="place-content-end text-xl"
+                    />
                   </div>
                 </div>
               )}
