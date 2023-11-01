@@ -19,7 +19,7 @@ export const tweetTime = (date: Date) => {
     case secondsDiff <= 60:
       return `${currentTime.diff(tweetDate, "second")}s`;
     case secondsDiff <= 3600:
-      return `${currentTime.diff(tweetDate, "minute")}s`;
+      return `${currentTime.diff(tweetDate, "minute")}m`;
     default:
       const hoursDiff = currentTime.diff(tweetDate, "hour");
       if (hoursDiff >= 24) {
