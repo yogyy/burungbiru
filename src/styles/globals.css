@@ -9,6 +9,7 @@
     --background: 0 0% 0%;
     --primary: 204 88% 53%;
     --secondary: 220 12% 10%;
+    --desctructive: 356 91% 54%;
   }
 
   * {
@@ -20,7 +21,11 @@
   }
 
   body {
-    @apply bg-background font-twitter-chirp leading-5 text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    line-height: 1.25rem;
+    font-family: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      Roboto, Helvetica, Arial, sans-serif;
   }
 }
 
@@ -35,19 +40,7 @@
     overflow-wrap: break-word;
   }
 
-  .post-detail .content-post {
-    font-size: 17px;
-    line-height: 1.5rem;
-  }
-
-  .image-tweet {
-    background-image: url("/images-test/b.jpg");
-    background-position: center;
-    background-size: cover;
-    height: 100%;
-    position: absolute;
-    width: 100%;
-    z-index: -1;
-    padding-bottom: 56.25%;
+  .create-post-content::-webkit-scrollbar {
+    display: none;
   }
 }

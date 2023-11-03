@@ -46,6 +46,7 @@ module.exports = {
         background: "hsl(var(--background))",
         primary: "hsl(var(--primary))",
         secondary: "hsl(var(--secondary))",
+        desctructive: "hsl(var(--desctructive))",
       },
     },
   },
