@@ -55,7 +55,7 @@ export const UserCard = ({ children, author, ...props }: UserCardT) => {
             2 <span className="font-normal text-accent">Following</span>
           </p>
           <p>
-            11 <span className="font-normal text-accent">span</span>
+            11 <span className="font-normal text-accent">Followers</span>
           </p>
         </div>
       </HoverCardContent>

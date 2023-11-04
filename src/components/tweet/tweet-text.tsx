@@ -17,7 +17,7 @@ export const TweetText = ({ content }: { content: string }) => {
               className="text-primary hover:underline"
             >
               {convertToHttps(word)?.title}
-            </Link>{" "}
+            </Link>
           </React.Fragment>
         ) : (
           word + " "
