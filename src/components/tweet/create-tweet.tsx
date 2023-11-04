@@ -1,68 +1,65 @@
-import Image from "next/image";
+import { useRef, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useRef, useState, useEffect } from "react";
 import { api } from "~/utils/api";
+import { z } from "zod";
 import { useUser } from "@clerk/nextjs";
-import Link from "next/link";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
 import { createTweetActions } from "~/constant";
-import { Globe } from "../icons";
+import { Globe, Media } from "../icons";
 import { UserAvatar } from "../avatar";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ImageModal } from "../modal/image-modal";
+import { useUploadImage } from "~/hooks/use-upload-img";
+import { uploadImage } from "~/lib/cloudinary";
+import { LuX } from "react-icons/lu";
+
+const tweetSchema = z.object({
+  text: z.string().min(1),
+  image: z
+    .object({
+      public_id: z.string(),
+      url: z.string(),
+    })
+    .optional(),
+});
 
 export const CreateTweet = () => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [input, setInput] = useState("");
-  const [showBadge, setShowBadge] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const [submitBtn, setSubmitBtn] = useState(false);
 
+  const { image, ImagePrev, setImagePrev, handleImageChange } =
+    useUploadImage();
   const { user } = useUser();
   const ctx = api.useUtils();
-  const {
-    mutate,
-    isLoading: isPosting,
-    isSuccess,
-  } = api.posts.create.useMutation({
-    onMutate() {
-      toast("creating your post...", {
-        position: "top-center",
-      });
-    },
+  if (!user) return null;
+
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
     onSuccess: () => {
-      setInput("");
-      ctx.posts.getAll.invalidate();
-      toast.success(`Your post was sent.`);
-      adjustTextareaHeight();
+      setImagePrev("");
+      form.reset();
+      ctx.posts.getAll.invalidate().then(() => adjustTextareaHeight());
+      if (!ImagePrev) toast.success("Your Post was sent.");
     },
-    onError: (e) => {
-      const errorMessage = e.data?.zodError?.fieldErrors.content;
-      if (errorMessage && errorMessage[0]) {
-        toast.error(errorMessage[0]);
+    onError: (err) => {
+      adjustTextareaHeight();
+      if (err.shape?.data.zodError?.fieldErrors.content) {
+        toast.error(err.shape?.data.zodError?.fieldErrors.content[0] as string);
       } else {
-        toast.error("Failed to post! Please try again later.");
+        toast.error("error sending post");
       }
     },
   });
-
-  const formSchema = z.object({
-    post: z.string().min(2, {
-      message: "Username must be at least 2 characters.",
-    }),
-  });
-
-  if (!user) return null;
 
   useEffect(() => {
     const { current } = textareaRef;
@@ -82,20 +79,44 @@ export const CreateTweet = () => {
     textarea.style.height = `${textarea.scrollHeight + 5}px`;
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof tweetSchema>>({
+    resolver: zodResolver(tweetSchema),
     defaultValues: {
-      post: "",
+      text: "",
+      image: {
+        public_id: "",
+        url: "",
+      },
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    mutate({ content: values.post });
-    console.log(values);
-    form.reset();
+  async function onSubmit(values: z.infer<typeof tweetSchema>) {
+    try {
+      setSubmitBtn((prev) => !prev);
+      if (ImagePrev) {
+        const imagePost = toast.promise(
+          uploadImage(image as File),
+          {
+            loading: "sending your post...",
+            success: "Your post was sent.",
+            error: "Uh oh, sending post went error!",
+          },
+          { position: "top-right" }
+        );
+        values.image = await imagePost;
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      mutate({
+        content: values.text,
+        image: {
+          public_id: values.image?.public_id as string,
+          url: values.image?.url as string,
+        },
+      });
+      setSubmitBtn((prev) => !prev);
+    }
   }
 
   return (
@@ -106,55 +127,72 @@ export const CreateTweet = () => {
       >
         <FormField
           control={form.control}
-          name="post"
+          name="text"
           render={({ field }) => (
             <div className="px-4 pt-1.5">
               <div className="relative flex h-auto w-auto items-start gap-4">
                 <UserAvatar
                   username={user.username}
                   profileImg={user.imageUrl}
-                  className="mt-1.5 flex-shrink-0"
+                  className="flex-shrink-0 pt-3"
                 />
                 <FormItem className="h-full w-full space-y-0">
-                  {/* <div
-                    className={cn(
-                      "w-full cursor-pointer pb-3",
-                      showBadge ? "block" : "hidden"
-                    )}
-                  >
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "flex h-[24px] w-fit min-w-[24px] cursor-not-allowed items-center rounded-full border-accent bg-background font-sans text-sm text-primary hover:bg-primary/25"
-                      )}
-                    >
-                      Everyone <LuChevronDown size={20} className="ml-1" />
-                    </Badge>
-                  </div> */}
                   <FormControl>
-                    <textarea
-                      {...field}
-                      ref={textareaRef}
-                      placeholder="What's happening?"
-                      className={cn(
-                        "flex max-h-[35rem] min-h-[52px] w-full flex-1 resize-none bg-transparent pt-3 text-xl leading-6 text-fuchsia-50 outline-none placeholder:font-thin",
-                        isPosting && "text-accent",
-                        isSuccess && "h-min",
-                        textareaRef.current?.value.length! >= 255 &&
-                          "text-desctructive"
-                      )}
-                      disabled={isPosting}
-                    />
+                    <div className="create-post-content max-h-[84.5vh] w-full overflow-y-scroll">
+                      <div
+                        className={cn(
+                          "h-full w-full pt-1",
+                          form.formState.isSubmitting && "opacity-60"
+                        )}
+                      >
+                        <textarea
+                          {...field}
+                          ref={textareaRef}
+                          maxLength={500}
+                          placeholder="What is happening?"
+                          className={cn(
+                            "flex max-h-[35rem] min-h-[32px] w-full flex-1 resize-none bg-transparent",
+                            "py-3 text-xl leading-6 outline-none placeholder:font-thin",
+                            isPosting && "text-accent",
+                            textareaRef.current?.value.length! >= 255 &&
+                              "text-desctructive"
+                          )}
+                          disabled={isPosting}
+                        />
+                        {ImagePrev && (
+                          <div className="relative">
+                            <Button
+                              type="button"
+                              size="icon"
+                              variant="ghost"
+                              className={cn(
+                                "absolute right-1 top-1 rounded-full bg-background p-1",
+                                "opacity-70 transition-opacity hover:bg-background hover:opacity-100"
+                              )}
+                              onClick={() => setImagePrev("")}
+                            >
+                              <LuX size={20} />
+                            </Button>
+                            <ImageModal
+                              src={ImagePrev}
+                              className="max-h-[42.5rem] w-full rounded-2xl"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </FormControl>
+                  <FormMessage />
                   <div className="-ml-[8px] -mt-2 pb-3">
                     <span
                       className={cn(
                         "flex h-6 w-fit items-center rounded-full px-3 font-sans font-semibold text-primary",
                         "text-[15px] leading-5 transition-colors duration-200 ease-out hover:bg-primary/10",
-                        "cursor-not-allowed [&>svg>path]:fill-primary [&>svg]:mr-1 [&>svg]:w-4"
+                        "cursor-not-allowed"
                       )}
                     >
-                      <Globe /> Everyone can reply
+                      <Globe className="mr-1 w-4 fill-primary" /> Everyone can
+                      reply
                     </span>
                   </div>
                 </FormItem>
@@ -162,6 +200,39 @@ export const CreateTweet = () => {
               <hr className="ml-10" />
               <div className="mt-2 flex justify-between">
                 <div className={cn("ml-10 flex gap-1.5")}>
+                  <FormField
+                    control={form.control}
+                    name="image.url"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0">
+                        <FormLabel className="relative cursor-pointer">
+                          <Button
+                            size={"icon"}
+                            variant={"ghost"}
+                            type="button"
+                            onClick={() => inputRef.current?.click()}
+                            className={cn(
+                              "h-8 w-8 rounded-full fill-primary p-1 text-primary hover:bg-primary/10"
+                            )}
+                          >
+                            <span className="sr-only">add image</span>
+                            <Media className="h-5 w-5 fill-current" />
+                          </Button>
+                        </FormLabel>
+                        <FormControl ref={inputRef}>
+                          <input
+                            accept="image/*"
+                            {...field}
+                            placeholder="add image"
+                            type="file"
+                            onChange={handleImageChange}
+                            disabled={isPosting}
+                            className="hidden"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                   {createTweetActions.map((btn) => (
                     <Button
                       size={"icon"}
@@ -184,7 +255,10 @@ export const CreateTweet = () => {
                 <Button
                   type="submit"
                   disabled={
-                    isPosting || textareaRef.current?.value.length! >= 255
+                    isPosting ||
+                    submitBtn ||
+                    textareaRef.current?.value.length! >= 255
+                    // textareaRef.current?.value.length === 0
                   }
                   className={cn(
                     "h-9 self-end rounded-full font-sans text-[15px] font-[600] leading-5 focus-visible:border-white disabled:opacity-60"
