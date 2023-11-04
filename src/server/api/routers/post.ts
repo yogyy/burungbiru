@@ -70,8 +70,8 @@ export const postRouter = createTRPCRouter({
 
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
-      take: 100,
       orderBy: [{ createdAt: "desc" }],
+      take: 20,
     });
     return addUserDataToPosts(posts);
   }),
@@ -88,7 +88,6 @@ export const postRouter = createTRPCRouter({
           where: {
             authorId: input.userId,
           },
-          take: 100,
           orderBy: [{ createdAt: "desc" }],
         })
         .then(addUserDataToPosts)
@@ -96,20 +95,37 @@ export const postRouter = createTRPCRouter({
 
   create: privateProcedure
     .input(
-      z.object({
-        content: z.string().min(1).max(250, "max char 250"),
-      })
+      z
+        .object({
+          content: z
+            .string()
+            .min(0, { message: "content must contain at least 1 character(s)" })
+            .max(255, {
+              message: "content must contain at most 255 character(s)",
+            }),
+          image: z
+            .object({
+              url: z.string(),
+              public_id: z.string(),
+            })
+            .optional(),
+        })
+        .refine(
+          (schema) => schema.content.length > 0 || schema.image !== undefined
+        )
     )
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.userId;
 
-      const { success } = await ratelimit.limit(authorId);
-      if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+      // const { success } = await ratelimit.limit(authorId);
+      // if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
 
       const post = await ctx.prisma.post.create({
         data: {
           authorId,
           content: input.content,
+          image: input.image?.url,
+          imageId: input.image?.public_id,
         },
       });
       return post;
