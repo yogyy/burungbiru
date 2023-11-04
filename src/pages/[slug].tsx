@@ -51,9 +51,9 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             </div>
           </div>
           <div className="bg-[url('https://pbs.twimg.com/profile_banners/15240983020bg-cover relative h-auto max-h-[12.5rem] object-cover">
-            <img
+            <Image
               src="https://pbs.twimg.com/profile_banners/1524098302039318529/1687799380/600x200"
-              alt=""
+              alt={`banner @${user?.username}`}
             />
           </div>
           <div className="mb-3 px-4 pt-3">
