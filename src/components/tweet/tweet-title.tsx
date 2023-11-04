@@ -42,7 +42,7 @@ const TweetTitle: React.FC<TweetType> = (props) => {
             {`@${author.username}`}
           </Link>
         </UserCard>
-        <span className="px-1 text-sm text-accent">·</span>
+        <span className="px-1 text-[15px] leading-5 text-accent">·</span>
         <Link
           href={`/post/${post.id}`}
           className="group relative flex w-max items-end text-sm font-thin text-accent outline-none hover:underline focus:underline"
@@ -50,7 +50,10 @@ const TweetTitle: React.FC<TweetType> = (props) => {
         >
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger asChild className="text-base leading-5">
+              <TooltipTrigger
+                asChild
+                className="text-[15px] font-normal leading-5"
+              >
                 <time dateTime={post.createdAt.toISOString()}>
                   {tweetTime(post.createdAt)}
                 </time>
@@ -66,7 +69,7 @@ const TweetTitle: React.FC<TweetType> = (props) => {
         </Link>
       </div>
 
-      <TweetMenu post={post} />
+      <TweetMenu post={post} author={author} />
     </div>
   );
 };

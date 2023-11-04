@@ -8,6 +8,8 @@ import { renderText } from "~/lib/tweet";
 import { TweetTitle } from "./tweet-title";
 import { TweetText } from "./tweet-text";
 import { TweetAction } from "./tweet-action";
+import { UserCard } from "../user-hover-card";
+import { ImageModal } from "../modal/image-modal";
 dayjs.extend(LocalizedFormat);
 
 type VariantTweet = "default" | "details";
@@ -28,43 +30,45 @@ export const TweetPost: React.FC<TweetType> = ({
     <div
       key={post.id}
       className={cn(
-        "relative w-full max-w-full border-b border-border px-4 outline-none",
+        "relative w-full max-w-full overflow-hidden border-b border-border pl-4 outline-none md:cursor-pointer",
         className
       )}
       {...props}
     >
-      <div className="relative flex w-full pt-3">
-        <div className="mr-3 h-auto w-10 flex-shrink-0 basis-10">
-          <Image
-            width={40}
-            height={40}
-            draggable={false}
-            src={author.profileImg}
-            alt={`@${author.username || author.lastName}'s profile picture`}
-            className="first-letter flex basis-12 rounded-full"
-          />
+      <div className="relative flex w-full overflow-hidden pt-1">
+        <div className="mt-2 h-auto w-10 flex-shrink-0 basis-10">
+          <UserCard author={author}>
+            <Image
+              width={40}
+              height={40}
+              draggable={false}
+              src={author.profileImg}
+              alt={`@${author.username || author.lastName}'s profile picture`}
+              className="first-letter flex basis-12 rounded-full"
+            />
+          </UserCard>
         </div>
-        <div className="relative w-full flex-col overflow-hidden pb-3">
-          <TweetTitle
-            variant={variant}
-            author={author}
-            post={post}
-            user={user}
-          />
-          <div className="flex w-fit justify-start">
+        <div className="relative flex w-full flex-col overflow-x-hidden pb-3 pl-3 pr-4">
+          <TweetTitle variant={variant} author={author} post={post} />
+          <div className="flex w-full justify-start">
             <TweetText content={renderText(post.content)} />
           </div>
-          <div className="relative flex h-fit w-full">
-            <div className="relative mt-3 w-fit items-start overflow-hidden rounded-2xl border">
-              <div className="relative h-full w-full max-w-full transition-colors duration-200 hover:bg-secondary">
-                <img
-                  src="https://pbs.twimg.com/media/F9iEb7LbkAAHnw3?format=webp&name=medium"
-                  alt="test"
-                  className="max-h-[510px] w-full object-cover xs:min-w-[382.5px] "
-                />
-              </div>
+          {post.image ? (
+            <div
+              className="relative flex h-fit w-full xs:w-fit"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className="relative mt-3 flex w-full items-start justify-center overflow-hidden rounded-2xl border xs:w-fit">
+                <div className="relative h-full w-fit max-w-full transition-colors duration-200 hover:bg-secondary xs:w-full">
+                  <ImageModal
+                    src={post.image as string}
+                    alt="test"
+                    className="max-h-[510px] w-full object-cover xs:min-w-[382.5px]"
+                  />
+                </div>
+              </button>
             </div>
-          </div>
+          ) : null}
           <TweetAction />
         </div>
       </div>

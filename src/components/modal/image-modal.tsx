@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogOverlay,
-  DialogPortal,
-  DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
@@ -31,13 +27,13 @@ export const ImageModal: React.FC<
       />
       <DialogContent
         close
-        className="h-full w-screen min-w-fit max-w-max items-center overflow-hidden rounded-md border-none border-transparent p-0 shadow-none outline-none md:h-auto [&>button]:bg-background"
+        className="h-full w-screen min-w-fit max-w-max items-center overflow-hidden rounded-md border-none border-transparent bg-transparent shadow-none outline-none md:h-auto [&>button]:bg-background"
       >
         <img
           src={src}
           alt={alt}
           width={600}
-          className="max-h-screen w-full cursor-zoom-in rounded-md bg-center object-contain xs:min-w-[382.5px]"
+          className="max-h-screen w-full rounded-md bg-background/60 bg-center object-contain p-0 xs:min-w-[382.5px]"
         />
       </DialogContent>
     </Dialog>

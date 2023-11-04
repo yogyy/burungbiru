@@ -50,7 +50,7 @@ export const TweetAction = (props: React.HTMLAttributes<HTMLDivElement>) => {
               {btn.name !== "Bookmark" && btn.name !== "Share" && (
                 <span
                   className={cn(
-                    "h-fit min-w-[calc(1em_+_24px)] px-2 font-sans text-[13px] leading-4 md:cursor-pointer",
+                    "hidden h-fit min-w-[calc(1em_+_24px)] px-2 font-sans text-[13px] leading-4 xs:block md:cursor-pointer",
                     "transition duration-300 group-focus-within:text-primary group-hover:text-primary",
                     btn.name === "Repost" &&
                       "group-focus-within:text-[#00BA7C] group-hover:text-[#00BA7C]",
