@@ -1,128 +1,151 @@
 import React from "react";
-import {
-  LuBell,
-  LuHome,
-  LuLeaf,
-  LuLogOut,
-  LuMail,
-  LuSearch,
-  LuTwitter,
-} from "react-icons/lu";
-import { UserButton, SignIn, SignedOut, useUser } from "@clerk/nextjs";
+
+import { useUser, SignInButton } from "@clerk/nextjs";
 import { useClerk } from "@clerk/clerk-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { cn } from "~/lib/utils";
+
+import Image from "next/image";
+
 import {
+  PopoverArrow,
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "~/components/ui/popover";
-import Image from "next/image";
-import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { Button } from "../button";
-import { Button as BtnShadcn } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../ui/popover";
 import { useMediaQuery } from "~/hooks/use-media-q";
-
-const navLinks = [
-  { id: 1, title: "Home", icon: LuBell, link: "/" },
-  { id: 2, title: "Explore", icon: LuSearch, link: "#explore" },
-  { id: 3, title: "Notifications", icon: LuBell, link: "#notifications" },
-  { id: 4, title: "Messages", icon: LuMail, link: "#messages" },
-];
+import { Button } from "../ui/button";
+import { Tweet } from "../icons";
+import { navbarLink } from "~/constant";
+import Logo from "../icons/navbar-icon/logo.svg";
+import { TbDots } from "react-icons/tb";
 
 const Navbar = () => {
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const { signOut } = useClerk();
 
   let r = useRouter();
-  const matches = useMediaQuery("(min-width: 1024px)");
+  const arrOfRoute = r.route.split("/");
+  const baseRoute = "/" + arrOfRoute[1];
 
   return (
-    <nav className="fixed flex h-full flex-col justify-between">
-      <div className="flex w-full flex-col items-center">
-        <ul className="">
-          <li>
-            <div>
-              <Link href="/" className="nav-links">
-                <LuTwitter className=" w-7 fill-[#F1F5F9] text-3xl" />
-              </Link>
-            </div>
-          </li>
-          {navLinks.map((link) => (
-            <li key={link.id}>
-              <Link className="nav-links" href={link.link}>
-                <span className="text-2xl">
+    <div className="sticky top-0 flex h-screen w-[68px] flex-col items-start justify-between px-2 md:w-[88px] xl:w-[275px]">
+      <div className="flex w-full flex-col">
+        <div className="my-0.5 flex h-fit w-full justify-center self-stretch xl:w-fit">
+          <Link
+            href="/"
+            className="rounded-full border border-transparent p-2.5 transition-colors duration-300 hover:bg-border/30"
+          >
+            <Logo width="30" height="30" className="fill-current" />
+            <span className="sr-only">logo</span>
+          </Link>
+        </div>
+        <nav className="mb-1 mt-0.5 flex w-full flex-col items-center">
+          <ul className="flex w-full flex-col">
+            {navbarLink.map((link) => (
+              <li
+                key={link.title}
+                className="flex w-full justify-center py-0.5 xl:justify-start"
+              >
+                <Link
+                  className="-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
+                  href={
+                    link.link === "/profile" ? `/@${user?.username}` : link.link
+                  }
+                >
                   <link.icon
-                    className={cn(r.asPath === link.link && "fill-[#F1F5F9]")}
+                    className={cn(
+                      baseRoute === link.link && "w-6 fill-current stroke-none"
+                    )}
                   />
-                </span>
-                <span className="mx-3 hidden text-xl lg:block">
-                  <p>{link.title}</p>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div className="flex w-full justify-center">
-          {matches ? (
-            <Button className="mt-3 w-10/12">Tweet</Button>
+                  <span
+                    className={cn(
+                      "ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block",
+                      baseRoute === link.link && "font-bold"
+                    )}
+                  >
+                    <p>{link.title}</p>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="my-1 flex w-full items-center justify-center xl:w-[90%] 2xl:my-4">
+          {!isSignedIn ? (
+            <Button
+              asChild
+              className="h-[50px] w-[50px] rounded-full p-0 font-semibold xl:min-h-[52px] xl:w-full xl:min-w-[52px]"
+            >
+              <SignInButton mode="modal" />
+            </Button>
           ) : (
-            <BtnShadcn className="mt-3 flex h-auto w-fit items-center rounded-full bg-[#1D9BF0] p-3 transition-all duration-300 hover:bg-[#1D9BF0]/80 focus-visible:bg-[#1D9BF0]/80">
-              <LuLeaf className="text-xl" />
-            </BtnShadcn>
+            <Button
+              type="button"
+              variant="default"
+              className="h-[50px] w-[50px] rounded-full p-0 font-semibold xl:min-h-[52px] xl:w-full xl:min-w-[52px]"
+            >
+              <Tweet className="block w-6 fill-foreground xl:hidden" />
+              <span className="hidden text-[17px] xl:block">Post</span>
+            </Button>
           )}
         </div>
       </div>
-      <div className="flex w-full items-center justify-center">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="flex w-fit items-center p-4 transition-all duration-300 hover:cursor-pointer hover:rounded-full hover:bg-border/30 lg:w-full">
+      <div className="my-3 flex w-full items-center justify-center place-self-end">
+        <Popover>
+          <PopoverTrigger className="w-full">
+            <div className="flex w-fit items-center p-2.5 transition-all duration-300 hover:cursor-pointer hover:rounded-full hover:bg-border/30 xl:w-full">
               {user && (
                 <div className="flex h-full w-full justify-between">
                   <div className="flex items-center">
                     <div className="h-10 w-10">
                       <Image
-                        src={user?.profileImageUrl}
-                        alt={user.firstName || user.username || user.fullName!}
+                        src={user?.imageUrl}
+                        alt={user.username!}
                         height={40}
                         width={40}
                         className="rounded-full"
                       />
                     </div>
-                    <div className="hidden lg:flex">
-                      <div className="mx-3 flex flex-col text-[15px]">
-                        <span className="font-semibold">{user?.fullName}</span>
-                        <span className="font-thin">@{user?.username}</span>
+                    <div className="hidden h-[41.06px] xl:flex">
+                      <div className="mx-3 flex flex-col items-start">
+                        <span className="text-base font-semibold leading-5">
+                          {user?.fullName}
+                        </span>
+                        <span className="font-thin leading-5 text-accent">
+                          @{user?.username}
+                        </span>
                       </div>
                     </div>
                   </div>
-                  <div className="hidden place-items-end items-center lg:flex">
-                    <BiDotsHorizontalRounded className="place-content-end text-xl" />
+                  <div className="hidden place-items-end items-center xl:flex">
+                    <TbDots
+                      size={18.75}
+                      className="place-content-end text-xl"
+                    />
                   </div>
                 </div>
               )}
             </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="ml-4 w-56 bg-dark text-[#F1F5F9]">
-            <DropdownMenuLabel>Add an existing account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut()}>
-              <LuLogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </PopoverTrigger>
+          <PopoverContent
+            align="center"
+            alignOffset={-20}
+            className="data-[side=bottom] sm:data-[align=center] relative px-0 py-1 font-sans text-[15px] leading-5 text-foreground/90"
+          >
+            <Button
+              variant="ghost"
+              onClick={() => signOut()}
+              className="h-full w-full justify-normal rounded-md hover:bg-[rgb(22,24,28)]"
+            >
+              Log Out @{user?.username}
+            </Button>
+            <PopoverArrow className="h-2 stroke-neutral-100" />
+          </PopoverContent>
+        </Popover>
       </div>
-    </nav>
+    </div>
   );
 };
 

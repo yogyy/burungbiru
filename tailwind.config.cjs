@@ -16,6 +16,9 @@ module.exports = {
       },
     },
     extend: {
+      screens: {
+        xs: "500px",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: 0 },
@@ -30,10 +33,20 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      fontFamily: {
+        "twitter-chirp": ["TwitterChirp", "sans-serif"],
+        "twitter-chirp-extended": ["TwitterChirpExtendedHeavy", "sans-serif"],
+      },
       colors: {
         dark: "#010100",
         border: "rgb(47, 51, 54)",
         accent: "rgb(113, 118, 123)",
+        card: "rgb(32, 35, 39)",
+        foreground: "hsl(var(--foreground))",
+        background: "hsl(var(--background))",
+        primary: "hsl(var(--primary))",
+        secondary: "hsl(var(--secondary))",
+        desctructive: "hsl(var(--desctructive))",
       },
     },
   },

@@ -1,10 +1,9 @@
 import type { PropsWithChildren, ReactNode } from "react";
-import { Open_Sans } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import Navbar from "./layouts/navbar";
 import { cn } from "~/lib/utils";
-
-const openSans = Open_Sans({ subsets: ["latin"] });
+import { RightAside } from "./layouts/aside";
+import { MobileNav } from "./layouts/mobile-navbar";
 
 export const PageLayout = ({
   children,
@@ -14,14 +13,39 @@ export const PageLayout = ({
   className?: string;
 }) => {
   return (
-    <div style={openSans.style} className="flex">
-      <header className="relative hidden w-20 place-content-end sm:flex md:w-[260px] lg:w-[400px] xl:w-[500px]">
+    <div className="flex w-full gap-0 xs:justify-center">
+      <header className="relative hidden min-[555px]:flex">
         <Navbar />
       </header>
-      <main className={cn("relative flex h-full w-full flex-col", className)}>
-        {children}
+      <main className={cn("relative w-full md:w-auto", className)}>
+        <div className="flex w-full flex-shrink justify-between md:w-[600px] lg:w-[920px] xl:w-[990px]">
+          {children}
+          <RightAside />
+        </div>
       </main>
-      <Toaster position="top-right" />
+      <MobileNav />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          position: "bottom-center",
+          style: {
+            backgroundColor: "hsl(var(--primary))",
+            color: "hsl(var(--foreground))",
+          },
+          success: {
+            icon: null,
+          },
+          loading: {
+            position: "top-center",
+          },
+          error: {
+            style: {
+              backgroundColor: "hsl(var(--desctructive) / .9)",
+            },
+            position: "top-center",
+          },
+        }}
+      />
     </div>
   );
 };

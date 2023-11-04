@@ -6,8 +6,19 @@
 
 /** @type {import("next").NextConfig} */
 const config = {
+  reactStrictMode: true,
+  images: {
+    domains: [
+      "images.clerk.dev",
+      "avatars.githubusercontent.com",
+      "lh3.googleusercontent.com",
+    ],
+    unoptimized: true,
+  },
+
   webpack(config) {
     // Grab the existing rule that handles SVG imports
+    // @ts-ignore
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.(".svg")
     );
@@ -34,15 +45,6 @@ const config = {
     return config;
   },
 
-  reactStrictMode: true,
-  images: {
-    domains: [
-      "images.clerk.dev",
-      "avatars.githubusercontent.com",
-      "lh3.googleusercontent.com",
-    ],
-  },
-
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you
    * must comment the below `i18n` config out.
@@ -52,6 +54,12 @@ const config = {
   i18n: {
     locales: ["en"],
     defaultLocale: "en",
+  },
+
+  modularizeImports: {
+    "react-icons": {
+      transform: "react-icons/{{member}}",
+    },
   },
 
   typescript: {

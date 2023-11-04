@@ -21,4 +21,12 @@ export const profileRouter = createTRPCRouter({
       }
       return filterUserForClient(user);
     }),
+
+  getUserRandomUser: publicProcedure.query(async () => {
+    const users = (
+      await clerkClient.users.getUserList({ orderBy: "-created_at", limit: 3 })
+    ).map(filterUserForClient);
+
+    return users;
+  }),
 });
