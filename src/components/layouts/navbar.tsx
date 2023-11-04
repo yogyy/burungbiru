@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useUser } from "@clerk/nextjs";
+import { useUser, SignInButton } from "@clerk/nextjs";
 import { useClerk } from "@clerk/clerk-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -8,7 +8,12 @@ import { cn } from "~/lib/utils";
 
 import Image from "next/image";
 
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import {
+  PopoverArrow,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../ui/popover";
 import { useMediaQuery } from "~/hooks/use-media-q";
 import { Button } from "../ui/button";
 import { Tweet } from "../icons";
@@ -17,11 +22,10 @@ import Logo from "../icons/navbar-icon/logo.svg";
 import { TbDots } from "react-icons/tb";
 
 const Navbar = () => {
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const { signOut } = useClerk();
 
   let r = useRouter();
-  const matches = useMediaQuery("(min-width: 1280px)");
   const arrOfRoute = r.route.split("/");
   const baseRoute = "/" + arrOfRoute[1];
 
@@ -45,13 +49,14 @@ const Navbar = () => {
                 className="flex w-full justify-center py-0.5 xl:justify-start"
               >
                 <Link
-                  className="-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-300 ease-in-out hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
-                  href={link.link === null ? `/@${user?.username}` : link.link}
+                  className="-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
+                  href={
+                    link.link === "/profile" ? `/@${user?.username}` : link.link
+                  }
                 >
                   <link.icon
                     className={cn(
-                      baseRoute === link.link && "w-6 fill-current stroke-none",
-                      link.link === null && "fill-current stroke-none"
+                      baseRoute === link.link && "w-6 fill-current stroke-none"
                     )}
                   />
                   <span
@@ -68,20 +73,29 @@ const Navbar = () => {
           </ul>
         </nav>
         <div className="my-1 flex w-full items-center justify-center xl:w-[90%] 2xl:my-4">
-          <Button
-            type="button"
-            variant="default"
-            className="h-[50px] w-[50px] rounded-full p-0 font-semibold xl:min-h-[52px] xl:w-full xl:min-w-[52px]"
-          >
-            <Tweet className="block w-6 fill-foreground xl:hidden" />
-            <span className="hidden text-[17px] xl:block">Post</span>
-          </Button>
+          {!isSignedIn ? (
+            <Button
+              asChild
+              className="h-[50px] w-[50px] rounded-full p-0 font-semibold xl:min-h-[52px] xl:w-full xl:min-w-[52px]"
+            >
+              <SignInButton mode="modal" />
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="default"
+              className="h-[50px] w-[50px] rounded-full p-0 font-semibold xl:min-h-[52px] xl:w-full xl:min-w-[52px]"
+            >
+              <Tweet className="block w-6 fill-foreground xl:hidden" />
+              <span className="hidden text-[17px] xl:block">Post</span>
+            </Button>
+          )}
         </div>
       </div>
       <div className="my-3 flex w-full items-center justify-center place-self-end">
         <Popover>
           <PopoverTrigger className="w-full">
-            <div className="flex w-fit items-center p-3 transition-all duration-300 hover:cursor-pointer hover:rounded-full hover:bg-border/30 xl:w-full">
+            <div className="flex w-fit items-center p-2.5 transition-all duration-300 hover:cursor-pointer hover:rounded-full hover:bg-border/30 xl:w-full">
               {user && (
                 <div className="flex h-full w-full justify-between">
                   <div className="flex items-center">
@@ -115,7 +129,11 @@ const Navbar = () => {
               )}
             </div>
           </PopoverTrigger>
-          <PopoverContent className="relative overflow-hidden px-0 py-1 font-sans text-[15px] leading-5 text-foreground/90">
+          <PopoverContent
+            align="center"
+            alignOffset={-20}
+            className="data-[side=bottom] sm:data-[align=center] relative px-0 py-1 font-sans text-[15px] leading-5 text-foreground/90"
+          >
             <Button
               variant="ghost"
               onClick={() => signOut()}
@@ -123,6 +141,7 @@ const Navbar = () => {
             >
               Log Out @{user?.username}
             </Button>
+            <PopoverArrow className="h-2 stroke-neutral-100" />
           </PopoverContent>
         </Popover>
       </div>

@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "./layouts/navbar";
 import { cn } from "~/lib/utils";
 import { RightAside } from "./layouts/aside";
+import { MobileNav } from "./layouts/mobile-navbar";
 
 export const PageLayout = ({
   children,
@@ -13,7 +14,7 @@ export const PageLayout = ({
 }) => {
   return (
     <div className="flex w-full gap-0 xs:justify-center">
-      <header className="relative hidden xs:flex">
+      <header className="relative hidden min-[555px]:flex">
         <Navbar />
       </header>
       <main className={cn("relative w-full md:w-auto", className)}>
@@ -22,14 +23,20 @@ export const PageLayout = ({
           <RightAside />
         </div>
       </main>
+      <MobileNav />
       <Toaster
         position="top-right"
         toastOptions={{
           position: "bottom-center",
-          icon: null,
           style: {
             backgroundColor: "hsl(var(--primary))",
             color: "hsl(var(--foreground))",
+          },
+          success: {
+            icon: null,
+          },
+          loading: {
+            position: "top-center",
           },
           error: {
             style: {

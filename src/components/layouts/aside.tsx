@@ -4,6 +4,7 @@ import { LuSearch } from "react-icons/lu";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
 import { Button } from "../ui/button";
+import { UserAvatar } from "../avatar";
 
 const RightAside: React.FC<React.HTMLAttributes<HTMLElement>> = (props) => {
   const { className } = props;
@@ -36,35 +37,20 @@ const RightAside: React.FC<React.HTMLAttributes<HTMLElement>> = (props) => {
       <div className="-mt-8 mb-4 min-h-[15rem] rounded-2xl bg-card">
         <h1 className="px-4 py-3">You Might Like</h1>
         <div className="">
-          {!isSignedIn ? (
-            <Button asChild>
-              <SignInButton mode="modal" />
-            </Button>
-          ) : (
-            peoples?.map((ppl) => (
-              <div
-                className="flex justify-between px-4 py-3"
-                key={ppl.username}
-              >
-                <div className="flex flex-grow basis-10">
-                  <img
-                    src={ppl.profileImg}
-                    width={40}
-                    height={40}
-                    alt=""
-                    className="mr-3 aspect-square h-10"
-                  />
-                  <div className="flex flex-col">
-                    <span className="text-[15px] font-bold leading-5">{`${
-                      ppl.firstName
-                    } ${ppl.lastName || null}`}</span>
-                    <span className="text-accent">@{ppl.username}</span>
-                  </div>
+          {peoples?.map((ppl) => (
+            <div className="flex justify-between px-4 py-3" key={ppl.username}>
+              <div className="flex flex-grow basis-10">
+                <UserAvatar {...ppl} className="mr-3 aspect-square h-10" />
+                <div className="flex flex-col">
+                  <span className="text-[15px] font-bold leading-5">{`${
+                    ppl.firstName
+                  } ${ppl.lastName || null}`}</span>
+                  <span className="text-accent">@{ppl.username}</span>
                 </div>
-                <Button variant="outline">Follow</Button>
               </div>
-            ))
-          )}
+              <Button variant="outline">Follow</Button>
+            </div>
+          ))}
         </div>
       </div>
     </aside>
