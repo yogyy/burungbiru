@@ -2,7 +2,7 @@
   "git": {
     "deploymentEnabled": {
       "main": false,
-      "before-using-drizzle": false
+      "before-using-drizzle": true
     }
   }
 }
