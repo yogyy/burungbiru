@@ -3,74 +3,96 @@ import Head from "next/head";
 import { appRouter } from "~/server/api/root";
 import { api } from "~/utils/api";
 
-const ProfileFeed = (props: { userId: string }) => {
-  const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
-    userId: props.userId,
-  });
-
-  // if (isLoading) return <LoadingPage />;
-
-  return (
-    <div className="flex w-full flex-col">
-      {isLoading && (
-        <div className="flex h-screen items-center justify-center">
-          <LoadingSpinner size={60} />
-        </div>
-      )}
-      {!isLoading && data && data?.length !== 0 ? (
-        data.map((fullPost) => (
-          <PostView {...fullPost} key={fullPost.post.id} />
-        ))
-      ) : (
-        <div>User has not posted</div>
-      )}
-    </div>
-  );
-};
-
-// ... timestamp
-
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const { data } = api.profile.getUserByUsername.useQuery({
+  const { data: user, isLoading } = api.profile.getUserByUsername.useQuery({
     username,
   });
-  if (!data)
+
+  const { data: posts, isLoading: userpostLoading } =
+    api.posts.getPostsByUserId.useQuery({
+      userId: user?.id as string,
+    });
+
+  if (!posts)
     return (
       <div className="flex h-screen items-center justify-center">
-        <h1 className="text-3xl font-semibold text-red-500">User Not Found</h1>
+        <h2 className="text-3xl font-semibold text-red-500">User Not Found</h2>
       </div>
     );
+
+  if (isLoading) {
+    return <p>loading</p>;
+  }
 
   return (
     <>
       <Head>
-        <title>{data.username}</title>
+        <title>
+          {`${user?.firstName} ${user?.lastName || null} (@${
+            user?.username
+          }) / burbir`}
+        </title>
       </Head>
-      <PageLayout className="">
+      <PageLayout className="flex">
         <div className="flex w-full flex-col border-x border-border md:w-[600px]">
-          <div className="sticky top-0 z-10 flex h-14 w-full items-center bg-dark/70 px-4 font-semibold backdrop-blur-md md:max-w-2xl">
-            <div className="w-16">
-              <ButtonBack />
+          <div className="sticky top-0 z-10 flex h-auto w-full items-center bg-dark/70 px-4 font-semibold backdrop-blur-md ">
+            <div className="relative flex h-[53px] w-full items-center md:max-w-[600px]">
+              <div className="-ml-2 w-14">
+                <ButtonBack />
+              </div>
+              <div className="flex w-max flex-shrink flex-col justify-center">
+                <h1 className="font-sans text-xl font-bold leading-6">
+                  {user?.firstName + (user?.lastName ? user?.lastName : "")}
+                </h1>
+                <p className="text-[13px] font-thin leading-4 text-accent ">
+                  {posts.length} posts
+                </p>
+              </div>
             </div>
-            <p>{data.firstName + (data.lastName ? data.lastName : "")}</p>
           </div>
-          <div className="relative h-36 bg-zinc-600">
-            <Image
-              src={data.profileImg}
-              alt={`${
-                data.username ?? data.firstName ?? "unknown"
-              }'s profile pic`}
-              width={128}
-              height={128}
-              className="absolute bottom-0 left-0 -mb-[64px] ml-4 rounded-full border-4 border-dark bg-dark"
+          <div className="bg-[url('https://pbs.twimg.com/profile_banners/15240983020bg-cover relative h-auto max-h-[12.5rem] object-cover">
+            <img
+              src="https://pbs.twimg.com/profile_banners/1524098302039318529/1687799380/600x200"
+              alt=""
             />
           </div>
-          <div className="h-[64px]"></div>
-          <div className="p-4 text-2xl font-bold">{`@${
-            data.username ?? data.firstName ?? "unknown"
-          }`}</div>
+          <div className="mb-3 px-4 pt-3">
+            <div className="relative flex w-full flex-wrap justify-between">
+              <div className="-mt-[15%] mb-3 h-auto w-1/4 min-w-[48px]">
+                <Image
+                  src={user?.profileImg as string}
+                  alt={`${
+                    user?.username ?? user?.firstName ?? "unknown"
+                  }'s profile pic`}
+                  width={128}
+                  height={128}
+                  className="rounded-full border-4 border-dark bg-dark"
+                />
+              </div>
+              <Button
+                variant="outline"
+                className="rounded-full dark:bg-background"
+              >
+                Edit Profile
+              </Button>
+            </div>
+            <h2 className="text-2xl font-bold">{`@${
+              user?.username ?? user?.firstName ?? "unknown"
+            }`}</h2>
+          </div>
           <div className="w-full border-b border-border" />
-          <ProfileFeed userId={data.id} />
+          <div className="flex w-full flex-col">
+            {userpostLoading && (
+              <div className="flex h-screen items-center justify-center">
+                <LoadingSpinner size={60} />
+              </div>
+            )}
+            {!userpostLoading && posts && posts?.length !== 0 ? (
+              <Feed post={posts} postLoading={userpostLoading} />
+            ) : (
+              <div>User has not posted</div>
+            )}
+          </div>
         </div>
       </PageLayout>
     </>
@@ -79,9 +101,10 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 import { PageLayout } from "~/components/layout";
 import Image from "next/image";
 import { LoadingSpinner } from "~/components/loading";
-import { PostView } from "~/components/postView";
 import ButtonBack from "~/components/ButtonBack";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
+import Feed from "~/components/layouts/feed";
+import { Button } from "~/components/ui/button";
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = generateSSGHelper();
@@ -93,7 +116,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const username = slug.replace("@", "");
 
   await ssg.profile.getUserByUsername.prefetch({ username });
-
   return {
     props: {
       trpcState: ssg.dehydrate(),

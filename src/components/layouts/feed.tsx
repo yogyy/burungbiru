@@ -1,32 +1,36 @@
 import React from "react";
-import { PostView } from "../postView";
 import { LoadingSpinner } from "../loading";
 import { RouterOutputs } from "~/utils/api";
 import { useRouter } from "next/navigation";
+import { cn } from "~/lib/utils";
+import { TweetPost } from "../tweet";
 
-const Feed = ({
-  post,
-  postLoading,
-}: {
+type FeedType = {
   post: RouterOutputs["posts"]["getAll"];
   postLoading: boolean;
-}) => {
-  const router = useRouter();
+};
 
+const Feed = ({ post, postLoading }: FeedType) => {
+  const router = useRouter();
   return (
     <div className="h-auto w-full">
-      {postLoading ? (
+      {postLoading === true ? (
         <div className="flex h-screen items-center justify-center">
           <LoadingSpinner size={60} />
         </div>
       ) : (
-        post &&
         post.map((fullPost) => (
-          <PostView
+          <TweetPost
+            variant="default"
             {...fullPost}
             key={fullPost.post.id}
-            onClick={() => router.push(`/post/${fullPost.post.id}`)}
-            className="cursor-pointer focus-within:bg-white/5 hover:bg-white/5"
+            onClick={(e) => {
+              router.push(`/post/${fullPost.post.id}`);
+            }}
+            className={cn(
+              "focus-wihtin:bg-white/[.03] hover:bg-white/[.03]",
+              "group/post transition-colors duration-200 ease-linear"
+            )}
           />
         ))
       )}
