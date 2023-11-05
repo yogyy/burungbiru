@@ -14,13 +14,13 @@ import { TweetAction } from "~/components/tweet/tweet-action";
 import { ImageModal } from "~/components/modal/image-modal";
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
+  const { user } = useUser();
   const { data } = api.posts.getById.useQuery({
     id,
   });
   if (!data) return <div className="">404</div>;
   // console.log(data);
   const { author, post } = data;
-  const { user } = useUser();
 
   return (
     <>

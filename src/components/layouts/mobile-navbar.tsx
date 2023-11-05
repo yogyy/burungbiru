@@ -20,7 +20,10 @@ export const MobileNav = () => {
       <nav>
         <ul className="flex items-center justify-between">
           {mobileNavbar.map((nav) => (
-            <li className="my-1 flex flex-1 items-center justify-center">
+            <li
+              key={nav.name}
+              className="my-1 flex flex-1 items-center justify-center"
+            >
               <Link
                 href={nav.link}
                 className="rounded-full p-2 hover:bg-white/5"

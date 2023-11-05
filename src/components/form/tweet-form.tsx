@@ -38,6 +38,28 @@ export const CreateTweet = () => {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [submitBtn, setSubmitBtn] = useState(false);
 
+  useEffect(() => {
+    const { current } = textareaRef;
+    if (!current) return;
+    current.addEventListener("input", adjustTextareaHeight);
+    adjustTextareaHeight();
+
+    return () => {
+      current.removeEventListener("input", adjustTextareaHeight);
+    };
+  }, [textareaRef]);
+
+  const form = useForm<z.infer<typeof tweetSchema>>({
+    resolver: zodResolver(tweetSchema),
+    defaultValues: {
+      text: "",
+      image: {
+        public_id: "",
+        url: "",
+      },
+    },
+  });
+
   const { image, ImagePrev, setImagePrev, handleImageChange } =
     useUploadImage();
   const { user } = useUser();
@@ -61,34 +83,12 @@ export const CreateTweet = () => {
     },
   });
 
-  useEffect(() => {
-    const { current } = textareaRef;
-    if (!current) return;
-    current.addEventListener("input", adjustTextareaHeight);
-    adjustTextareaHeight();
-
-    return () => {
-      current.removeEventListener("input", adjustTextareaHeight);
-    };
-  }, [textareaRef]);
-
   const adjustTextareaHeight = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
     textarea.style.height = "auto";
     textarea.style.height = `${textarea.scrollHeight + 5}px`;
   };
-
-  const form = useForm<z.infer<typeof tweetSchema>>({
-    resolver: zodResolver(tweetSchema),
-    defaultValues: {
-      text: "",
-      image: {
-        public_id: "",
-        url: "",
-      },
-    },
-  });
 
   async function onSubmit(values: z.infer<typeof tweetSchema>) {
     try {
@@ -176,6 +176,7 @@ export const CreateTweet = () => {
                             <ImageModal
                               src={ImagePrev}
                               className="max-h-[42.5rem] w-full rounded-2xl"
+                              alt="image preview"
                             />
                           </div>
                         )}
