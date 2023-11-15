@@ -14,9 +14,9 @@ const Feed = ({ post, postLoading }: FeedType) => {
   const router = useRouter();
   return (
     <div className="h-auto w-full">
-      {postLoading === true ? (
-        <div className="flex h-screen items-center justify-center">
-          <LoadingSpinner size={60} />
+      {postLoading ? (
+        <div className="flex h-20 items-center justify-center">
+          <LoadingSpinner size={24} />
         </div>
       ) : (
         post.map((fullPost) => (

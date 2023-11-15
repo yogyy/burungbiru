@@ -15,7 +15,7 @@ const Home: NextPage = () => {
   if (!userLoaded)
     return (
       <div className="flex h-screen w-screen items-center justify-center">
-        <Logo width={192} height={192} />
+        <Logo width={120} height={120} className="brightness-50" />
       </div>
     );
 
@@ -38,7 +38,7 @@ const Home: NextPage = () => {
         <div className="hidden border-b border-border xs:flex">
           {isSignedIn ? <CreateTweet /> : null}
         </div>
-        {!!data && <Feed post={data} postLoading={postLoading} />}
+        {data ? <Feed post={data} postLoading={postLoading} /> : null}
       </div>
     </PageLayout>
   );
