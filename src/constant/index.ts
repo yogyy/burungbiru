@@ -22,6 +22,14 @@ const navbarLink = [
   { title: "More", icon: icon.Menu, link: "/#more" },
 ];
 
+const userMenu = [
+  { name: "Posts", href: "" },
+  { name: "Replies", href: "/with_replies" },
+  { name: "Highlights", href: "/hightlights" },
+  { name: "Media", href: "/media" },
+  { name: "Likes", href: "/likes" },
+];
+
 const TweetButton = [
   { name: "Reply", icon: Comment, action: null },
   { name: "Repost", icon: Retweet, action: null },
@@ -39,4 +47,4 @@ const createTweetActions = [
   { name: "Location", icon: Location },
 ];
 
-export { navbarLink, TweetButton, createTweetActions };
+export { navbarLink, TweetButton, createTweetActions, userMenu };
