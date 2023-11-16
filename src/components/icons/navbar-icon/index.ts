@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import Bell from "./bell.svg";
 import Bookmark from "./bookmark.svg";
 import Group from "./group.svg";

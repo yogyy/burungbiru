@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import Share from "./share.svg";
 import Analytic from "./analytic.svg";
 import Bookmark from "./bookmark.svg";

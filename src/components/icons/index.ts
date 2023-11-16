@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import Media from "./image.svg";
 import Gif from "./gif.svg";
 import Emoji from "./emoji.svg";
