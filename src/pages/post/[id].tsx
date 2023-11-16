@@ -21,7 +21,7 @@ import {
 } from "~/components/ui/tooltip";
 import { Analytic } from "~/components/icons/post-icon";
 
-const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
+const SinglePostPage = ({ id }: { id: string }) => {
   const { user: currentUser } = useUser();
   const { data } = api.posts.getById.useQuery({
     id,
