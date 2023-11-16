@@ -52,7 +52,7 @@
     "zustand": "^4.4.4"
   },
   "devDependencies": {
-    "@svgr/webpack": "^8.0.1",
+    "@svgr/webpack": "^8.1.0",
     "@types/eslint": "^8.21.1",
     "@types/node": "^18.14.0",
     "@types/prettier": "^2.7.2",
