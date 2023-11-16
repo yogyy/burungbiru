@@ -16,7 +16,7 @@ export const MobileNav = () => {
   const arrOfRoute = r.route.split("/");
   const baseRoute = "/" + arrOfRoute[1];
   return (
-    <header className="fixed bottom-0 z-30 block w-full overflow-hidden bg-background min-[555px]:hidden">
+    <header className="fixed bottom-0 z-30 block w-full overflow-hidden border-t bg-background min-[555px]:hidden">
       <nav>
         <ul className="flex items-center justify-between">
           {mobileNavbar.map((nav) => (

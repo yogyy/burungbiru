@@ -13,7 +13,7 @@ export const PageLayout = ({
   className?: string;
 }) => {
   return (
-    <div className="flex w-full gap-0 xs:justify-center">
+    <div className="flex w-full gap-0 max-[555px]:pb-12 xs:justify-center">
       <header className="relative hidden min-[555px]:flex">
         <Navbar />
       </header>
