@@ -15,14 +15,14 @@ const Home: NextPage = () => {
   if (!userLoaded)
     return (
       <div className="flex h-screen w-screen items-center justify-center">
-        <Logo width={120} height={120} className="brightness-50" />
+        <Logo width={80} height={80} className="text-white/10" />
       </div>
     );
 
   return (
     <PageLayout className="flex">
       <div className="flex w-full max-w-[600px] flex-shrink flex-col border-x border-border">
-        <div className="sticky top-0 z-10 h-auto w-full min-w-[300px] border-b border-border bg-dark/70 backdrop-blur-sm">
+        <div className="sticky top-0 z-20 h-auto w-full min-w-[300px] border-b border-border bg-background/[.65] backdrop-blur-md">
           <div className="flex h-[53px] items-center">
             <div className="relative  flex h-full w-full flex-1 items-center justify-center px-4 font-semibold hover:cursor-pointer hover:bg-white/10">
               <div className="relative flex h-full w-fit items-center">
@@ -38,7 +38,7 @@ const Home: NextPage = () => {
         <div className="hidden border-b border-border xs:flex">
           {isSignedIn ? <CreateTweet /> : null}
         </div>
-        {data ? <Feed post={data} postLoading={postLoading} /> : null}
+        {<Feed post={data} postLoading={postLoading} />}
       </div>
     </PageLayout>
   );

@@ -6,7 +6,7 @@ import { cn } from "~/lib/utils";
 import { TweetPost } from "../tweet";
 
 type FeedType = {
-  post: RouterOutputs["posts"]["getAll"];
+  post: RouterOutputs["posts"]["getAll"] | undefined;
   postLoading: boolean;
 };
 
@@ -19,7 +19,7 @@ const Feed = ({ post, postLoading }: FeedType) => {
           <LoadingSpinner size={24} />
         </div>
       ) : (
-        post.map((fullPost) => (
+        post?.map((fullPost) => (
           <TweetPost
             variant="default"
             {...fullPost}
