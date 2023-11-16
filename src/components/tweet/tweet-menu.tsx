@@ -91,7 +91,7 @@ export const TweetMenu = ({ post, author }: TMenu) => {
           <Button
             type="button"
             variant="ghost"
-            className="flex h-auto w-full justify-start gap-2 rounded-none p-3 text-[16px]"
+            className="flex h-auto w-full justify-start gap-2 rounded-none p-2.5 text-[16px]"
             disabled={deleting}
           >
             <BiSolidUserPlus size={20} />
@@ -107,7 +107,7 @@ export const TweetMenu = ({ post, author }: TMenu) => {
             >
               <Button
                 variant="ghost"
-                className="flex h-auto w-full justify-start gap-2 rounded-none p-3 text-[16px] font-bold text-desctructive"
+                className="flex h-auto w-full justify-start gap-2 rounded-none p-2.5 text-[16px] font-bold text-desctructive"
               >
                 <BiTrash size={18} /> Delete
               </Button>

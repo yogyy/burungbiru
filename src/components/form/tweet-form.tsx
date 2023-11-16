@@ -22,6 +22,7 @@ import { ImageModal } from "../modal/image-modal";
 import { useUploadImage } from "~/hooks/use-upload-img";
 import { uploadImage } from "~/lib/cloudinary";
 import { LuX } from "react-icons/lu";
+import axios from "axios";
 
 const tweetSchema = z.object({
   text: z.string().min(1),
@@ -174,6 +175,8 @@ export const CreateTweet = () => {
                               <LuX size={20} />
                             </Button>
                             <ImageModal
+                              width="600"
+                              height="400"
                               src={ImagePrev}
                               className="max-h-[42.5rem] w-full rounded-2xl"
                               alt="image preview"

@@ -2,8 +2,10 @@ import React from "react";
 import { TweetButton } from "~/constant";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
+import { TweetType } from "./tweet-post";
 
-export const TweetAction = (props: React.HTMLAttributes<HTMLDivElement>) => {
+export const TweetAction: React.FC<TweetType> = (props) => {
+  const { variant } = props;
   return (
     <div className="relative z-10 -ml-2 -mr-2 flex" {...props}>
       <div className="mt-3 flex h-5 flex-1 flex-row gap-1 border-x border-transparent">
@@ -12,7 +14,10 @@ export const TweetAction = (props: React.HTMLAttributes<HTMLDivElement>) => {
             className={cn(
               "flex w-full flex-1 text-accent",
               btn.name === "Share" && "w-fit flex-none justify-end",
-              btn.name === "Bookmark" && "w-fit flex-none justify-end"
+              variant !== "details" && btn.name === "Bookmark"
+                ? "w-fit flex-none justify-end"
+                : "",
+              variant === "details" && btn.name === "Analytic" ? "hidden" : ""
             )}
             key={btn.name}
           >
@@ -37,17 +42,20 @@ export const TweetAction = (props: React.HTMLAttributes<HTMLDivElement>) => {
               >
                 <span
                   className={cn(
-                    "w-5 fill-accent transition duration-300 group-hover:fill-primary group-focus-visible/button:fill-primary",
+                    "fill-accent transition duration-300 group-hover:fill-primary group-focus-visible/button:fill-primary",
                     btn.name === "Repost" &&
                       "group-hover:fill-[#00BA7C] group-focus-visible/button:fill-[#00BA7C]",
                     btn.name === "Like" &&
                       "group-hover:fill-[#F91880] group-focus-visible/button:fill-[#F91880]"
                   )}
                 >
-                  <btn.icon />
+                  <btn.icon
+                    className={cn("w-5", variant === "details" && "w-6")}
+                  />
                 </span>
+                <span className="sr-only">{btn.name}</span>
               </Button>
-              {btn.name !== "Bookmark" && btn.name !== "Share" && (
+              {btn.name !== "Share" && (
                 <span
                   className={cn(
                     "hidden h-fit min-w-[calc(1em_+_24px)] px-2 font-sans text-[13px] leading-4 xs:block md:cursor-pointer",
@@ -55,7 +63,10 @@ export const TweetAction = (props: React.HTMLAttributes<HTMLDivElement>) => {
                     btn.name === "Repost" &&
                       "group-focus-within:text-[#00BA7C] group-hover:text-[#00BA7C]",
                     btn.name === "Like" &&
-                      "group-focus-within:text-[#F91880] group-hover:text-[#F91880]"
+                      "group-focus-within:text-[#F91880] group-hover:text-[#F91880]",
+                    variant !== "details" && btn.name === "Bookmark"
+                      ? "!hidden"
+                      : ""
                   )}
                 >
                   20

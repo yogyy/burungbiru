@@ -39,8 +39,8 @@ export const TweetPost: React.FC<TweetType> = ({
         <div className="mt-2 h-auto w-10 flex-shrink-0 basis-10">
           <UserCard author={author}>
             <Image
-              width={40}
-              height={40}
+              width="40"
+              height="40"
               draggable={false}
               src={author.profileImg}
               alt={`@${author.username || author.lastName}'s profile picture`}
@@ -59,17 +59,19 @@ export const TweetPost: React.FC<TweetType> = ({
               onClick={(e) => e.stopPropagation()}
             >
               <button className="relative mt-3 flex w-full items-start justify-center overflow-hidden rounded-2xl border xs:w-fit">
-                <div className="relative h-full w-fit max-w-full transition-colors duration-200 hover:bg-secondary xs:w-full">
+                <div className="relative h-full w-full max-w-full transition-colors duration-200 hover:bg-secondary">
                   <ImageModal
-                    src={post.image as string}
+                    src={post.image}
                     alt="test"
+                    width="600"
+                    height="400"
                     className="max-h-[510px] w-full object-cover xs:min-w-[382.5px]"
                   />
                 </div>
               </button>
             </div>
           ) : null}
-          <TweetAction />
+          <TweetAction variant={variant} author={author} post={post} />
         </div>
       </div>
     </div>
