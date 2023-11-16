@@ -1,29 +1,18 @@
 import React from "react";
 
 import { useUser, SignInButton } from "@clerk/nextjs";
-import { useClerk } from "@clerk/clerk-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { cn } from "~/lib/utils";
 
-import Image from "next/image";
-
-import {
-  PopoverArrow,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../ui/popover";
-import { useMediaQuery } from "~/hooks/use-media-q";
 import { Button } from "../ui/button";
 import { Tweet } from "../icons";
 import { navbarLink } from "~/constant";
 import Logo from "../icons/navbar-icon/logo.svg";
-import { TbDots } from "react-icons/tb";
+import { NavbarLogout } from "../nav-logout";
 
 const Navbar = () => {
   const { user, isSignedIn } = useUser();
-  const { signOut } = useClerk();
 
   let r = useRouter();
   const arrOfRoute = r.route.split("/");
@@ -46,10 +35,18 @@ const Navbar = () => {
             {navbarLink.map((link) => (
               <li
                 key={link.title}
-                className="flex w-full justify-center py-0.5 xl:justify-start"
+                className={cn(
+                  "flex w-full justify-center py-0.5 xl:justify-start",
+                  link.title === "Lists" && "hidden md:flex",
+                  link.title === "Communities" && "hidden lg:flex",
+                  link.title === "Premium" && "hidden xl:flex"
+                )}
               >
                 <Link
-                  className="-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
+                  className={cn(
+                    "-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
+                    "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
+                  )}
                   href={
                     link.link === "/profile" ? `/@${user?.username}` : link.link
                   }
@@ -92,59 +89,7 @@ const Navbar = () => {
           )}
         </div>
       </div>
-      <div className="my-3 flex w-full items-center justify-center place-self-end">
-        <Popover>
-          <PopoverTrigger className="w-full">
-            <div className="flex w-fit items-center p-2.5 transition-all duration-300 hover:cursor-pointer hover:rounded-full hover:bg-border/30 xl:w-full">
-              {user && (
-                <div className="flex h-full w-full justify-between">
-                  <div className="flex items-center">
-                    <div className="h-10 w-10">
-                      <Image
-                        src={user?.imageUrl}
-                        alt={user.username!}
-                        height={40}
-                        width={40}
-                        className="rounded-full"
-                      />
-                    </div>
-                    <div className="hidden h-[41.06px] xl:flex">
-                      <div className="mx-3 flex flex-col items-start">
-                        <span className="text-base font-semibold leading-5">
-                          {user?.fullName}
-                        </span>
-                        <span className="font-thin leading-5 text-accent">
-                          @{user?.username}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="hidden place-items-end items-center xl:flex">
-                    <TbDots
-                      size={18.75}
-                      className="place-content-end text-xl"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </PopoverTrigger>
-          <PopoverContent
-            align="center"
-            alignOffset={-20}
-            className="data-[side=bottom] sm:data-[align=center] relative px-0 py-1 font-sans text-[15px] leading-5 text-foreground/90"
-          >
-            <Button
-              variant="ghost"
-              onClick={() => signOut()}
-              className="h-full w-full justify-normal rounded-md hover:bg-[rgb(22,24,28)]"
-            >
-              Log Out @{user?.username}
-            </Button>
-            <PopoverArrow className="h-2 stroke-neutral-100" />
-          </PopoverContent>
-        </Popover>
-      </div>
+      <NavbarLogout user={user} />
     </div>
   );
 };
