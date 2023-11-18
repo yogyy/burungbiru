@@ -22,22 +22,29 @@ import { ImageModal } from "../modal/image-modal";
 import { useUploadImage } from "~/hooks/use-upload-img";
 import { uploadImage } from "~/lib/cloudinary";
 import { LuX } from "react-icons/lu";
-import axios from "axios";
+import { useTweetModal } from "~/hooks/store";
 
 const tweetSchema = z.object({
-  text: z.string().min(1),
+  text: z
+    .string()
+    .min(1, { message: "tweet must contain at least 1 character(s)" }),
   image: z
     .object({
       public_id: z.string(),
-      url: z.string(),
+      secure_url: z.string(),
     })
     .optional(),
 });
 
-export const CreateTweet = () => {
+type CreateTweetVariant = "default" | "modal";
+
+export const CreateTweet: React.FC<
+  React.FormHTMLAttributes<HTMLFormElement> & { variant?: CreateTweetVariant }
+> = ({ variant = "default", className, ...props }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [submitBtn, setSubmitBtn] = useState(false);
+  const setTweetModal = useTweetModal((state) => state.setShow);
 
   useEffect(() => {
     const { current } = textareaRef;
@@ -56,7 +63,7 @@ export const CreateTweet = () => {
       text: "",
       image: {
         public_id: "",
-        url: "",
+        secure_url: "",
       },
     },
   });
@@ -71,7 +78,11 @@ export const CreateTweet = () => {
     onSuccess: () => {
       setImagePrev("");
       form.reset();
-      ctx.posts.getAll.invalidate().then(() => adjustTextareaHeight());
+      ctx.posts.getPostsByUserId.invalidate();
+      ctx.posts.getAll.invalidate().then(() => {
+        adjustTextareaHeight();
+        if (variant === "modal") setTweetModal((prev) => !prev);
+      });
       if (!ImagePrev) toast.success("Your Post was sent.");
     },
     onError: (err) => {
@@ -79,7 +90,7 @@ export const CreateTweet = () => {
       if (err.shape?.data.zodError?.fieldErrors.content) {
         toast.error(err.shape?.data.zodError?.fieldErrors.content[0] as string);
       } else {
-        toast.error("error sending post");
+        toast.error(err.message);
       }
     },
   });
@@ -113,7 +124,7 @@ export const CreateTweet = () => {
         content: values.text,
         image: {
           public_id: values.image?.public_id as string,
-          url: values.image?.url as string,
+          secure_url: values.image?.secure_url as string,
         },
       });
       setSubmitBtn((prev) => !prev);
@@ -124,156 +135,179 @@ export const CreateTweet = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="relative flex w-full flex-col pb-2"
+        className={cn("relative flex w-full flex-col pb-2", className)}
       >
         <FormField
           control={form.control}
           name="text"
           render={({ field }) => (
-            <div className="px-4 pt-1.5">
+            <div
+              className={cn(
+                "create-post-content w-full overflow-y-scroll px-4",
+                variant === "default"
+                  ? "max-h-[calc(100vh_-_148px)]"
+                  : "max-h-[calc(100vh_-_148px)] sm:max-h-[calc(90vh_-_148px)]"
+              )}
+            >
               <div className="relative flex h-auto w-auto items-start gap-4">
                 <UserAvatar
                   username={user.username}
                   profileImg={user.imageUrl}
-                  className="flex-shrink-0 pt-3"
+                  className="mt-3 flex-shrink-0"
+                  onClick={(e) => {
+                    variant === "modal" ? e.preventDefault() : null;
+                  }}
                 />
                 <FormItem className="h-full w-full space-y-0">
                   <FormControl>
-                    <div className="create-post-content max-h-[84.5vh] w-full overflow-y-scroll">
-                      <div
+                    <div
+                      className={cn(
+                        "h-full w-full pt-1",
+                        form.formState.isSubmitting && "opacity-60"
+                      )}
+                    >
+                      <textarea
+                        {...field}
+                        ref={textareaRef}
+                        maxLength={500}
+                        placeholder="What is happening?"
                         className={cn(
-                          "h-full w-full pt-1",
-                          form.formState.isSubmitting && "opacity-60"
+                          "flex max-h-[35rem] min-h-[10px] w-full flex-1 resize-none bg-transparent",
+                          "pt-3 text-xl leading-6 outline-none placeholder:font-thin",
+                          isPosting && "text-accent",
+                          textareaRef.current?.value.length! >= 255 &&
+                            "text-desctructive",
+                          ImagePrev ? "pb-1.5" : ""
                         )}
-                      >
-                        <textarea
-                          {...field}
-                          ref={textareaRef}
-                          maxLength={500}
-                          placeholder="What is happening?"
-                          className={cn(
-                            "flex max-h-[35rem] min-h-[32px] w-full flex-1 resize-none bg-transparent",
-                            "py-3 text-xl leading-6 outline-none placeholder:font-thin",
-                            isPosting && "text-accent",
-                            textareaRef.current?.value.length! >= 255 &&
-                              "text-desctructive"
-                          )}
-                          disabled={isPosting}
-                        />
-                        {ImagePrev && (
-                          <div className="relative">
-                            <Button
-                              type="button"
-                              size="icon"
-                              variant="ghost"
-                              className={cn(
-                                "absolute right-1 top-1 rounded-full bg-background p-1",
-                                "opacity-70 transition-opacity hover:bg-background hover:opacity-100"
-                              )}
-                              onClick={() => setImagePrev("")}
-                            >
-                              <LuX size={20} />
-                            </Button>
-                            <ImageModal
-                              width="600"
-                              height="400"
-                              src={ImagePrev}
-                              className="max-h-[42.5rem] w-full rounded-2xl"
-                              alt="image preview"
-                            />
-                          </div>
-                        )}
-                      </div>
+                        disabled={isPosting}
+                      />
+                      {ImagePrev && (
+                        <div className="relative pb-2">
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            className={cn(
+                              "absolute right-1 top-1 rounded-full bg-background p-1",
+                              "opacity-70 transition-opacity hover:bg-background hover:opacity-100"
+                            )}
+                            onClick={() => setImagePrev("")}
+                          >
+                            <LuX size={20} />
+                            <span className="sr-only">close preview image</span>
+                          </Button>
+                          <ImageModal
+                            width="600"
+                            height="400"
+                            src={ImagePrev}
+                            className="max-h-[42.5rem] w-full rounded-2xl"
+                            alt="image preview"
+                          />
+                        </div>
+                      )}
                     </div>
                   </FormControl>
-                  <FormMessage />
-                  <div className="-ml-[8px] -mt-2 pb-3">
-                    <span
-                      className={cn(
-                        "flex h-6 w-fit items-center rounded-full px-3 font-sans font-semibold text-primary",
-                        "text-[15px] leading-5 transition-colors duration-200 ease-out hover:bg-primary/10",
-                        "cursor-not-allowed"
-                      )}
-                    >
-                      <Globe className="mr-1 w-4 fill-primary" /> Everyone can
-                      reply
-                    </span>
-                  </div>
+                  <FormMessage className="absolute bottom-10 cursor-default select-none text-accent" />
                 </FormItem>
-              </div>
-              <hr className="ml-10" />
-              <div className="mt-2 flex justify-between">
-                <div className={cn("ml-10 flex gap-1.5")}>
-                  <FormField
-                    control={form.control}
-                    name="image.url"
-                    render={({ field }) => (
-                      <FormItem className="space-y-0">
-                        <FormLabel className="relative cursor-pointer">
-                          <Button
-                            size={"icon"}
-                            variant={"ghost"}
-                            type="button"
-                            onClick={() => inputRef.current?.click()}
-                            className={cn(
-                              "h-8 w-8 rounded-full fill-primary p-1 text-primary hover:bg-primary/10"
-                            )}
-                          >
-                            <span className="sr-only">add image</span>
-                            <Media className="h-5 w-5 fill-current" />
-                          </Button>
-                        </FormLabel>
-                        <FormControl ref={inputRef}>
-                          <input
-                            accept="image/*"
-                            {...field}
-                            placeholder="add image"
-                            type="file"
-                            onChange={handleImageChange}
-                            disabled={isPosting}
-                            className="hidden"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  {createTweetActions.map((btn) => (
-                    <Button
-                      size={"icon"}
-                      variant={"ghost"}
-                      key={btn.name}
-                      disabled={btn.name !== "Media"}
-                      type="button"
-                      className={cn(
-                        "h-8 w-8 rounded-full fill-primary text-primary hover:bg-primary/25",
-                        "relative last:opacity-60 last:hover:bg-transparent",
-                        btn.name !== "Media" && "cursor-not-allowed"
-                      )}
-                    >
-                      <span className="w-5 fill-primary">
-                        <btn.icon />
-                      </span>
-                    </Button>
-                  ))}
-                </div>
-                <Button
-                  type="submit"
-                  disabled={
-                    isPosting ||
-                    submitBtn ||
-                    textareaRef.current?.value.length! >= 255
-                    // textareaRef.current?.value.length === 0
-                  }
-                  className={cn(
-                    "h-9 self-end rounded-full font-sans text-[15px] font-[600] leading-5 focus-visible:border-white disabled:opacity-60"
-                  )}
-                >
-                  Post
-                </Button>
               </div>
             </div>
           )}
         />
+        <div className="mt-3 px-4">
+          <div
+            className={cn(
+              "-mt-3 pb-3",
+              variant === "default" ? "ml-11" : "-ml-1"
+            )}
+          >
+            <span
+              className={cn(
+                "flex h-6 w-fit items-center rounded-full px-3 font-sans font-semibold text-primary",
+                "text-[15px] leading-5 transition-colors duration-200 ease-out hover:bg-primary/10",
+                "cursor-not-allowed"
+              )}
+            >
+              <Globe className="mr-1 w-4 fill-primary" /> Everyone can reply
+            </span>
+          </div>
+          <hr className={cn(variant === "default" ? "ml-12" : "ml-0")} />
+          <div className="mt-2 flex justify-between">
+            <div
+              className={cn(
+                variant === "default" ? "ml-12" : "ml-0",
+                "flex gap-1.5"
+              )}
+            >
+              <FormField
+                control={form.control}
+                name="image.secure_url"
+                render={({ field }) => (
+                  <FormItem className="space-y-0">
+                    <FormLabel className="relative cursor-pointer">
+                      <Button
+                        size={"icon"}
+                        variant={"ghost"}
+                        type="button"
+                        onClick={() => inputRef.current?.click()}
+                        className={cn(
+                          "h-8 w-8 rounded-full fill-primary p-1 text-primary hover:bg-primary/10"
+                        )}
+                      >
+                        <span className="sr-only">add image</span>
+                        <Media className="h-5 w-5 fill-current" />
+                      </Button>
+                    </FormLabel>
+                    <FormControl ref={inputRef}>
+                      <input
+                        accept="image/*"
+                        {...field}
+                        placeholder="add image"
+                        type="file"
+                        onChange={handleImageChange}
+                        disabled={isPosting}
+                        className="hidden"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              {createTweetActions.map((btn) => (
+                <Button
+                  size={"icon"}
+                  variant={"ghost"}
+                  key={btn.name}
+                  disabled={btn.name !== "Media"}
+                  type="button"
+                  className={cn(
+                    "h-8 w-8 rounded-full fill-primary text-primary hover:bg-primary/25",
+                    "relative last:hover:bg-transparent",
+                    btn.name !== "Media" && "cursor-not-allowed"
+                  )}
+                >
+                  <btn.icon className="w-5 fill-primary" />
+                  <span className="sr-only">Add {btn.name}</span>
+                </Button>
+              ))}
+            </div>
+            <Button
+              type="submit"
+              disabled={
+                isPosting ||
+                submitBtn ||
+                textareaRef.current?.value.length! >= 255 ||
+                textareaRef.current?.value.length === 0
+              }
+              className={cn(
+                "h-8 self-end rounded-full font-sans text-[15px] font-[600] leading-5 focus-visible:border-white disabled:opacity-60",
+                variant === "modal"
+                  ? "fixed right-4 top-[11px] z-20 sm:static"
+                  : ""
+              )}
+            >
+              Post
+            </Button>
+          </div>
+        </div>
       </form>
     </Form>
   );
