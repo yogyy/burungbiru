@@ -43,36 +43,34 @@ const RightAside: React.FC<React.HTMLAttributes<HTMLElement>> = (props) => {
         ) : (
           <>
             <h1 className="px-4 py-3">You Might Like</h1>
-            <div>
-              {peoples?.map((ppl) => (
-                <div
-                  className="flex items-center justify-between px-4 py-3 hover:bg-white/[.03]"
-                  key={ppl.username}
-                  role="button"
-                  onClick={() => push(`/${ppl.username}`)}
-                >
-                  <div className="flex flex-grow basis-10">
-                    <UserAvatar
-                      {...ppl}
-                      className="mr-3 aspect-square h-10 rounded-full"
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-[15px] font-bold leading-5">{`${
-                        ppl.firstName
-                      } ${ppl.lastName || null}`}</span>
-                      <span className="text-accent">@{ppl.username}</span>
-                    </div>
+            {peoples?.map((ppl) => (
+              <div
+                className="flex items-center justify-between px-4 py-3 hover:bg-white/[.03]"
+                key={ppl.username}
+                onClick={() => push(`/${ppl.username}`)}
+              >
+                <div className="flex flex-grow basis-10">
+                  <UserAvatar
+                    profileImg={ppl.profileImg}
+                    username={ppl.username}
+                    className="mr-3 aspect-square h-10 rounded-full"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-[15px] font-bold leading-5">{`${
+                      ppl.firstName
+                    } ${ppl.lastName || null}`}</span>
+                    <span className="text-accent">@{ppl.username}</span>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    Follow
-                  </Button>
                 </div>
-              ))}
-            </div>
+                <Button
+                  variant="outline"
+                  className="border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Follow
+                </Button>
+              </div>
+            ))}
           </>
         )}
       </div>
