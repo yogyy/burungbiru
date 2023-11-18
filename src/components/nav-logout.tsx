@@ -75,6 +75,7 @@ export const NavbarLogout: React.FC<NavbarLogoutType> = ({
               </div>
             )}
           </div>
+          <span className="sr-only">user menu</span>
         </PopoverTrigger>
         <PopoverContent
           align="center"

@@ -17,6 +17,7 @@ const ButtonBack = ({ onClick }: additionalFnc) => {
       className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-border"
     >
       <LuArrowLeft size={24} />
+      <span className="sr-only">back</span>
     </button>
   );
 };
