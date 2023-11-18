@@ -1,8 +1,9 @@
 import axios from "axios";
+import { FileUploadInfo } from "~/types/cdnupload";
 
 export const uploadImage = async (
   file: File
-): Promise<{ public_id: string; url: string } | undefined> => {
+): Promise<FileUploadInfo["info"] | undefined> => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append(

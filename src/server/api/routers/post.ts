@@ -105,7 +105,7 @@ export const postRouter = createTRPCRouter({
             }),
           image: z
             .object({
-              url: z.string(),
+              secure_url: z.string(),
               public_id: z.string(),
             })
             .optional(),
@@ -118,13 +118,17 @@ export const postRouter = createTRPCRouter({
       const authorId = ctx.userId;
 
       const { success } = await ratelimit.limit(authorId);
-      if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+      if (!success)
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Too Many Request",
+        });
 
       const post = await ctx.prisma.post.create({
         data: {
           authorId,
           content: input.content,
-          image: input.image?.url,
+          image: input.image?.secure_url,
           imageId: input.image?.public_id,
         },
       });
