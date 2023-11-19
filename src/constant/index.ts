@@ -10,16 +10,25 @@ import * as icon from "~/components/icons/navbar-icon";
 import { Emoji, Gif, Location, Poll, Schedule } from "~/components/icons";
 
 const navbarLink = [
-  { title: "Home", icon: icon.Home, link: "/" },
-  { title: "Explore", icon: icon.Search, link: "#explore" },
-  { title: "Notifications", icon: icon.Bell, link: "/#notification" },
-  { title: "Messages", icon: icon.Message, link: "#messages" },
-  { title: "Lists", icon: icon.List, link: "/#list" },
-  { title: "Bookmarks", icon: icon.Bookmark, link: "#bookmark" },
-  { title: "Communities", icon: icon.Group, link: "/#group" },
-  { title: "Premium", icon: icon.Logo, link: "/#premium" },
-  { title: "Profile", icon: icon.Person, link: "/profile" },
-  { title: "More", icon: icon.Menu, link: "/#more" },
+  { name: "Home", icon: icon.Home, link: "/" },
+  { name: "Explore", icon: icon.Search, link: "#explore" },
+  { name: "Notifications", icon: icon.Bell, link: "/#notification" },
+  { name: "Messages", icon: icon.Message, link: "#messages" },
+  { name: "Lists", icon: icon.List, link: "/#list" },
+  { name: "Bookmarks", icon: icon.Bookmark, link: "#bookmark" },
+  { name: "Communities", icon: icon.Group, link: "/#group" },
+  { name: "Premium", icon: icon.Logo, link: "/#premium" },
+  { name: "Profile", icon: icon.Person, link: "/profile" },
+  { name: "More", icon: icon.Menu, link: "/#more" },
+];
+
+const hamburgerNavbarLink = [
+  { name: "Profile", icon: icon.Person, link: "/profile" },
+  { name: "Premium", icon: icon.Logo, link: "#premium" },
+  { name: "Lists", icon: icon.List, link: "#list" },
+  { name: "Bookmarks", icon: icon.Bookmark, link: "#bookmark" },
+  { name: "Communities", icon: icon.Group, link: "#group" },
+  { name: "Monetization", icon: icon.Monet, link: "#monetization" },
 ];
 
 const userMenu = [
@@ -47,4 +56,10 @@ const createTweetActions = [
   { name: "Location", icon: Location },
 ];
 
-export { navbarLink, TweetButton, createTweetActions, userMenu };
+export {
+  navbarLink,
+  TweetButton,
+  createTweetActions,
+  userMenu,
+  hamburgerNavbarLink,
+};

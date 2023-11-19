@@ -11,6 +11,7 @@ import Message from "./message.svg";
 import Person from "./person.svg";
 import PersonFill from "./person-fill.svg";
 import Search from "./search.svg";
+import Monet from "./monet..svg";
 
 export {
   Bell,
@@ -20,6 +21,7 @@ export {
   List,
   Logo,
   Menu,
+  Monet,
   Message,
   Person,
   Search,
