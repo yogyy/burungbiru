@@ -7,17 +7,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { Button } from "../ui/button";
-import { CreateTweet } from "../form";
+import { Button, ButtonProps } from "../ui/button";
+import CreateTweet from "../form/tweet-form";
 import { useTweetModal } from "~/hooks/store";
 import { IoArrowBack, IoClose } from "react-icons/io5";
+import { Tweet } from "../icons";
+import { cn } from "~/lib/utils";
+import { useMediaQuery } from "~/hooks/use-media-q";
 
-export const CreatePostModal = ({
-  children,
-}: {
-  children: React.ReactNode;
+export const CreatePostModal: React.FC<ButtonProps> = ({
+  className,
+  ...props
 }) => {
   const { show, setShow } = useTweetModal();
+  const matches = useMediaQuery("(min-width: 570px)");
 
   return (
     <Dialog open={show} onOpenChange={setShow}>
@@ -27,9 +30,28 @@ export const CreatePostModal = ({
           e.stopPropagation();
         }}
       >
-        {children}
+        <Button
+          type="button"
+          variant="default"
+          className={cn(
+            "h-[50px] w-[50px] rounded-full p-0 font-semibold xl:min-h-[52px] xl:w-full xl:min-w-[52px]",
+            className
+          )}
+          {...props}
+        >
+          <Tweet size={24} className="block fill-foreground xl:hidden" />
+          <span className="hidden text-[17px] xl:block">Post</span>
+        </Button>
       </DialogTrigger>
-      <DialogContent className="create-post-content top-0 h-screen max-w-[600px] translate-y-0 items-start overflow-hidden overflow-y-scroll rounded-none border-none p-0 text-start base:top-[5%] base:h-auto base:max-h-[90vh] base:!rounded-2xl [&>button]:block">
+      <DialogContent
+        className={cn(
+          "hide-scrollbar top-0 h-screen translate-y-0 items-start overflow-hidden overflow-y-scroll rounded-none border-none p-0 text-start [&>button]:block",
+          "max-w-[600px] min-[570px]:top-[5%] min-[570px]:h-auto min-[570px]:max-h-[90vh] min-[570px]:!rounded-2xl",
+          matches
+            ? ""
+            : "data-[state=closed]:slide-out-to-bottom-[48%] data-[state=open]:slide-in-from-bottom-[48%]"
+        )}
+      >
         <DialogHeader className="relative flex flex-col-reverse space-y-0">
           <CreateTweet className="" variant="modal" />
           <DialogDescription asChild>
