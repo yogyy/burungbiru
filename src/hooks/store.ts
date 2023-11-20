@@ -1,13 +1,18 @@
 import { create } from "zustand";
 
-type TweetModal = {
+type TYPE = {
   show: boolean;
   setShow: (show: React.SetStateAction<boolean>) => void;
 };
 
-const useTweetModal = create<TweetModal>((set) => ({
+const useTweetModal = create<TYPE>((set) => ({
   show: false,
   setShow: () => set((state) => ({ show: !state.show })),
 }));
 
-export { useTweetModal };
+const useBurgerMenu = create<TYPE>((set) => ({
+  show: false,
+  setShow: () => set((state) => ({ show: !state.show })),
+}));
+
+export { useTweetModal, useBurgerMenu };
