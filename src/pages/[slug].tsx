@@ -1,7 +1,6 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import { api } from "~/utils/api";
-import { PageLayout } from "~/components/layout";
 import Image from "next/image";
 import { LoadingSpinner } from "~/components/loading";
 import ButtonBack from "~/components/ButtonBack";
@@ -18,6 +17,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { useUser } from "@clerk/nextjs";
+import { PageLayout } from "~/components/layouts";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const [showModal, setShowModal] = useState(false);
@@ -47,8 +47,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         </title>
       </Head>
       <PageLayout className="flex">
-        <div className="flex h-full w-full flex-col border-x border-border md:w-[600px]">
-          <div className="sticky top-0 z-20 flex h-auto w-full items-center bg-background/70 px-4 font-semibold backdrop-blur-md">
+        <div className="flex h-full w-full max-w-[600px] flex-col border-x border-border">
+          <div className="sticky top-0 z-20 flex h-auto w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">
             <div className="relative flex h-[53px] w-full items-center md:max-w-[600px]">
               <div className="-ml-2 w-14">
                 <ButtonBack />
@@ -124,7 +124,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             }`}</h2>
             <p className="text-[15px] text-accent">@{user.username}</p>
           </div>
-          <div className="user-menu flex h-fit w-full items-center overflow-x-scroll border-b border-border">
+          <div className="hide-scrollbar flex h-fit w-full items-center overflow-x-scroll border-b border-border">
             {userMenu.map(
               (menu) =>
                 (menu.name !== "Highlights" || user.id === currentUser?.id) && (

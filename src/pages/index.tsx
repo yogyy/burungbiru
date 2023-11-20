@@ -1,14 +1,11 @@
 import { type NextPage } from "next";
 import { useUser } from "@clerk/nextjs";
-import React from "react";
-
 import { api } from "~/utils/api";
-import { PageLayout } from "~/components/layout";
 import Feed from "~/components/layouts/feed";
-import { CreateTweet } from "~/components/form";
+import CreateTweet from "~/components/form/tweet-form";
 import { Logo } from "~/components/icons/navbar-icon";
 import { cn } from "~/lib/utils";
-import { BurgerMenu } from "~/components/layouts/hamburger-menu";
+import { BurgerMenu, PageLayout } from "~/components/layouts";
 import { useMediaQuery } from "~/hooks/use-media-q";
 
 const Home: NextPage = () => {

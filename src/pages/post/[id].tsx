@@ -1,17 +1,15 @@
-import { GetStaticProps, NextPage } from "next";
+import { GetStaticProps } from "next";
 import Head from "next/head";
 import { api } from "~/utils/api";
-import { PageLayout } from "~/components/layout";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import ButtonBack from "~/components/ButtonBack";
-import { TweetText, TweetTitle } from "~/components/tweet";
+import { TweetText, TweetTitle, TweetAction } from "~/components/tweet";
 import { cn } from "~/lib/utils";
 import Image from "next/image";
-import { renderText, tweetTime } from "~/lib/tweet";
+import { renderText } from "~/lib/tweet";
 import { useUser } from "@clerk/nextjs";
 import dayjs from "dayjs";
-import { TweetAction } from "~/components/tweet/tweet-action";
-import { ImageModal } from "~/components/modal/image-modal";
+import { ImageModal } from "~/components/modal";
 import Link from "next/link";
 import {
   Tooltip,
@@ -20,6 +18,7 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { Analytic } from "~/components/icons/post-icon";
+import { PageLayout } from "~/components/layouts";
 
 const SinglePostPage = ({ id }: { id: string }) => {
   const { user: currentUser } = useUser();
@@ -28,13 +27,14 @@ const SinglePostPage = ({ id }: { id: string }) => {
   });
   if (!data) return;
   const { author, post } = data;
+
   return (
     <>
       <Head>
         <title>{`${data.author.username} at "${data.post.content}" / burbir`}</title>
       </Head>
       <PageLayout className="flex">
-        <div className="flex h-full min-h-screen w-full flex-col border-x border-border md:w-[600px]">
+        <div className="flex h-full min-h-screen w-full max-w-[600px] flex-col border-x border-border">
           <div className="sticky top-0 z-20 flex h-[53px] w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">
             <div className="w-16">
               <ButtonBack />
@@ -121,7 +121,7 @@ const SinglePostPage = ({ id }: { id: string }) => {
                     &nbsp;<span>View post engagements</span>
                   </button>
                 ) : null}
-                <TweetAction author={author} post={post} variant="details" />
+                <TweetAction variant="details" />
               </div>
             </div>
           </div>
