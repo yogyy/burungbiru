@@ -1,4 +1,3 @@
-import React from "react";
 import { useUser, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -7,9 +6,9 @@ import { BsTwitterX } from "react-icons/bs";
 import { Button } from "../ui/button";
 import { navbarLink } from "~/constant";
 import { NavbarLogout } from "../nav-logout";
-import { CreatePostModal } from "../modal/create-post-modal";
+import { CreatePostModal } from "../modal";
 
-const Navbar = () => {
+export const Navbar = () => {
   const { user, isSignedIn } = useUser();
 
   let r = useRouter();
@@ -92,5 +91,3 @@ const Navbar = () => {
     </header>
   );
 };
-
-export default Navbar;
