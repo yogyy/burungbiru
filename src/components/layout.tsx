@@ -4,6 +4,7 @@ import Navbar from "./layouts/navbar";
 import { cn } from "~/lib/utils";
 import { RightAside } from "./layouts/aside";
 import { MobileNav } from "./layouts/mobile-navbar";
+import { useMediaQuery } from "~/hooks/use-media-q";
 
 export const PageLayout = ({
   children,
@@ -12,18 +13,19 @@ export const PageLayout = ({
   children: ReactNode;
   className?: string;
 }) => {
+  const showNavbar = useMediaQuery("(min-width: 570px)");
+  const showAside = useMediaQuery("(min-width: 1024px)");
+
   return (
-    <div className="flex w-full gap-0 max-[555px]:pb-12 xs:justify-center">
-      <header className="relative hidden min-[555px]:flex">
-        <Navbar />
-      </header>
+    <div className="max-[570px]:pb-12 flex w-full gap-0 xs:justify-center">
+      {showNavbar ? <Navbar /> : <MobileNav />}
       <main className={cn("relative w-full md:w-auto", className)}>
         <div className="flex w-full flex-shrink justify-between md:w-[600px] lg:w-[920px] xl:w-[990px]">
           {children}
-          <RightAside />
+          {showAside ? <RightAside /> : null}
         </div>
       </main>
-      <MobileNav />
+
       <Toaster
         position="top-right"
         toastOptions={{
@@ -49,4 +51,3 @@ export const PageLayout = ({
     </div>
   );
 };
-// fixed top-0 mb-3 hidden h-full w-[68px] flex-col items-end justify-between min-[500px]:flex sm:w-[88px] xl:w-[260px]

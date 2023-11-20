@@ -3,21 +3,33 @@ import { Bell, Home, Message, Search } from "../icons/navbar-icon";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { cn } from "~/lib/utils";
+import { CreatePostModal } from "../modal/create-post-modal";
+
+import { useScroll } from "~/hooks/use-scroll";
+import { useAuth } from "@clerk/nextjs";
 
 const mobileNavbar = [
   { name: "Home", icon: Home, link: "/" },
-  { name: "Search", icon: Search, link: "/#search" },
-  { name: "Notification", icon: Bell, link: "/#search" },
-  { name: "Message", icon: Message, link: "/#search" },
+  { name: "Search", icon: Search, link: "#srch" },
+  { name: "Notification", icon: Bell, link: "#notif" },
+  { name: "Message", icon: Message, link: "#msg" },
 ];
 
 export const MobileNav = () => {
   const r = useRouter();
   const arrOfRoute = r.route.split("/");
   const baseRoute = "/" + arrOfRoute[1];
-  return (
-    <header className="fixed bottom-0 z-30 block w-full overflow-hidden border-t bg-background min-[555px]:hidden">
-      <nav>
+  const show = useScroll();
+  const { isSignedIn } = useAuth();
+
+  return r.pathname !== "/" ? null : (
+    <header
+      className={cn(
+        "fixed z-30 block w-full overflow-hidden border-t bg-background transition-all duration-300 min-[570px]:hidden",
+        !show ? "-bottom-14 opacity-0" : "bottom-0 opacity-100"
+      )}
+    >
+      <nav className="relative">
         <ul className="flex items-center justify-between">
           {mobileNavbar.map((nav) => (
             <li
@@ -34,10 +46,19 @@ export const MobileNav = () => {
                     baseRoute === nav.link && "w-6 fill-current stroke-none"
                   )}
                 />
+                <span className="sr-only">{nav.name}</span>
               </Link>
             </li>
           ))}
         </ul>
+        {isSignedIn ? (
+          <CreatePostModal
+            className={cn(
+              "fixed right-2 z-30 transition-all duration-500 min-[570px]:hidden",
+              !show ? "-bottom-16 opacity-0" : "bottom-16 opacity-100"
+            )}
+          />
+        ) : null}
       </nav>
     </header>
   );
