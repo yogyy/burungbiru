@@ -38,7 +38,7 @@ const tweetSchema = z.object({
 
 type CreateTweetVariant = "default" | "modal";
 
-export const CreateTweet: React.FC<
+const CreateTweet: React.FC<
   React.FormHTMLAttributes<HTMLFormElement> & { variant?: CreateTweetVariant }
 > = ({ variant = "default", className, ...props }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -67,7 +67,6 @@ export const CreateTweet: React.FC<
       },
     },
   });
-
   const { image, ImagePrev, setImagePrev, handleImageChange } =
     useUploadImage();
   const { user } = useUser();
@@ -136,6 +135,7 @@ export const CreateTweet: React.FC<
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn("relative flex w-full flex-col pb-2", className)}
+        {...props}
       >
         <FormField
           control={form.control}
@@ -143,10 +143,10 @@ export const CreateTweet: React.FC<
           render={({ field }) => (
             <div
               className={cn(
-                "create-post-content w-full overflow-y-scroll px-4",
+                "hide-scrollbar w-full overflow-y-scroll px-4",
                 variant === "default"
-                  ? "max-h-[calc(100vh_-_148px)]"
-                  : "max-h-[calc(100vh_-_148px)] sm:max-h-[calc(90vh_-_148px)]"
+                  ? "max-h-[calc(100dvh_-_148px)]"
+                  : "max-h-[calc(100dvh_-_148px)] sm:max-h-[calc(90dvh_-_148px)]"
               )}
             >
               <div className="relative flex h-auto w-auto items-start gap-4">
@@ -172,7 +172,7 @@ export const CreateTweet: React.FC<
                         maxLength={500}
                         placeholder="What is happening?"
                         className={cn(
-                          "flex max-h-[35rem] min-h-[10px] w-full flex-1 resize-none bg-transparent",
+                          "flex max-h-[35rem] min-h-[53px] w-full flex-1 resize-none bg-transparent",
                           "pt-3 text-xl leading-6 outline-none placeholder:font-thin",
                           isPosting && "text-accent",
                           textareaRef.current?.value.length! >= 255 &&
@@ -284,7 +284,7 @@ export const CreateTweet: React.FC<
                     btn.name !== "Media" && "cursor-not-allowed"
                   )}
                 >
-                  <btn.icon className="w-5 fill-primary" />
+                  <btn.icon size={20} className="fill-primary" />
                   <span className="sr-only">Add {btn.name}</span>
                 </Button>
               ))}
@@ -300,7 +300,7 @@ export const CreateTweet: React.FC<
               className={cn(
                 "h-8 self-end rounded-full font-sans text-[15px] font-[600] leading-5 focus-visible:border-white disabled:opacity-60",
                 variant === "modal"
-                  ? "fixed right-4 top-[11px] z-20 sm:static"
+                  ? "fixed right-4 top-[11px] z-20 min-[570px]:static"
                   : ""
               )}
             >
@@ -312,3 +312,5 @@ export const CreateTweet: React.FC<
     </Form>
   );
 };
+
+export default CreateTweet;
