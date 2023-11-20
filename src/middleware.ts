@@ -8,8 +8,7 @@ export default authMiddleware({
     "/api/trpc/posts.getAll,profile.getUserRandomUser",
   ],
   ignoredRoutes: [
-    "/android-chrome-192x192.png",
-    "/favicon-32x32.png",
+    "/favicon.ico",
     "/fonts/chirp-medium-web.woff",
     "/fonts/chirp-bold-web.woff",
     "/fonts/chirp-regular-web.woff",
