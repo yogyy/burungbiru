@@ -40,8 +40,7 @@
     overflow-wrap: break-word;
   }
 
-  .create-post-content::-webkit-scrollbar,
-  .user-menu::-webkit-scrollbar {
+  .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
 }

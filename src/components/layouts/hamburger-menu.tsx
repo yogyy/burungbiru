@@ -108,7 +108,7 @@ export const BurgerMenu: React.FC<
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button className="inline-flex h-8 w-8 items-center justify-center rounded-full focus-within:bg-white/10 hover:bg-white/10">
+            <button className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 focus-visible:bg-white/10">
               <GoGear className="h-5 w-5" />
             </button>
           </TooltipTrigger>

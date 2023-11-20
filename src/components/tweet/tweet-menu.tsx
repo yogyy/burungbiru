@@ -70,7 +70,7 @@ export const TweetMenu = ({ post, author }: TMenu) => {
           size={"icon"}
           variant="ghost"
           disabled={deleting}
-          className="group -mr-2 h-[34.75px] w-[34.75px] text-accent"
+          className="group -mr-2 aspect-square h-[34.75px] w-[34.75px] text-accent"
         >
           <TbDots
             size={18.75}

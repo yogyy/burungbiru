@@ -7,7 +7,9 @@ import { UserAvatar } from "../avatar";
 import { LoadingSpinner } from "../loading";
 import { useRouter } from "next/router";
 
-const RightAside: React.FC<React.HTMLAttributes<HTMLElement>> = (props) => {
+export const RightAside: React.FC<React.HTMLAttributes<HTMLElement>> = (
+  props
+) => {
   const { className } = props;
   const { data: peoples, isLoading } = api.profile.getUserRandomUser.useQuery();
   const { push } = useRouter();
@@ -45,7 +47,7 @@ const RightAside: React.FC<React.HTMLAttributes<HTMLElement>> = (props) => {
             <h1 className="px-4 py-3">You Might Like</h1>
             {peoples?.map((ppl) => (
               <div
-                className="flex items-center justify-between px-4 py-3 hover:bg-white/[.03]"
+                className="flex cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[.03]"
                 key={ppl.username}
                 onClick={() => push(`/${ppl.username}`)}
               >
@@ -77,5 +79,3 @@ const RightAside: React.FC<React.HTMLAttributes<HTMLElement>> = (props) => {
     </aside>
   );
 };
-
-export { RightAside };

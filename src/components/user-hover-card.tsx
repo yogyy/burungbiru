@@ -1,15 +1,14 @@
 import React from "react";
-import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
+import { HoverCardTriggerProps } from "@radix-ui/react-hover-card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import { RouterOutputs } from "~/utils/api";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 
-type UserCardT = HoverCardPrimitive.HoverCardTriggerProps &
-  React.RefAttributes<HTMLAnchorElement> & {
-    author: RouterOutputs["profile"]["getUserByUsername"];
-  };
+type UserCardT = HoverCardTriggerProps & {
+  author: RouterOutputs["profile"]["getUserByUsername"];
+};
 
 export const UserCard = ({ children, author, ...props }: UserCardT) => {
   return (
@@ -19,7 +18,7 @@ export const UserCard = ({ children, author, ...props }: UserCardT) => {
       </HoverCardTrigger>
       <HoverCardContent
         onClick={(e) => e.stopPropagation()}
-        className="flex cursor-default flex-col gap-2 rounded-2xl"
+        className="flex cursor-default flex-col gap-2 rounded-2xl !duration-100"
       >
         <div className="flex w-full items-start justify-between">
           <Link href={`/@${author.username}`}>
@@ -52,10 +51,10 @@ export const UserCard = ({ children, author, ...props }: UserCardT) => {
         </p>
         <div className="flex gap-2 text-base font-medium leading-5 text-foreground">
           <p>
-            2 <span className="font-normal text-accent">Following</span>
+            ? <span className="font-normal text-accent">Following</span>
           </p>
           <p>
-            11 <span className="font-normal text-accent">Followers</span>
+            ?? <span className="font-normal text-accent">Followers</span>
           </p>
         </div>
       </HoverCardContent>

@@ -14,43 +14,74 @@ import { cn } from "~/lib/utils";
 import { tweetTime } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
 import { TweetMenu } from "./tweet-menu";
+import { useMediaQuery } from "~/hooks/use-media-q";
 
 const TweetTitle: React.FC<TweetType> = (props) => {
   const { author, post, variant } = props;
+  const matches = useMediaQuery("(min-width: 768px)");
 
   return (
-    <div className="flex w-full flex-wrap items-center justify-between">
-      <div className={cn("flex", variant === "details" && "flex-col")}>
-        <UserCard author={author}>
-          <Link
-            onClick={(e) => e.stopPropagation()}
-            className="-mt-0.5 flex items-start break-words text-base font-bold outline-none focus-within:underline hover:underline"
-            href={`/@${author.username}`}
-          >
-            {`${author.firstName} ${
-              author.lastName !== null ? author.lastName : ""
-            }`}
-          </Link>
-        </UserCard>
-        <UserCard author={author}>
-          <Link
-            tabIndex={-1}
-            onClick={(e) => e.stopPropagation()}
-            className={cn(
-              "inline-flex text-accent outline-none",
-              variant === "details" ? "" : "ml-2"
-            )}
-            href={`/@${author.username}`}
-          >
-            {`@${author.username}`}
-          </Link>
-        </UserCard>
+    <div className="relative flex w-full flex-nowrap items-center justify-between">
+      <div
+        className={cn("flex flex-wrap", variant === "details" && "flex-col")}
+      >
+        {matches ? (
+          <>
+            <UserCard author={author}>
+              <Link
+                onClick={(e) => e.stopPropagation()}
+                className="-mt-0.5 flex items-start break-words text-base font-bold outline-none focus-within:underline hover:underline"
+                href={`/@${author.username}`}
+              >
+                {`${author.firstName} ${
+                  author.lastName !== null ? author.lastName : ""
+                }`}
+              </Link>
+            </UserCard>
+            <UserCard author={author}>
+              <Link
+                tabIndex={-1}
+                onClick={(e) => e.stopPropagation()}
+                className={cn(
+                  "inline-flex text-accent outline-none",
+                  variant === "details" ? "" : "ml-2"
+                )}
+                href={`/@${author.username}`}
+              >
+                {`@${author.username}`}
+              </Link>
+            </UserCard>
+          </>
+        ) : (
+          <>
+            <Link
+              onClick={(e) => e.stopPropagation()}
+              className={cn(
+                "-mt-0.5 flex flex-shrink-0 items-start text-base font-bold outline-none focus-within:underline hover:underline",
+                variant === "details" ? "" : "mr-2"
+              )}
+              href={`/@${author.username}`}
+            >
+              {`${author.firstName} ${
+                author.lastName !== null ? author.lastName : ""
+              }`}
+            </Link>
+            <Link
+              tabIndex={-1}
+              onClick={(e) => e.stopPropagation()}
+              className={cn("inline-flex text-accent outline-none")}
+              href={`/@${author.username}`}
+            >
+              {`@${author.username}`}
+            </Link>
+          </>
+        )}
         {variant === "default" ? (
           <>
             <span className="px-1 text-[15px] leading-5 text-accent">·</span>
             <Link
               href={`/post/${post.id}`}
-              className="group relative flex w-max items-end text-sm font-thin text-accent outline-none hover:underline focus:underline"
+              className="group relative flex w-max flex-shrink-0 items-end text-sm font-thin text-accent outline-none hover:underline focus:underline"
               aria-label={dayjs(post.createdAt).format("LL LT")}
             >
               <TooltipProvider>
