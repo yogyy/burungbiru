@@ -1,16 +1,17 @@
 import Link from "next/link";
-import React from "react";
+import React, { ComponentProps } from "react";
 import { URL_REGEX } from "~/lib/tweet";
 import { cn, convertToHttps } from "~/lib/utils";
 
-type TweetTextType = React.HTMLAttributes<HTMLParagraphElement> & {
-  content: string;
-};
-
-export const TweetText = ({ content, className }: TweetTextType) => {
+export const TweetText: React.FC<
+  ComponentProps<"p"> & {
+    content: string;
+  }
+> = ({ content, className, ...props }) => {
   const words = content.split(" ");
+
   return (
-    <p className={cn("content-post whitespace-pre-wrap", className)}>
+    <p className={cn("content-post whitespace-pre-wrap", className)} {...props}>
       {words.map((word: string) => {
         return word.match(URL_REGEX) ? (
           <React.Fragment key={word + new Date()}>

@@ -9,28 +9,41 @@ import {
 } from "~/components/ui/tooltip";
 
 import dayjs from "dayjs";
-import { TweetType } from "./tweet-post";
+import { TweetProps } from "./tweet-post";
 import { cn } from "~/lib/utils";
 import { tweetTime } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
 import { TweetMenu } from "./tweet-menu";
 import { useMediaQuery } from "~/hooks/use-media-q";
+import { useIsClient } from "~/hooks/use-client";
 
-const TweetTitle: React.FC<TweetType> = (props) => {
-  const { author, post, variant } = props;
-  const matches = useMediaQuery("(min-width: 768px)");
+export const TweetTitle: React.FC<TweetProps> = ({
+  author,
+  post,
+  variant,
+  className,
+  ...props
+}) => {
+  const isClient = useIsClient();
+  const onDekstop = useMediaQuery("(min-width: 768px)");
 
   return (
-    <div className="relative flex w-full flex-nowrap items-center justify-between">
+    <div
+      className={cn(
+        "relative flex w-full flex-nowrap items-center justify-between",
+        className
+      )}
+      {...props}
+    >
       <div
         className={cn("flex flex-wrap", variant === "details" && "flex-col")}
       >
-        {matches ? (
+        {isClient && onDekstop ? (
           <>
             <UserCard author={author}>
               <Link
                 onClick={(e) => e.stopPropagation()}
-                className="-mt-0.5 flex items-start break-words text-base font-bold outline-none focus-within:underline hover:underline"
+                className="-mt-0.5 flex flex-shrink-0 items-start text-base font-bold outline-none focus-within:underline hover:underline"
                 href={`/@${author.username}`}
               >
                 {`${author.firstName} ${
@@ -111,5 +124,3 @@ const TweetTitle: React.FC<TweetType> = (props) => {
     </div>
   );
 };
-
-export { TweetTitle };
