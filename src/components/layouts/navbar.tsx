@@ -58,7 +58,7 @@ export const Navbar = () => {
                         baseRoute === link.link &&
                           "w-6 fill-current stroke-none"
                       )}
-                      title={link.name}
+                      size={26.25}
                     />
                     <span
                       className={cn(

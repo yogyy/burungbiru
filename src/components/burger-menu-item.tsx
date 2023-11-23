@@ -8,11 +8,9 @@ import {
 import { hamburgerNavbarLink } from "~/constant";
 import { cn } from "~/lib/utils";
 import Link from "next/link";
-import { AdsIcon } from "./icons/ads-icon";
+import { AdsIcon, LogOutIcon, AnalyticIcon } from "./icons";
 import { UserResource } from "@clerk/types/dist";
 import { LogoutModal } from "./modal/logout-modal";
-import { LogOutIcon } from "./icons/logout-icon";
-import { AnalyticIcon } from "./icons/post-icon/analytic-icon";
 import { GoGear } from "react-icons/go";
 
 export const BurgerMenuItem: React.FC<

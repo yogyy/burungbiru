@@ -2,6 +2,7 @@ import { Toaster } from "react-hot-toast";
 import { cn } from "~/lib/utils";
 import { RightAside, MobileNav, Navbar } from ".";
 import { useMediaQuery } from "~/hooks/use-media-q";
+import { useIsClient } from "~/hooks/use-client";
 
 export const PageLayout = ({
   children,
@@ -10,19 +11,21 @@ export const PageLayout = ({
   children: React.ReactNode;
   className?: string;
 }) => {
+  const isClient = useIsClient();
+
   const showNavbar = useMediaQuery("(min-width: 570px)");
   const showAside = useMediaQuery("(min-width: 1024px)");
 
   return (
     <div className="flex w-full gap-0 max-[570px]:pb-12 xs:justify-center">
-      {showNavbar ? <Navbar /> : <MobileNav />}
+      <Navbar />
       <main className={cn("relative w-full md:w-auto", className)}>
         <div className="flex w-full flex-shrink justify-between md:w-[600px] lg:w-[920px] xl:w-[990px]">
           {children}
-          {showAside ? <RightAside /> : null}
+          <RightAside />
         </div>
       </main>
-
+      <MobileNav />
       <Toaster
         position="top-right"
         toastOptions={{

@@ -11,7 +11,7 @@ import { Button, ButtonProps } from "../ui/button";
 import CreateTweet from "../form/tweet-form";
 import { useTweetModal } from "~/hooks/store";
 import { IoArrowBack, IoClose } from "react-icons/io5";
-import { Tweet } from "../icons";
+import { TweetIcon } from "../icons";
 import { cn } from "~/lib/utils";
 import { useMediaQuery } from "~/hooks/use-media-q";
 
@@ -39,7 +39,7 @@ export const CreatePostModal: React.FC<ButtonProps> = ({
           )}
           {...props}
         >
-          <Tweet size={24} className="block fill-foreground xl:hidden" />
+          <TweetIcon size={24} className="block fill-foreground xl:hidden" />
           <span className="hidden text-[17px] xl:block">Post</span>
         </Button>
       </DialogTrigger>

@@ -1,13 +1,15 @@
-import React from "react";
 import { TweetButton } from "~/constant";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
-import { TweetType } from "./tweet-post";
+import { TweetProps } from "./tweet-post";
 
-export const TweetAction: React.FC<Pick<TweetType, "variant">> = (props) => {
-  const { variant } = props;
+export const TweetAction: React.FC<Omit<TweetProps, "post" | "author">> = ({
+  variant,
+  className,
+  ...props
+}) => {
   return (
-    <div className="relative z-10 -mr-2 flex" {...props}>
+    <div className={cn("relative z-10 -mr-2 flex", className)} {...props}>
       <div className="-ml-2 mt-3 flex h-5 flex-1 flex-shrink-0 flex-row border-x border-transparent xs:gap-1">
         {TweetButton.map((btn) => (
           <div
@@ -41,8 +43,8 @@ export const TweetAction: React.FC<Pick<TweetType, "variant">> = (props) => {
               >
                 <btn.icon
                   className={cn(
-                    "w-5",
-                    variant === "details" && "w-6",
+                    "h-5 w-5",
+                    variant === "details" && "h-6 w-6",
                     "fill-accent transition duration-300 group-hover:fill-primary group-focus-visible/button:fill-primary",
                     btn.name === "Repost" &&
                       "group-hover:fill-[#00BA7C] group-focus-visible/button:fill-[#00BA7C]",
