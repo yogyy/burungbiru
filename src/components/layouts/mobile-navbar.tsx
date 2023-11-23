@@ -23,45 +23,43 @@ export const MobileNav = () => {
   const { isSignedIn } = useAuth();
 
   return r.pathname !== "/" ? null : (
-    <header
+    <div
       className={cn(
         "fixed z-30 block w-full overflow-hidden border-t bg-background transition-all duration-300 min-[570px]:hidden",
         !show ? "-bottom-14 opacity-0" : "bottom-0 opacity-100"
       )}
     >
-      <div className="">
-        <nav className="relative">
-          <ul className="flex items-center justify-between">
-            {mobileNavbar.map((nav) => (
-              <li
-                key={nav.name}
-                className="my-1 flex flex-1 items-center justify-center"
+      <nav className="relative">
+        <ul className="flex items-center justify-between">
+          {mobileNavbar.map((nav) => (
+            <li
+              key={nav.name}
+              className="my-1 flex flex-1 items-center justify-center"
+            >
+              <Link
+                href={nav.link}
+                className="rounded-full p-2 hover:bg-white/5"
               >
-                <Link
-                  href={nav.link}
-                  className="rounded-full p-2 hover:bg-white/5"
-                >
-                  <nav.icon
-                    size={26.25}
-                    className={cn(
-                      baseRoute === nav.link && "w-6 fill-current stroke-none"
-                    )}
-                  />
-                  <span className="sr-only">{nav.name}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          {isSignedIn ? (
-            <CreatePostModal
-              className={cn(
-                "fixed right-2 z-30 transition-all duration-500 min-[570px]:hidden",
-                !show ? "-bottom-16 opacity-0" : "bottom-16 opacity-100"
-              )}
-            />
-          ) : null}
-        </nav>
-      </div>
-    </header>
+                <nav.icon
+                  size={26.25}
+                  className={cn(
+                    baseRoute === nav.link && "w-6 fill-current stroke-none"
+                  )}
+                />
+                <span className="sr-only">{nav.name}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        {isSignedIn ? (
+          <CreatePostModal
+            className={cn(
+              "fixed right-2 z-30 transition-all duration-500 min-[570px]:hidden",
+              !show ? "-bottom-16 opacity-0" : "bottom-16 opacity-100"
+            )}
+          />
+        ) : null}
+      </nav>
+    </div>
   );
 };

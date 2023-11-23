@@ -7,11 +7,14 @@ import { UserAvatar } from "../avatar";
 import { LoadingSpinner } from "../loading";
 import { useRouter } from "next/router";
 
-export const RightAside: React.FC<React.HTMLAttributes<HTMLElement>> = (
-  props
-) => {
-  const { className } = props;
-  const { data: peoples, isLoading } = api.profile.getUserRandomUser.useQuery();
+export const RightAside: React.FC<React.ComponentProps<"aside">> = ({
+  className,
+  ...props
+}) => {
+  const { data: peoples, isLoading } = api.profile.getUserRandomUser.useQuery(
+    {},
+    { refetchOnWindowFocus: false, refetchOnMount: false }
+  );
   const { push } = useRouter();
 
   return (

@@ -1,22 +1,21 @@
 import { type NextPage } from "next";
 import { useUser } from "@clerk/nextjs";
 import { api } from "~/utils/api";
-import Feed from "~/components/layouts/feed";
-import CreateTweet from "~/components/form/tweet-form";
-import { Logo } from "~/components/icons/navbar-icon";
+import CreateTweet from "~/components/form";
+import { LogoIcon } from "~/components/icons";
 import { cn } from "~/lib/utils";
-import { BurgerMenu, PageLayout } from "~/components/layouts";
+import { BurgerMenu, PageLayout, Feed } from "~/components/layouts";
 import { useMediaQuery } from "~/hooks/use-media-q";
 
 const Home: NextPage = () => {
   const { user, isLoaded: userLoaded, isSignedIn } = useUser();
-  const { data, isLoading: postLoading } = api.posts.getAll.useQuery();
+  const { data, isLoading: postLoading } = api.post.timeline.useQuery();
   const matches = useMediaQuery("(min-width: 570px)");
 
   if (!userLoaded)
     return (
       <div className="flex h-[100dvh] w-screen items-center justify-center">
-        <Logo width={80} height={80} className="text-white/10" />
+        <LogoIcon size={80} className="text-white/10" />
       </div>
     );
 
