@@ -1,34 +1,25 @@
-import {
-  Analytic,
-  Bookmark,
-  Comment,
-  Like,
-  Retweet,
-  Share,
-} from "~/components/icons/post-icon";
-import * as icon from "~/components/icons/navbar-icon";
-import { Emoji, Gif, Location, Poll, Schedule } from "~/components/icons";
+import * as icon from "~/components/icons";
 
 const navbarLink = [
-  { name: "Home", icon: icon.Home, link: "/" },
-  { name: "Explore", icon: icon.Search, link: "#explore" },
-  { name: "Notifications", icon: icon.Bell, link: "/#notification" },
-  { name: "Messages", icon: icon.Message, link: "#messages" },
-  { name: "Lists", icon: icon.List, link: "/#list" },
-  { name: "Bookmarks", icon: icon.Bookmark, link: "#bookmark" },
-  { name: "Communities", icon: icon.Group, link: "/#group" },
-  { name: "Premium", icon: icon.Logo, link: "/#premium" },
-  { name: "Profile", icon: icon.Person, link: "/profile" },
-  { name: "More", icon: icon.Menu, link: "/#more" },
+  { name: "Home", icon: icon.HomeIcon, link: "/" },
+  { name: "Explore", icon: icon.SearchIcon, link: "#explore" },
+  { name: "Notifications", icon: icon.BellIcon, link: "/#notification" },
+  { name: "Messages", icon: icon.MessageIcon, link: "#messages" },
+  { name: "Lists", icon: icon.ListIcon, link: "/#list" },
+  { name: "Bookmarks", icon: icon.BookmarkIcon, link: "#bookmark" },
+  { name: "Communities", icon: icon.GroupIcon, link: "/#group" },
+  { name: "Premium", icon: icon.LogoIcon, link: "/#premium" },
+  { name: "Profile", icon: icon.PersonIcon, link: "/profile" },
+  { name: "More", icon: icon.MenuIcon, link: "/#more" },
 ];
 
 const hamburgerNavbarLink = [
-  { name: "Profile", icon: icon.Person, link: "/profile" },
-  { name: "Premium", icon: icon.Logo, link: "#premium" },
-  { name: "Lists", icon: icon.List, link: "#list" },
-  { name: "Bookmarks", icon: icon.Bookmark, link: "#bookmark" },
-  { name: "Communities", icon: icon.Group, link: "#group" },
-  { name: "Monetization", icon: icon.Monet, link: "#monetization" },
+  { name: "Profile", icon: icon.PersonIcon, link: "/profile" },
+  { name: "Premium", icon: icon.LogoIcon, link: "#premium" },
+  { name: "Lists", icon: icon.ListIcon, link: "#list" },
+  { name: "Bookmarks", icon: icon.BookmarkIcon, link: "#bookmark" },
+  { name: "Communities", icon: icon.GroupIcon, link: "#group" },
+  { name: "Monetization", icon: icon.MonetIcon, link: "#monetization" },
 ];
 
 const userMenu = [
@@ -40,20 +31,20 @@ const userMenu = [
 ];
 
 const TweetButton = [
-  { name: "Reply", icon: Comment, action: null },
-  { name: "Repost", icon: Retweet, action: null },
-  { name: "Like", icon: Like, action: null },
-  { name: "Analytic", icon: Analytic, action: null },
-  { name: "Bookmark", icon: Bookmark, action: null },
-  { name: "Share", icon: Share, action: null },
+  { name: "Reply", icon: icon.CommentIcon, action: null },
+  { name: "Repost", icon: icon.RetweetIcon, action: null },
+  { name: "Like", icon: icon.LikeIcon, action: null },
+  { name: "Analytic", icon: icon.AnalyticIcon, action: null },
+  { name: "Bookmark", icon: icon.BookmarkIcon, action: null },
+  { name: "Share", icon: icon.ShareIcon, action: null },
 ];
 
 const createTweetActions = [
-  { name: "GIF", icon: Gif },
-  { name: "Poll", icon: Poll },
-  { name: "Emoji", icon: Emoji },
-  { name: "Schedule", icon: Schedule },
-  { name: "Location", icon: Location },
+  { name: "GIF", icon: icon.GifIcon },
+  { name: "Poll", icon: icon.PollIcon },
+  { name: "Emoji", icon: icon.EmojiIcon },
+  { name: "Schedule", icon: icon.ScheduleIcon },
+  { name: "Location", icon: icon.LocationIcon },
 ];
 
 export {
