@@ -44,7 +44,7 @@ const addUserDataToPosts = async (posts: Post[]) => {
 };
 
 export const postRouter = createTRPCRouter({
-  getById: publicProcedure
+  detailPost: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const post = await ctx.prisma.post.findUnique({
@@ -56,7 +56,7 @@ export const postRouter = createTRPCRouter({
       return (await addUserDataToPosts([post]))[0];
     }),
 
-  deleteById: privateProcedure
+  deletePost: privateProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const post = await ctx.prisma.post.delete({
@@ -68,15 +68,14 @@ export const postRouter = createTRPCRouter({
       return post;
     }),
 
-  getAll: publicProcedure.query(async ({ ctx }) => {
+  timeline: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
       orderBy: [{ createdAt: "desc" }],
-      take: 20,
     });
     return addUserDataToPosts(posts);
   }),
 
-  getPostsByUserId: publicProcedure
+  userPosts: publicProcedure
     .input(
       z.object({
         userId: z.string(),
@@ -93,7 +92,7 @@ export const postRouter = createTRPCRouter({
         .then(addUserDataToPosts)
     ),
 
-  create: privateProcedure
+  createPost: privateProcedure
     .input(
       z
         .object({
@@ -117,12 +116,12 @@ export const postRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.userId;
 
-      const { success } = await ratelimit.limit(authorId);
-      if (!success)
-        throw new TRPCError({
-          code: "TOO_MANY_REQUESTS",
-          message: "Too Many Request",
-        });
+      // const { success } = await ratelimit.limit(authorId);
+      // if (!success)
+      //   throw new TRPCError({
+      //     code: "TOO_MANY_REQUESTS",
+      //     message: "Too Many Request",
+      //   });
 
       const post = await ctx.prisma.post.create({
         data: {

@@ -8,7 +8,7 @@ import { profileRouter } from "./routers/profile";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  posts: postRouter,
+  post: postRouter,
   profile: profileRouter,
 });
 

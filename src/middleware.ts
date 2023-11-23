@@ -2,10 +2,10 @@ import { authMiddleware } from "@clerk/nextjs/server";
 
 export default authMiddleware({
   publicRoutes: [
-    "/api/trpc/posts.getAll",
+    "/api/trpc/post.timeline",
     "/api/trpc/profile.getUserRandomUser",
-    "/api/trpc/profile.getUserRandomUser,posts.getAll",
-    "/api/trpc/posts.getAll,profile.getUserRandomUser",
+    "/api/trpc/profile.getUserRandomUser,post.timeline",
+    "/api/trpc/post.timeline,profile.getUserRandomUser",
   ],
   ignoredRoutes: [
     "/favicon.ico",

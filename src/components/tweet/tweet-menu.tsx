@@ -1,5 +1,6 @@
+import React from "react";
+import axios from "axios";
 import { useUser } from "@clerk/nextjs";
-import React, { useState } from "react";
 import { BiSolidUserPlus, BiTrash } from "react-icons/bi";
 import { TbDots } from "react-icons/tb";
 import {
@@ -18,59 +19,68 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import axios from "axios";
+import { useRouter } from "next/router";
 
-type TMenu = {
-  post: RouterOutputs["posts"]["deleteById"];
-} & RouterOutputs["posts"]["getById"];
-
-export const TweetMenu = ({ post, author }: TMenu) => {
+export const TweetMenu: React.FC<
+  {
+    post: RouterOutputs["post"]["deletePost"];
+  } & RouterOutputs["post"]["detailPost"]
+> = ({ post, author }) => {
+  const [modal, setModal] = React.useState(false);
+  const [menu, setMenu] = React.useState(false);
   const { user } = useUser();
   const ctx = api.useUtils();
-  const [modal, setModal] = useState(false);
-  const [menu, setMenu] = useState(false);
+  const router = useRouter();
 
-  const { mutate, isLoading: deleting } = api.posts.deleteById.useMutation({
+  const { mutate, isLoading: deleting } = api.post.deletePost.useMutation({
     onSuccess: () => {
-      ctx.posts.getAll
+      if (router.pathname === "/post/[id]") router.back();
+      ctx.post.userPosts.invalidate();
+      ctx.post.timeline
         .invalidate()
         .then(() => toast.success("Your post was deleted"));
     },
-    onError: (e) => {
-      const errorMessage = e.data?.zodError?.fieldErrors.content;
-      if (errorMessage && errorMessage[0]) {
-        toast.error(errorMessage[0]);
-      } else {
+    onError: () => {
+      if (post.authorId !== user?.id) {
         toast.error("Failed to delete, you not the author.");
+      } else {
+        toast.error("Post NOT_FOUND");
+        console.error("Post NOT_FOUND");
       }
     },
   });
 
-  const deletePost = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setModal((prev) => !prev);
-    setMenu((prev) => !prev);
+  async function deletePost(
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) {
     e.stopPropagation();
     e.currentTarget.disabled = true;
-    mutate({ id: post.id });
-    if (post.image)
-      axios.post("/api/delete", {
-        publicId: post.imageId,
-      });
-  };
+    try {
+      if (post.image)
+        axios.post("/api/delete", {
+          publicId: post.imageId,
+        });
+      mutate({ id: post.id });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setModal((prev) => !prev);
+      setMenu((prev) => !prev);
+    }
+  }
 
   return (
     <Popover open={menu} onOpenChange={setMenu}>
-      <PopoverTrigger
-        asChild
-        onClick={(e) => e.stopPropagation()}
-        className="inline-flex items-center justify-center rounded-full focus-within:bg-primary/5 hover:bg-primary/5"
-      >
+      <PopoverTrigger asChild>
         <Button
           type="button"
-          size={"icon"}
+          size="icon"
           variant="ghost"
           disabled={deleting}
-          className="group -mr-2 aspect-square h-[34.75px] w-[34.75px] text-accent"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          className="group -mr-2 inline-flex aspect-square h-[34.75px] w-[34.75px] items-center justify-center rounded-full text-accent focus-within:bg-primary/5 hover:bg-primary/5"
         >
           <TbDots
             size={18.75}

@@ -1,23 +1,20 @@
 import Image from "next/image";
 import { RouterOutputs } from "~/utils/api";
-import LocalizedFormat from "dayjs/plugin/localizedFormat";
-import dayjs from "dayjs";
-import { useUser } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { renderText } from "~/lib/tweet";
-import { TweetTitle } from "./tweet-title";
-import { TweetText } from "./tweet-text";
-import { TweetAction } from "./tweet-action";
 import { UserCard } from "../user-hover-card";
-import { ImageModal } from "../modal/image-modal";
+import { ImageModal } from "../modal";
+import { TweetTitle, TweetText, TweetAction } from "./";
+import dayjs from "dayjs";
+import LocalizedFormat from "dayjs/plugin/localizedFormat";
 dayjs.extend(LocalizedFormat);
 
 type VariantTweet = "default" | "details";
 
-export type TweetType = RouterOutputs["posts"]["getAll"][number] &
+export type TweetProps = RouterOutputs["post"]["timeline"][number] &
   React.HTMLAttributes<HTMLDivElement> & { variant?: VariantTweet };
 
-export const TweetPost: React.FC<TweetType> = ({
+export const TweetPost: React.FC<TweetProps> = ({
   post,
   author,
   variant = "default",

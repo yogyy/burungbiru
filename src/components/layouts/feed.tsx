@@ -1,16 +1,13 @@
-import React from "react";
 import { LoadingSpinner } from "../loading";
 import { RouterOutputs } from "~/utils/api";
 import { useRouter } from "next/navigation";
 import { cn } from "~/lib/utils";
 import { TweetPost } from "../tweet";
 
-type FeedType = {
-  post: RouterOutputs["posts"]["getAll"] | undefined;
+export const Feed: React.FC<{
+  post: RouterOutputs["post"]["timeline"] | undefined;
   postLoading: boolean;
-};
-
-const Feed = ({ post, postLoading }: FeedType) => {
+}> = ({ post, postLoading }) => {
   const router = useRouter();
   return (
     <div className="h-auto w-full">
@@ -24,7 +21,7 @@ const Feed = ({ post, postLoading }: FeedType) => {
             variant="default"
             {...fullPost}
             key={fullPost.post.id}
-            onClick={(e) => {
+            onClick={() => {
               router.push(`/post/${fullPost.post.id}`);
             }}
             className={cn(
@@ -37,5 +34,3 @@ const Feed = ({ post, postLoading }: FeedType) => {
     </div>
   );
 };
-
-export default Feed;

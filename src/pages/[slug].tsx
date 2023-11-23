@@ -5,7 +5,6 @@ import Image from "next/image";
 import { LoadingSpinner } from "~/components/loading";
 import ButtonBack from "~/components/ButtonBack";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
-import Feed from "~/components/layouts/feed";
 import { Button } from "~/components/ui/button";
 import { userMenu } from "~/constant";
 import { cn } from "~/lib/utils";
@@ -17,7 +16,8 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { useUser } from "@clerk/nextjs";
-import { PageLayout } from "~/components/layouts";
+import { PageLayout, Feed } from "~/components/layouts";
+import { ImageModal } from "~/components/modal";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const [showModal, setShowModal] = useState(false);
@@ -25,7 +25,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     username,
   });
   const { data: posts, isLoading: userpostLoading } =
-    api.posts.getPostsByUserId.useQuery({
+    api.post.userPosts.useQuery({
       userId: user?.id as string,
     });
 
@@ -63,14 +63,13 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
               </div>
             </div>
           </div>
-          <div className="relative h-auto max-h-[12.5rem] object-cover">
-            <Image
-              src="https://pbs.twimg.com/profile_banners/1524098302039318529/1687799380/600x200"
+          <div className="relative aspect-[3/1] w-full overflow-hidden">
+            <ImageModal
               alt={`banner @${user?.username}`}
-              draggable={false}
+              src="https://pbs.twimg.com/media/F8H50sjbYAAUr-1?format=webp&name=small"
               width="600"
               height="200"
-              className="w-full"
+              className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover brightness-75"
             />
           </div>
           <div className="px-4 pb-3 pt-3">
