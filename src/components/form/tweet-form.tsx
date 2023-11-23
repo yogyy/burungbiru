@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { createTweetActions } from "~/constant";
-import { Globe, Media } from "../icons";
+import { GlobeIcon, ImageIcon } from "../icons";
 import { UserAvatar } from "../avatar";
 import {
   Form,
@@ -45,17 +45,11 @@ const CreateTweet: React.FC<
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [submitBtn, setSubmitBtn] = useState(false);
   const setTweetModal = useTweetModal((state) => state.setShow);
+  const { image, ImagePrev, setImagePrev, handleImageChange } =
+    useUploadImage();
 
-  useEffect(() => {
-    const { current } = textareaRef;
-    if (!current) return;
-    current.addEventListener("input", adjustTextareaHeight);
-    adjustTextareaHeight();
-
-    return () => {
-      current.removeEventListener("input", adjustTextareaHeight);
-    };
-  }, [textareaRef]);
+  const { user } = useUser();
+  const ctx = api.useUtils();
 
   const form = useForm<z.infer<typeof tweetSchema>>({
     resolver: zodResolver(tweetSchema),
@@ -67,22 +61,17 @@ const CreateTweet: React.FC<
       },
     },
   });
-  const { image, ImagePrev, setImagePrev, handleImageChange } =
-    useUploadImage();
-  const { user } = useUser();
-  const ctx = api.useUtils();
-  if (!user) return null;
 
-  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+  const { mutate, isLoading: isPosting } = api.post.createPost.useMutation({
     onSuccess: () => {
       setImagePrev("");
       form.reset();
-      ctx.posts.getPostsByUserId.invalidate();
-      ctx.posts.getAll.invalidate().then(() => {
+      ctx.post.userPosts.invalidate();
+      ctx.post.timeline.invalidate().then(() => {
         adjustTextareaHeight();
-        if (variant === "modal") setTweetModal((prev) => !prev);
       });
       if (!ImagePrev) toast.success("Your Post was sent.");
+      if (variant === "modal") setTweetModal((prev) => !prev);
     },
     onError: (err) => {
       adjustTextareaHeight();
@@ -93,13 +82,6 @@ const CreateTweet: React.FC<
       }
     },
   });
-
-  const adjustTextareaHeight = () => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight + 5}px`;
-  };
 
   async function onSubmit(values: z.infer<typeof tweetSchema>) {
     try {
@@ -130,6 +112,25 @@ const CreateTweet: React.FC<
     }
   }
 
+  function adjustTextareaHeight() {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight + 5}px`;
+  }
+
+  useEffect(() => {
+    const { current } = textareaRef;
+    if (!current) return;
+    current.addEventListener("input", adjustTextareaHeight);
+    adjustTextareaHeight();
+
+    return () => {
+      current.removeEventListener("input", adjustTextareaHeight);
+    };
+  }, [textareaRef]);
+
+  if (!user) return null;
   return (
     <Form {...form}>
       <form
@@ -207,7 +208,7 @@ const CreateTweet: React.FC<
                       )}
                     </div>
                   </FormControl>
-                  <FormMessage className="absolute bottom-10 cursor-default select-none text-accent" />
+                  <FormMessage className="absolute bottom-2 cursor-default select-none text-accent" />
                 </FormItem>
               </div>
             </div>
@@ -227,7 +228,7 @@ const CreateTweet: React.FC<
                 "cursor-not-allowed"
               )}
             >
-              <Globe className="mr-1 w-4 fill-primary" /> Everyone can reply
+              <GlobeIcon className="mr-1" /> Everyone can reply
             </span>
           </div>
           <hr className={cn(variant === "default" ? "ml-12" : "ml-0")} />
@@ -254,7 +255,7 @@ const CreateTweet: React.FC<
                         )}
                       >
                         <span className="sr-only">add image</span>
-                        <Media className="h-5 w-5 fill-current" />
+                        <ImageIcon className="h-5 w-5 fill-current" />
                       </Button>
                     </FormLabel>
                     <FormControl ref={inputRef}>

@@ -1,1 +1,1 @@
-export * from "./tweet-form";
+export { default } from "./tweet-form";
