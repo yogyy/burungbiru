@@ -3,7 +3,12 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import ButtonBack from "~/components/ButtonBack";
-import { TweetText, TweetTitle, TweetAction } from "~/components/tweet";
+import {
+  TweetText,
+  TweetTitle,
+  TweetAction,
+  PostNotFound,
+} from "~/components/tweet";
 import { cn } from "~/lib/utils";
 import Image from "next/image";
 import { renderText } from "~/lib/tweet";
@@ -19,7 +24,6 @@ import {
 } from "~/components/ui/tooltip";
 import { AnalyticIcon } from "~/components/icons";
 import { PageLayout } from "~/components/layouts";
-import { PostNotFound } from "./not-found";
 import { LoadingSpinner } from "~/components/loading";
 
 const SinglePostPage = ({
