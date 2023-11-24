@@ -11,7 +11,7 @@ import { Button } from "../ui/button";
 import { BsTwitterX } from "react-icons/bs";
 import { useClerk } from "@clerk/nextjs";
 import { UserResource } from "@clerk/types/dist";
-import { useBurgerMenu } from "~/hooks/store";
+import { useBurgerMenu, useUserPopover } from "~/hooks/store";
 
 export const LogoutModal: React.FC<{
   user: UserResource | null | undefined;
@@ -19,6 +19,7 @@ export const LogoutModal: React.FC<{
 }> = ({ user, children }) => {
   const [modalSignOut, setModalSignOut] = React.useState(false);
   const closeBurgerMenu = useBurgerMenu((state) => state.setShow);
+  const closeUserPopover = useUserPopover((state) => state.setShow);
   const { signOut } = useClerk();
 
   return (
@@ -54,6 +55,7 @@ export const LogoutModal: React.FC<{
                     signOut();
                     setModalSignOut((prev) => !prev);
                     closeBurgerMenu((prev) => !prev);
+                    closeUserPopover((prev) => !prev);
                   }}
                   className="mb-3 min-h-[44px] min-w-[44px] text-[15px]"
                 >

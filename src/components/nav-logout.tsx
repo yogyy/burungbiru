@@ -11,17 +11,14 @@ import { TbDots } from "react-icons/tb";
 import { Button } from "./ui/button";
 import { cn } from "~/lib/utils";
 import { LogoutModal } from "./modal/logout-modal";
+import { useUserPopover } from "~/hooks/store";
 
-type NavbarLogoutType = React.HTMLAttributes<HTMLDivElement> & {
-  user: UserResource | null | undefined;
-};
-
-export const NavbarLogout: React.FC<NavbarLogoutType> = ({
-  user,
-  className,
-  ...props
-}) => {
-  const [popoverSignOut, setPopoverSignOut] = React.useState(false);
+export const NavbarLogout: React.FC<
+  React.HTMLAttributes<HTMLDivElement> & {
+    user: UserResource | null | undefined;
+  }
+> = ({ user, className, ...props }) => {
+  const { show, setShow } = useUserPopover();
 
   return (
     <div
@@ -31,7 +28,7 @@ export const NavbarLogout: React.FC<NavbarLogoutType> = ({
       )}
       {...props}
     >
-      <Popover open={popoverSignOut} onOpenChange={setPopoverSignOut}>
+      <Popover open={show} onOpenChange={setShow}>
         <PopoverTrigger className="flex w-full justify-center">
           <div className="flex w-fit items-center p-2.5 transition-all duration-300 hover:cursor-pointer hover:rounded-full hover:bg-border/30 xl:w-full">
             {user && (
