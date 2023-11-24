@@ -18,6 +18,7 @@ import {
 import { useUser } from "@clerk/nextjs";
 import { PageLayout, Feed } from "~/components/layouts";
 import { ImageModal } from "~/components/modal";
+import UserNotFound from "~/components/user-not-found";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const [showModal, setShowModal] = useState(false);
@@ -30,13 +31,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     });
 
   const { user: currentUser } = useUser();
+  if (!user) return <UserNotFound username={username} />;
 
-  if (!user)
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <h2 className="text-3xl font-semibold text-red-500">User Not Found</h2>
-      </div>
-    );
   return (
     <>
       <Head>
@@ -69,6 +65,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
               src="https://pbs.twimg.com/media/F8H50sjbYAAUr-1?format=webp&name=small"
               width="600"
               height="200"
+              priority
               className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover brightness-75"
             />
           </div>
@@ -110,13 +107,23 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                   </DialogContent>
                 </Dialog>
               </div>
-              <Button
-                variant="outline"
-                className="focus-visible:border-1 rounded-full border-border py-4 hover:bg-[rgba(239,243,244,0.1)] focus-visible:bg-[rgba(239,243,244,0.1)]"
-                type="button"
-              >
-                Edit Profile
-              </Button>
+              {currentUser?.id === user.id ? (
+                <Button
+                  variant="outline"
+                  className="focus-visible:border-1 rounded-full border-border py-4 hover:bg-[rgba(239,243,244,0.1)] focus-visible:bg-[rgba(239,243,244,0.1)]"
+                  type="button"
+                >
+                  Edit Profile
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
+                  disabled
+                >
+                  Follow
+                </Button>
+              )}
             </div>
             <h2 className="text-lg font-bold leading-6">{`${user?.firstName} ${
               user.lastName || ""
@@ -131,7 +138,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                     key={menu.name}
                     className={cn(
                       "flex flex-1 justify-center px-4 text-[16px] leading-5 text-accent first:font-semibold first:text-white",
-                      "hover:bg-white/[.03] focus:bg-white/[.03]"
+                      "hover:bg-white/[.03] focus-visible:bg-white/[.03]"
                     )}
                   >
                     <div className="relative flex justify-center px-2 py-4">
