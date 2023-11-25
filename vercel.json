@@ -2,7 +2,8 @@
   "git": {
     "deploymentEnabled": {
       "main": false,
-      "before-using-drizzle": false
+      "before-using-drizzle": false,
+      "fix-toast-persist": false
     }
   }
 }
