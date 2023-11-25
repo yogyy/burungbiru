@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FileUploadInfo } from "~/types/cdnupload";
+import { FileUploadInfo } from "~/types";
 
 export const uploadImage = async (
   file: File
