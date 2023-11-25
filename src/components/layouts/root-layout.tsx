@@ -1,4 +1,3 @@
-import { Toaster } from "react-hot-toast";
 import { cn } from "~/lib/utils";
 import { RightAside, MobileNav, Navbar } from ".";
 import { useMediaQuery } from "~/hooks/use-media-q";
@@ -22,28 +21,6 @@ export const PageLayout = ({
         </div>
       </main>
       {showNavbar ? null : <MobileNav />}
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          position: "bottom-center",
-          style: {
-            backgroundColor: "hsl(var(--primary))",
-            color: "hsl(var(--foreground))",
-          },
-          success: {
-            icon: null,
-          },
-          loading: {
-            position: "top-center",
-          },
-          error: {
-            style: {
-              backgroundColor: "hsl(var(--desctructive) / .9)",
-            },
-            position: "top-center",
-          },
-        }}
-      />
     </div>
   );
 };
