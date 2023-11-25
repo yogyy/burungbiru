@@ -8,19 +8,19 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Button, ButtonProps } from "../ui/button";
-import CreateTweet from "../form/tweet-form";
 import { useTweetModal } from "~/hooks/store";
 import { IoArrowBack, IoClose } from "react-icons/io5";
 import { TweetIcon } from "../icons";
 import { cn } from "~/lib/utils";
-import { useMediaQuery } from "~/hooks/use-media-q";
+import dynamic from "next/dynamic";
+
+const LazyForm = dynamic(() => import("~/components/form"));
 
 export const CreatePostModal: React.FC<ButtonProps> = ({
   className,
   ...props
 }) => {
   const { show, setShow } = useTweetModal();
-  const matches = useMediaQuery("(min-width: 570px)");
 
   return (
     <Dialog open={show} onOpenChange={setShow}>
@@ -47,13 +47,11 @@ export const CreatePostModal: React.FC<ButtonProps> = ({
         className={cn(
           "hide-scrollbar top-0 h-screen translate-y-0 items-start overflow-hidden overflow-y-scroll rounded-none border-none p-0 text-start [&>button]:block",
           "max-w-[600px] min-[570px]:top-[5%] min-[570px]:h-auto min-[570px]:max-h-[90vh] min-[570px]:!rounded-2xl",
-          matches
-            ? ""
-            : "data-[state=closed]:slide-out-to-bottom-[48%] data-[state=open]:slide-in-from-bottom-[48%]"
+          "max-[570px]:data-[state=open]:!slide-in-from-bottom-[48%]"
         )}
       >
         <DialogHeader className="relative flex flex-col-reverse space-y-0">
-          <CreateTweet className="" variant="modal" />
+          <LazyForm variant="modal" />
           <DialogDescription asChild>
             <div className="sticky top-0 flex h-[53px] w-full items-center justify-between bg-background/10 px-4 backdrop-blur-sm">
               <button
