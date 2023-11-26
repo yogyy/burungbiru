@@ -35,10 +35,7 @@ export const BurgerMenuItem: React.FC<
                 link.link === "/profile" ? `/@${user?.username}` : link.link
               }
             >
-              <link.icon
-                className={cn("w-6 fill-current stroke-none")}
-                title={link.name}
-              />
+              <link.icon className={cn("fill-current stroke-none")} size="24" />
               <span
                 className={cn(
                   "ml-5 mr-4 text-xl font-semibold leading-6 tracking-wide"
