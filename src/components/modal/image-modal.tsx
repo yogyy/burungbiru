@@ -1,5 +1,5 @@
 import Image, { ImageProps } from "next/image";
-import React, { useState } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,13 +14,13 @@ export const ImageModal: React.FC<ImageProps> = ({
   className,
   ...props
 }) => {
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = React.useState(false);
   return (
     <Dialog open={showModal} onOpenChange={setShowModal}>
       <DialogTrigger asChild>
         <Image
-          src={src as string}
-          alt={alt as string}
+          src={src || ""}
+          alt={alt || ""}
           className={cn("cursor-pointer object-cover", className)}
           {...props}
         />
@@ -35,7 +35,7 @@ export const ImageModal: React.FC<ImageProps> = ({
         overlayClassName="bg-background/80"
       >
         <Image
-          src={src as string}
+          src={src || ""}
           width="600"
           height="400"
           alt={alt!}

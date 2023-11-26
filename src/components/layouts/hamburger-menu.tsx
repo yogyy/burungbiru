@@ -34,6 +34,9 @@ export const BurgerMenu: React.FC<
   }
 > = ({ user, isSignedIn, className, ...props }) => {
   const { show, setShow } = useBurgerMenu();
+
+  if (!user) return null;
+
   return (
     <div
       className={cn(
@@ -54,14 +57,14 @@ export const BurgerMenu: React.FC<
           </SheetTrigger>
           <SheetContent
             side="left"
-            className="hide-scrollbar min-w-[280px] max-w-[70%] overflow-y-scroll border-r-0 p-0 shadow-sm shadow-white data-[state=open]:duration-300 [&>button]:hidden"
+            className="hide-scrollbar min-w-[280px] max-w-[70%] overflow-y-scroll border-r-0 p-0 shadow-sm duration-100 [&>button]:hidden"
           >
             <SheetHeader className="text-left">
               <SheetTitle className="p-4 text-base leading-5  ">
                 <div className="w-fit">
                   <UserAvatar
-                    profileImg={user?.imageUrl as string}
-                    username={user?.username as string}
+                    profileImg={user?.imageUrl}
+                    username={user?.username}
                   />
                 </div>
                 <div className="mt-2">

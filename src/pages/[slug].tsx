@@ -25,13 +25,15 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({
     username,
   });
-  const { data: posts, isLoading: userpostLoading } =
-    api.post.userPosts.useQuery({
-      userId: user?.id as string,
-    });
 
   const { user: currentUser } = useUser();
+
   if (!user) return <UserNotFound username={username} />;
+
+  const { data: posts, isLoading: userpostLoading } =
+    api.post.userPosts.useQuery({
+      userId: user?.id,
+    });
 
   return (
     <>
@@ -75,7 +77,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                 <Dialog open={showModal} onOpenChange={setShowModal}>
                   <DialogTrigger className="rounded-full">
                     <Image
-                      src={user?.profileImg as string}
+                      src={user?.profileImg}
                       alt={`${
                         user?.username ?? user?.firstName ?? "unknown"
                       }'s profile pic`}
@@ -96,7 +98,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                     overlayClassName="bg-background/40"
                   >
                     <Image
-                      src={user?.profileImg as string}
+                      src={user?.profileImg}
                       alt={`${
                         user?.username ?? user?.firstName ?? "unknown"
                       }'s profile pic`}

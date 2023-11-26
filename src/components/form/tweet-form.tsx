@@ -76,7 +76,9 @@ const CreateTweet: React.FC<
     onError: (err) => {
       adjustTextareaHeight();
       if (err.shape?.data.zodError?.fieldErrors.content) {
-        toast.error(err.shape?.data.zodError?.fieldErrors.content[0] as string);
+        toast.error(
+          err.shape?.data.zodError?.fieldErrors.content[0] || "error"
+        );
       } else {
         toast.error(err.message);
       }
@@ -104,8 +106,8 @@ const CreateTweet: React.FC<
       mutate({
         content: values.text,
         image: {
-          public_id: values.image?.public_id as string,
-          secure_url: values.image?.secure_url as string,
+          public_id: values.image?.public_id || "",
+          secure_url: values.image?.secure_url || "",
         },
       });
       setSubmitBtn((prev) => !prev);
