@@ -12,7 +12,7 @@ const LazyForm = dynamic(() => import("~/components/form"));
 const Home: NextPage = () => {
   const { user, isLoaded: userLoaded, isSignedIn } = useUser();
   const { data, isLoading: postLoading } = api.post.timeline.useQuery();
-  const matches = useMediaQuery("(min-width: 570px)");
+  const showBurgerMenu = useMediaQuery("(max-width: 570px)");
 
   if (!userLoaded)
     return (
@@ -24,7 +24,7 @@ const Home: NextPage = () => {
   return (
     <PageLayout className="flex">
       <div className="flex w-full max-w-[600px] flex-shrink flex-col border-x border-border">
-        {!matches && <BurgerMenu isSignedIn={isSignedIn} user={user} />}
+        {showBurgerMenu && <BurgerMenu isSignedIn={isSignedIn} user={user} />}
         <div
           className={cn(
             "sticky top-0 z-20 h-auto w-full border-b border-border bg-background/[.65] backdrop-blur-md"
@@ -43,7 +43,7 @@ const Home: NextPage = () => {
           </div>
         </div>
         <div className="hidden border-b border-border min-[570px]:flex">
-          {isSignedIn && matches && <LazyForm />}
+          {isSignedIn && showBurgerMenu && <LazyForm />}
         </div>
         {<Feed post={data} postLoading={postLoading} />}
       </div>

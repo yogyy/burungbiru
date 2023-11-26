@@ -1,4 +1,4 @@
-import { GetStaticProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 import Head from "next/head";
 import { api } from "~/utils/api";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
@@ -28,7 +28,7 @@ import { LoadingSpinner } from "~/components/loading";
 
 const SinglePostPage = ({
   id,
-}: InferGetServerSidePropsType<typeof getStaticProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { user: currentUser } = useUser();
   const { data, isLoading, error } = api.post.detailPost.useQuery(
     {
