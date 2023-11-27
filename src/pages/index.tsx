@@ -43,7 +43,7 @@ const Home: NextPage = () => {
           </div>
         </div>
         <div className="hidden border-b border-border min-[570px]:flex">
-          {isSignedIn && showBurgerMenu && <LazyForm />}
+          {isSignedIn && !showBurgerMenu && <LazyForm />}
         </div>
         {<Feed post={data} postLoading={postLoading} />}
       </div>
