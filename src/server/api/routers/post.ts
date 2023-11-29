@@ -1,4 +1,3 @@
-import { clerkClient } from "@clerk/nextjs/server";
 import {
   createTRPCRouter,
   privateProcedure,
@@ -8,40 +7,13 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import { filterUserForClient } from "~/server/helper/filterforClient";
-import type { Post } from "@prisma/client";
+import { addUserDataToPosts } from "~/server/helper/dbHelper";
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(3, "1 m"),
   analytics: true,
 });
-
-const addUserDataToPosts = async (posts: Post[]) => {
-  const users = (
-    await clerkClient.users.getUserList({
-      userId: posts.map((post) => post.authorId),
-      limit: 100,
-    })
-  ).map(filterUserForClient);
-
-  return posts.map((post) => {
-    const author = users.find((user) => user.id === post.authorId);
-    if (!author)
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Author for post not found",
-      });
-
-    return {
-      post,
-      author: {
-        ...author,
-        username: author.username,
-      },
-    };
-  });
-};
 
 export const postRouter = createTRPCRouter({
   detailPost: publicProcedure
