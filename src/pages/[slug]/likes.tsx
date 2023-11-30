@@ -1,11 +1,12 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import Head from "next/head";
-import { api } from "~/utils/api";
+import { RouterOutputs, api } from "~/utils/api";
 import { LoadingSpinner } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 
-import { Feed, UserLayout } from "~/components/layouts";
+import { PageLayout, Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
+
+type likedProps = RouterOutputs["profile"]["userLikedPosts"];
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({
@@ -13,10 +14,16 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   });
   if (!user) return <UserNotFound username={username} />;
 
-  const { data: posts, isLoading: userpostLoading } =
-    api.profile.userPosts.useQuery({
+  const { data: likes, isLoading: userLikeLoading } =
+    api.profile.userLikedPosts.useQuery({
       userId: user?.id,
     });
+
+  // const { data } = api.profile.userActions.useQuery({
+  //   userId: user.id,
+  // });
+
+  // console.log(data);
 
   return (
     <UserLayout
@@ -27,19 +34,24 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             {`${user?.firstName} ${user?.lastName ? user?.lastName : ""}`}
           </h1>
           <p className="text-[13px] font-thin leading-4 text-accent ">
-            {userpostLoading ? ".." : posts?.length} posts
+            {userLikeLoading ? ".." : likes?.length} likes
           </p>
         </div>
       }
     >
-      {userpostLoading ? (
-        <div className="flex h-20 items-center justify-center">
-          <LoadingSpinner size={24} />
-        </div>
-      ) : null}
-      {!userpostLoading && posts && posts?.length !== 0 ? (
-        <Feed post={posts} postLoading={userpostLoading} />
-      ) : null}
+      {/* <pre className="w-full overflow-x-scroll">
+        {JSON.stringify(likes, null, 2)}
+      </pre> */}
+      <div className="flex w-full flex-col items-center">
+        {userLikeLoading ? (
+          <div className="flex h-20 items-center justify-center">
+            <LoadingSpinner size={24} />
+          </div>
+        ) : null}
+        {!userLikeLoading && likes && likes?.length !== 0 ? (
+          <Feed post={likes} postLoading={userLikeLoading} />
+        ) : null}
+      </div>
     </UserLayout>
   );
 };

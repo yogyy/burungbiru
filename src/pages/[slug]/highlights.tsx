@@ -1,13 +1,15 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import Head from "next/head";
-import { api } from "~/utils/api";
-import { LoadingSpinner } from "~/components/loading";
-import { generateSSGHelper } from "~/server/helper/ssgHelper";
-
+import Link from "next/link";
+import React from "react";
 import { Feed, UserLayout } from "~/components/layouts";
+import { LoadingSpinner } from "~/components/loading";
+import { Button, buttonVariants } from "~/components/ui/button";
 import UserNotFound from "~/components/user-not-found";
+import { cn } from "~/lib/utils";
+import { generateSSGHelper } from "~/server/helper/ssgHelper";
+import { api } from "~/utils/api";
 
-const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
+const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({
     username,
   });
@@ -32,14 +34,26 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         </div>
       }
     >
-      {userpostLoading ? (
-        <div className="flex h-20 items-center justify-center">
-          <LoadingSpinner size={24} />
+      <div className="mx-auto my-8 flex w-full max-w-[calc(5*80px)] flex-col items-center px-8">
+        <div className="w-full">
+          <h2 className="mb-2 break-words text-left text-[31px] font-extrabold leading-8">
+            Highlight on your profile
+          </h2>
+          <p className="mb-8 break-words text-left text-[15px] leading-5 text-accent">
+            You must be subscribed to Premium to highlight posts on your
+            profile.
+          </p>
+          <Link
+            href="#/subscribe-premium"
+            className={cn(
+              buttonVariants({ variant: "secondary" }),
+              "min-h-[52px] max-w-fit flex-1 flex-grow whitespace-nowrap break-words px-8 text-base font-bold leading-5"
+            )}
+          >
+            Subscribe to Premium
+          </Link>
         </div>
-      ) : null}
-      {!userpostLoading && posts && posts?.length !== 0 ? (
-        <Feed post={posts} postLoading={userpostLoading} />
-      ) : null}
+      </div>
     </UserLayout>
   );
 };
@@ -67,4 +81,4 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths: [], fallback: "blocking" };
 };
 
-export default ProfilePage;
+export default ProfilePageReplies;

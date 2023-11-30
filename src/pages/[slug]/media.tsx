@@ -1,9 +1,7 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import Head from "next/head";
 import { api } from "~/utils/api";
 import { LoadingSpinner } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
-
 import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 
@@ -14,9 +12,15 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   if (!user) return <UserNotFound username={username} />;
 
   const { data: posts, isLoading: userpostLoading } =
-    api.profile.userPosts.useQuery({
+    api.profile.userPostwithMedia.useQuery({
       userId: user?.id,
     });
+
+  // const { data } = api.profile.userActions.useQuery({
+  //   userId: user.id,
+  // });
+
+  // console.log(data);
 
   return (
     <UserLayout
@@ -32,6 +36,9 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         </div>
       }
     >
+      {/* <pre className="w-full overflow-x-scroll">
+        {JSON.stringify(posts, null, 2)}
+      </pre> */}
       {userpostLoading ? (
         <div className="flex h-20 items-center justify-center">
           <LoadingSpinner size={24} />

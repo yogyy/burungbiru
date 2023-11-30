@@ -1,22 +1,22 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import Head from "next/head";
-import { api } from "~/utils/api";
-import { LoadingSpinner } from "~/components/loading";
-import { generateSSGHelper } from "~/server/helper/ssgHelper";
-
+import React from "react";
 import { Feed, UserLayout } from "~/components/layouts";
+import { LoadingSpinner } from "~/components/loading";
 import UserNotFound from "~/components/user-not-found";
+import { generateSSGHelper } from "~/server/helper/ssgHelper";
+import { api } from "~/utils/api";
 
-const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
+const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({
     username,
   });
   if (!user) return <UserNotFound username={username} />;
 
-  const { data: posts, isLoading: userpostLoading } =
-    api.profile.userPosts.useQuery({
-      userId: user?.id,
-    });
+  const { data, isLoading } = api.profile.userActions.useQuery({
+    userId: user.id,
+  });
+
+  const replies = data?.repost;
 
   return (
     <UserLayout
@@ -27,19 +27,22 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             {`${user?.firstName} ${user?.lastName ? user?.lastName : ""}`}
           </h1>
           <p className="text-[13px] font-thin leading-4 text-accent ">
-            {userpostLoading ? ".." : posts?.length} posts
+            {isLoading ? ".." : replies?.length} posts
           </p>
         </div>
       }
     >
-      {userpostLoading ? (
+      <pre className="w-full overflow-x-scroll">
+        {JSON.stringify(replies, null, 2)}
+      </pre>
+      {/* {userpostLoading ? (
         <div className="flex h-20 items-center justify-center">
           <LoadingSpinner size={24} />
         </div>
       ) : null}
       {!userpostLoading && posts && posts?.length !== 0 ? (
         <Feed post={posts} postLoading={userpostLoading} />
-      ) : null}
+      ) : null} */}
     </UserLayout>
   );
 };
@@ -67,4 +70,4 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths: [], fallback: "blocking" };
 };
 
-export default ProfilePage;
+export default ProfilePageReplies;
