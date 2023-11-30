@@ -35,10 +35,8 @@ export const UserLayout: NextPage<LayoutUser> = ({
   user,
 }) => {
   const [showModal, setShowModal] = React.useState(false);
-  const { user: currentUser } = useUser();
-  const r = useRouter();
+  const { user: currentUser, isLoaded } = useUser();
   const pathname = usePathname();
-  const arrRoute = pathname.split("/")[1];
 
   //   console.log(pathname.substring(1));
   return (
@@ -67,7 +65,7 @@ export const UserLayout: NextPage<LayoutUser> = ({
               width="600"
               height="200"
               priority
-              className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover brightness-75"
+              className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover"
             />
           </div>
           <div className="px-4 pb-3 pt-3">
@@ -108,7 +106,7 @@ export const UserLayout: NextPage<LayoutUser> = ({
                   </DialogContent>
                 </Dialog>
               </div>
-              {currentUser?.id === user.id ? (
+              {isLoaded && currentUser?.id === user.id && (
                 <Button
                   variant="outline"
                   className="focus-visible:border-1 rounded-full border-border py-4 hover:bg-[rgba(239,243,244,0.1)] focus-visible:bg-[rgba(239,243,244,0.1)]"
@@ -117,7 +115,8 @@ export const UserLayout: NextPage<LayoutUser> = ({
                 >
                   Edit Profile
                 </Button>
-              ) : (
+              )}
+              {isLoaded && currentUser?.id !== user.id && (
                 <Button
                   variant="outline"
                   className="border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
@@ -138,18 +137,19 @@ export const UserLayout: NextPage<LayoutUser> = ({
                 (menu.name !== "Highlights" || user.id === currentUser?.id) && (
                   <Link
                     key={menu.name}
-                    href={`/${user.username}${menu.href}`}
+                    href={`/@${user.username}${menu.href}`}
                     className={cn(
                       "flex flex-1 justify-center px-4 text-[16px] leading-5 text-accent",
                       "-outline-offset-1 hover:bg-white/[.03] focus-visible:bg-white/[.03] focus-visible:outline-2",
-                      user.username + menu.href === pathname.substring(1) &&
+                      user.username + menu.href ===
+                        pathname.substring(1).replace("@", "") &&
                         "font-semibold text-white"
                     )}
                   >
                     <div className="relative flex justify-center px-2 py-4">
                       {menu.name}
                       {`${user.username}${menu.href}` ===
-                      pathname.substring(1) ? (
+                      pathname.substring(1).replace("@", "") ? (
                         <div className="absolute bottom-0 h-1 w-full rounded-md bg-primary" />
                       ) : null}
                     </div>

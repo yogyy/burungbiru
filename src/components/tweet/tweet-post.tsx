@@ -11,7 +11,7 @@ dayjs.extend(LocalizedFormat);
 
 type VariantTweet = "default" | "details";
 
-export type TweetProps = RouterOutputs["post"]["timeline"][number] &
+export type TweetProps = RouterOutputs["post"]["detailPost"] &
   React.HTMLAttributes<HTMLDivElement> & { variant?: VariantTweet };
 
 export const TweetPost: React.FC<TweetProps> = ({
@@ -69,7 +69,7 @@ export const TweetPost: React.FC<TweetProps> = ({
               </button>
             </div>
           ) : null}
-          <TweetAction variant={variant} />
+          <TweetAction post={post} variant={variant} />
         </div>
       </div>
     </div>

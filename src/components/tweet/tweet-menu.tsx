@@ -35,6 +35,7 @@ export const TweetMenu: React.FC<
   const { mutate, isLoading: deleting } = api.post.deletePost.useMutation({
     onSuccess: () => {
       if (router.pathname === "/post/[id]") router.back();
+      ctx.post.detailPost.invalidate({ id: post.id });
       ctx.post.userPosts.invalidate();
       ctx.post.timeline
         .invalidate()
