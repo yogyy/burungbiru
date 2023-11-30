@@ -62,7 +62,7 @@ export const CreatePostModal: React.FC<ButtonProps> = ({
                 <IoClose size={26} className="hidden sm:block" />
                 <span className="sr-only">back</span>
               </button>
-              <DialogTitle className="mr-[76px] text-xl font-semibold leading-6 sm:mr-0">
+              <DialogTitle className="mr-[76px] text-xl font-semibold leading-6 min-[570px]:mr-0">
                 <Button
                   variant="ghost"
                   className="text-primary hover:bg-primary/10"
