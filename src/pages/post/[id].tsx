@@ -8,6 +8,7 @@ import {
   TweetTitle,
   TweetAction,
   PostNotFound,
+  TweetPost,
 } from "~/components/tweet";
 import { cn } from "~/lib/utils";
 import Image from "next/image";
@@ -23,8 +24,9 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { AnalyticIcon } from "~/components/icons";
-import { PageLayout } from "~/components/layouts";
+import { Feed, PageLayout } from "~/components/layouts";
 import { LoadingSpinner } from "~/components/loading";
+import CreateReply from "~/components/form/reply-form";
 
 const SinglePostPage = ({
   id,
@@ -34,10 +36,20 @@ const SinglePostPage = ({
     {
       id,
     },
-    { retry: 1, keepPreviousData: false }
+    { refetchOnWindowFocus: false }
   );
   if (!data || error?.message === "NOT_FOUND") return <PostNotFound />;
-  const { author, post } = data;
+  const { author, post, repostAuthor } = data;
+
+  const { data: replies, isLoading: repliesloading } =
+    api.post.postReplies.useQuery({ postId: post.id });
+
+  const { data: parent } = api.post.parentPost.useQuery(
+    {
+      parentId: post.parentId ?? "",
+    },
+    { refetchOnWindowFocus: false }
+  );
 
   return (
     <>
@@ -54,17 +66,47 @@ const SinglePostPage = ({
           </div>
           <div
             className={cn(
-              "relative w-full max-w-full border-b border-border px-4 outline-none"
+              "relative w-full max-w-full border-b border-border outline-none"
             )}
           >
+            {post.type === "COMMENT" && (
+              <>
+                {/* <pre className="w-full overflow-x-scroll">
+                  {JSON.stringify(parent, null, 2)}
+                </pre>{" "} */}
+                {parent?.map((i) => (
+                  <TweetPost
+                    author={i.author}
+                    post={i.post}
+                    repostAuthor={i.repostAuthor}
+                    key={i.post.id}
+                    className={cn(
+                      "focus-wihtin:bg-white/[.03] border-none hover:bg-white/[.03]",
+                      "group/post transition-colors duration-200 ease-linear"
+                    )}
+                    variant="parent"
+                  />
+                ))}
+              </>
+            )}
             {isLoading ? (
               <div className="flex h-20 items-center justify-center">
                 <LoadingSpinner size={24} />
               </div>
             ) : (
-              <div className="relative flex w-full flex-col pt-3">
+              <div
+                className="relative flex w-full scroll-mt-[52px] flex-col px-4"
+                onClick={() => console.log(post)}
+                id={post.type.toLowerCase()}
+              >
                 <div className="flex">
-                  <div className="mr-3 flex h-10 w-10 flex-shrink-0 basis-10">
+                  <div className="mr-3 flex flex-shrink-0 basis-10 flex-col">
+                    <div
+                      className={cn(
+                        "mx-auto mb-1 h-2 w-0.5 bg-transparent",
+                        post.type === "COMMENT" && " bg-[rgb(51,54,57)]"
+                      )}
+                    />
                     <Image
                       width="40"
                       height="40"
@@ -73,12 +115,18 @@ const SinglePostPage = ({
                       alt={`@${
                         author.username || author.lastName
                       }'s profile picture`}
-                      className="first-letter flex basis-12 rounded-full"
+                      className="first-letter flex h-10 w-10 rounded-full"
                     />
                   </div>
-                  <TweetTitle author={author} post={post} variant="details" />
+                  <TweetTitle
+                    author={author}
+                    post={post}
+                    repostAuthor={repostAuthor}
+                    variant="details"
+                    className=" pt-3"
+                  />
                 </div>
-                <div className="relative mt-3 w-full flex-col pb-3">
+                <div className="relative mt-3 w-full flex-col">
                   <div className="flex w-fit justify-start">
                     <TweetText
                       content={renderText(post.content)}
@@ -125,23 +173,44 @@ const SinglePostPage = ({
                     </Link>
                     <p className="text-inherit">
                       &nbsp;·&nbsp;
-                      <span className="font-semibold text-white">20</span> Views
+                      <span className="font-semibold text-white">
+                        {post.view}
+                      </span>{" "}
+                      Views
                     </p>
                   </div>
                   {currentUser?.id === post.authorId ? (
-                    <button
-                      type="button"
+                    <Link
+                      href={`#comment`}
                       className="flex w-full border-y py-3 text-[15px] leading-5 text-accent hover:bg-white/[.03]"
                     >
                       <AnalyticIcon className="h-5 w-5 fill-accent" />
                       &nbsp;<span>View post engagements</span>
-                    </button>
+                    </Link>
                   ) : null}
-                  <TweetAction variant="details" />
+                  <TweetAction
+                    post={post}
+                    variant="details"
+                    author={author}
+                    repostAuthor={repostAuthor}
+                  />
+                  <hr className="border-1 mb-1 mt-3" />
+                  <p className="ml-14 text-[15px] leading-5 text-accent">
+                    Replyign to&nbsp;
+                    <span className="text-primary">{`@${author.username}`}</span>
+                  </p>
+                  <CreateReply post={post} />
                 </div>
               </div>
             )}
           </div>
+          {!repliesloading && replies && replies?.length !== 0 ? (
+            <Feed post={replies} postLoading={repliesloading} />
+          ) : null}
+          {/* <pre className="w-full overflow-x-scroll"> */}
+          {/* {JSON.stringify(replies, null, 2)} */}
+          {/* </pre> */}
+          <div className="h-[90vh]" />
         </div>
       </PageLayout>
     </>
