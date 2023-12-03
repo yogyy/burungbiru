@@ -6,45 +6,55 @@ import { api } from "~/utils/api";
 import { TweetProps } from "../tweet-post";
 import { LikeIcon, LikeIconFill } from "~/components/icons";
 
-export const LikeTweet: React.FC<Omit<TweetProps, "author">> = ({
-  variant,
-  className,
-  post,
-  ...props
-}) => {
+export const LikeTweet: React.FC<
+  Omit<TweetProps, "author" | "repostAuthor">
+> = ({ variant, className, post }) => {
   const [likeBtn, setLikeBtn] = React.useState(false);
   const ctx = api.useUtils();
-  const { mutateAsync: like } = api.action.likePost.useMutation({
+  const postId = post.type === "REPOST" ? post.repostId ?? "" : post.id;
+
+  const { mutate: like } = api.action.likePost.useMutation({
     onMutate() {
       setLikeBtn((prev) => !prev);
     },
     onSuccess() {
       // console.log(data);
       setLikeBtn((prev) => !prev);
-      ctx.action.postActions.invalidate();
+      ctx.action.postActions.invalidate({ postId });
     },
   });
-  const { mutateAsync: unlike } = api.action.unlikePost.useMutation({
+  const { mutate: unlike } = api.action.unlikePost.useMutation({
     onMutate() {
       setLikeBtn((prev) => !prev);
     },
     onSuccess() {
       setLikeBtn((prev) => !prev);
       ctx.action.postActions
-        .invalidate({ postId: post.id })
+        .invalidate({ postId })
         .then(() => ctx.profile.userLikedPosts.invalidate());
     },
   });
   const { user: currentUser } = useUser();
 
-  const { data } = api.action.postActions.useQuery({
-    postId: post.id,
-  });
+  const { data } = api.action.postActions.useQuery(
+    {
+      postId,
+    },
+    { refetchOnWindowFocus: false }
+  );
 
   const postLike = data?.likes;
 
+  function LikePost() {
+    if (!postLike?.some((like) => like.userId === currentUser?.id)) {
+      like({ postId });
+    } else {
+      unlike({ postId });
+    }
+  }
+
   return (
-    <div className="flex w-full flex-1 text-accent">
+    <div className={cn("flex w-full flex-1 text-accent", className)}>
       <div
         className="group flex items-center"
         onClick={(e) => e.stopPropagation()}
@@ -52,13 +62,7 @@ export const LikeTweet: React.FC<Omit<TweetProps, "author">> = ({
         <Button
           variant="ghost"
           disabled={likeBtn}
-          onClick={() => {
-            if (!postLike?.some((like) => like.userId === currentUser?.id)) {
-              like({ postId: post.id });
-            } else {
-              unlike({ postId: post.id });
-            }
-          }}
+          onClick={LikePost}
           type="button"
           size="icon"
           className={cn(

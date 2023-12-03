@@ -6,33 +6,42 @@ import { api } from "~/utils/api";
 import { TweetProps } from "../tweet-post";
 import { CommentIcon, LikeIcon, RetweetIcon } from "~/components/icons";
 
-export const RepostTweet: React.FC<Omit<TweetProps, "author">> = ({
-  variant,
-  className,
-  post,
-  ...props
-}) => {
+export const RepostTweet: React.FC<
+  Omit<TweetProps, "author" | "repostAuthor">
+> = ({ variant, className, post, ...props }) => {
   const ctx = api.useUtils();
   const { mutateAsync: repost } = api.action.retweetPost.useMutation({
     onMutate() {},
     onSuccess() {
       ctx.action.postActions.invalidate({ postId: post.id });
+      ctx.post.timeline.invalidate();
+      ctx.profile.userPosts.invalidate();
     },
   });
   const { mutateAsync: deleteRepost } = api.action.unretweetPost.useMutation({
     onMutate() {},
     onSuccess() {
       ctx.action.postActions.invalidate({ postId: post.id });
+      ctx.post.timeline.invalidate();
     },
   });
 
-  const { data } = api.action.postActions.useQuery({
-    postId: post.id,
-  });
-
-  const { user: currentUser } = useUser();
-
+  const postId = post.type === "REPOST" ? post.repostId ?? "" : post.id;
+  const { data } = api.action.postActions.useQuery(
+    {
+      postId,
+    },
+    { refetchOnWindowFocus: false }
+  );
   const postRepost = data?.repost;
+  const { user: currentUser } = useUser();
+  function retweetPost() {
+    if (!postRepost?.some((repost) => repost.userId === currentUser?.id)) {
+      repost({ postId });
+    } else {
+      deleteRepost({ postId });
+    }
+  }
 
   return (
     <div className="flex w-full flex-1 text-accent" {...props}>
@@ -44,15 +53,7 @@ export const RepostTweet: React.FC<Omit<TweetProps, "author">> = ({
           variant="ghost"
           type="button"
           size="icon"
-          onClick={() => {
-            if (
-              !postRepost?.some((repost) => repost.userId === currentUser?.id)
-            ) {
-              repost({ postId: post.id });
-            } else {
-              deleteRepost({ postId: post.id });
-            }
-          }}
+          onClick={retweetPost}
           className={cn(
             "group/button z-10 -mr-2 flex border-2 transition-all ease-in last:mr-0",
             "hover:bg-[#00BA7C]/10 focus-visible:border-[#00BA7C]/50 focus-visible:bg-[#00BA7C]/10 group-hover:bg-[#00BA7C]/10"
