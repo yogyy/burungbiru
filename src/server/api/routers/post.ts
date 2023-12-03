@@ -47,11 +47,11 @@ export const postRouter = createTRPCRouter({
 
       if (post) {
         await ctx.prisma.repost.deleteMany({
-          where: { postId: post.repostId ?? input.id, userId: ctx.userId },
+          where: { postId: post.parentId ?? input.id, userId: ctx.userId },
         });
         await ctx.prisma.post.deleteMany({
           where: {
-            repostId: input.id,
+            parentId: input.id,
             authorId: ctx.userId,
             AND: { type: "REPOST" },
           },
@@ -63,6 +63,25 @@ export const postRouter = createTRPCRouter({
       return post;
     }),
 
+  postViews: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findUnique({
+        where: { id: input.id },
+        select: {
+          view: true,
+          replies: true,
+          likes: true,
+          bookmarks: true,
+          repost: true,
+        },
+      });
+
+      if (!post) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return post;
+    }),
+
   timeline: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
       orderBy: [{ createdAt: "desc" }],
@@ -70,6 +89,16 @@ export const postRouter = createTRPCRouter({
     });
     return addUserDataToPosts(posts);
   }),
+
+  parentPost: privateProcedure
+    .input(z.object({ parentId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.post
+        .findMany({
+          where: { id: input.parentId },
+        })
+        .then(addUserDataToPosts);
+    }),
 
   createPost: privateProcedure
     .input(tweetSchema)

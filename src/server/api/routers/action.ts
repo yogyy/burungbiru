@@ -41,9 +41,14 @@ export const actionRouter = createTRPCRouter({
       const repost = await ctx.prisma.repost.findMany({
         where: { postId: input.postId },
       });
+      const replies = await ctx.prisma.reply.findMany({
+        where: {
+          parentId: input.postId,
+        },
+      });
       if (!likes || !bookmarks) throw new TRPCError({ code: "NOT_FOUND" });
 
-      return { repost, likes, bookmarks };
+      return { repost, likes, bookmarks, replies };
     }),
 
   bookmarkPost: privateProcedure
@@ -85,7 +90,7 @@ export const actionRouter = createTRPCRouter({
             content: sourcePost.content,
             image: sourcePost.image,
             imageId: sourcePost.imageId,
-            repostId: sourcePost.id,
+            parentId: sourcePost.id,
             type: "REPOST",
             authorRepostId: authorId,
           },
@@ -98,7 +103,7 @@ export const actionRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.post.deleteMany({
         where: {
-          repostId: input.postId,
+          parentId: input.postId,
           authorId: ctx.userId,
           AND: { type: "REPOST" },
         },
@@ -127,6 +132,7 @@ export const actionRouter = createTRPCRouter({
           image: input.image?.secure_url,
           imageId: input.image?.public_id,
           type: input.type,
+          parentId: input.postId,
         },
       });
 

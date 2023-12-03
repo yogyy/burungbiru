@@ -23,6 +23,8 @@ const addUserDataToPosts = async (posts: Post[]) => {
 
   return posts.map((post) => {
     const author = users.find((user) => user.id === post.authorId);
+    const repostAuthor = users.find((user) => user.id === post.authorRepostId);
+
     if (!author)
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
@@ -35,6 +37,7 @@ const addUserDataToPosts = async (posts: Post[]) => {
         ...author,
         username: author.username,
       },
+      repostAuthor: { ...repostAuthor },
     };
   });
 };
