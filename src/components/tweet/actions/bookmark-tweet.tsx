@@ -7,12 +7,9 @@ import { TweetProps } from "../tweet-post";
 import { BookmarkIcon, BookmarkIconFill } from "~/components/icons";
 import { toast } from "react-hot-toast";
 
-export const BookmarkTweet: React.FC<Omit<TweetProps, "author">> = ({
-  variant,
-  className,
-  post,
-  ...props
-}) => {
+export const BookmarkTweet: React.FC<
+  Omit<TweetProps, "author" | "repostAuthor">
+> = ({ variant, className, post, ...props }) => {
   const [bookmarkBtn, setBookmarkBtn] = React.useState(false);
   const ctx = api.useUtils();
   const { mutateAsync: addToBookmark } = api.action.bookmarkPost.useMutation({
@@ -47,9 +44,12 @@ export const BookmarkTweet: React.FC<Omit<TweetProps, "author">> = ({
 
   const { user: currentUser } = useUser();
 
-  const { data } = api.action.postActions.useQuery({
-    postId: post.id,
-  });
+  const { data } = api.action.postActions.useQuery(
+    {
+      postId: post.id,
+    },
+    { refetchOnWindowFocus: false }
+  );
   const postBookmark = data?.bookmarks;
   return (
     <div
