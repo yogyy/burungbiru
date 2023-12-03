@@ -11,7 +11,7 @@ export const LikeTweet: React.FC<
 > = ({ variant, className, post }) => {
   const [likeBtn, setLikeBtn] = React.useState(false);
   const ctx = api.useUtils();
-  const postId = post.type === "REPOST" ? post.repostId ?? "" : post.id;
+  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
 
   const { mutate: like } = api.action.likePost.useMutation({
     onMutate() {

@@ -1,17 +1,17 @@
-import { useUser } from "@clerk/nextjs";
 import React from "react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import { api } from "~/utils/api";
 import { TweetProps } from "../tweet-post";
-import { AnalyticIcon, BookmarkIcon } from "~/components/icons";
+import { AnalyticIcon } from "~/components/icons";
+import { api } from "~/utils/api";
 
-export const AnalyticTweet: React.FC<Omit<TweetProps, "author">> = ({
-  variant,
-  className,
-  post,
-  ...props
-}) => {
+export const AnalyticTweet: React.FC<
+  Omit<TweetProps, "author" | "repostAuthor">
+> = ({ variant, className, post, ...props }) => {
+  const { data, isLoading } = api.post.postViews.useQuery({
+    id: post.type === "REPOST" ? post.parentId ?? "" : post.id,
+  });
+
   return (
     <div
       className={cn(
@@ -21,7 +21,9 @@ export const AnalyticTweet: React.FC<Omit<TweetProps, "author">> = ({
     >
       <div
         className="group flex items-center"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
         {...props}
       >
         <Button
@@ -48,7 +50,7 @@ export const AnalyticTweet: React.FC<Omit<TweetProps, "author">> = ({
             "font-normal transition duration-300 group-hover:text-primary group-focus:text-primary"
           )}
         >
-          ??
+          {data && data.view >= 1 && data.view}
         </span>
       </div>
     </div>

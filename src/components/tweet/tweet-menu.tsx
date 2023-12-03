@@ -36,7 +36,7 @@ export const TweetMenu: React.FC<
     onSuccess: () => {
       if (router.pathname === "/post/[id]") router.back();
       ctx.post.detailPost.invalidate({ id: post.id });
-      ctx.post.userPosts.invalidate();
+      ctx.profile.userPosts.invalidate();
       ctx.post.timeline
         .invalidate()
         .then(() => toast.success("Your post was deleted"));

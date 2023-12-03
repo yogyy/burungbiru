@@ -20,12 +20,14 @@ import { useIsClient } from "~/hooks/use-client";
 export const TweetTitle: React.FC<TweetProps> = ({
   author,
   post,
+  repostAuthor,
   variant,
   className,
   ...props
 }) => {
   const isClient = useIsClient();
   const onDekstop = useMediaQuery("(min-width: 768px)");
+  const authorPost = post.type === "POST" ? author : repostAuthor;
 
   return (
     <div
@@ -120,7 +122,7 @@ export const TweetTitle: React.FC<TweetProps> = ({
         ) : null}
       </div>
 
-      <TweetMenu post={post} author={author} />
+      <TweetMenu post={post} author={author} repostAuthor={repostAuthor} />
     </div>
   );
 };

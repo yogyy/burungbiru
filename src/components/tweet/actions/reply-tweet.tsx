@@ -1,17 +1,26 @@
-import { useUser } from "@clerk/nextjs";
 import React from "react";
-import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import { api } from "~/utils/api";
 import { TweetProps } from "../tweet-post";
 import { CommentIcon, LikeIcon } from "~/components/icons";
+import { ReplyPostModal } from "~/components/modal";
+import { api } from "~/utils/api";
 
-export const ReplyTweet: React.FC<Omit<TweetProps, "author">> = ({
+export const ReplyTweet: React.FC<TweetProps> = ({
   variant,
   className,
   post,
+  author,
+  repostAuthor,
   ...props
 }) => {
+  const { data } = api.action.postActions.useQuery(
+    {
+      postId: post.id,
+    },
+    { refetchOnWindowFocus: false }
+  );
+  const posteply = data?.replies;
+
   return (
     <div className="flex w-full flex-1 text-accent">
       <div
@@ -19,14 +28,11 @@ export const ReplyTweet: React.FC<Omit<TweetProps, "author">> = ({
         onClick={(e) => e.stopPropagation()}
         {...props}
       >
-        <Button
-          variant="ghost"
-          type="button"
-          size="icon"
-          className={cn(
-            "group/button z-10 -mr-2 flex border-2 transition-all ease-in last:mr-0",
-            "hover:bg-primary/10 focus-visible:border-primary/50 focus-visible:bg-primary/10 group-hover:bg-primary/10"
-          )}
+        <ReplyPostModal
+          author={author}
+          post={post}
+          repostAuthor={repostAuthor}
+          key={post.id}
         >
           <CommentIcon
             className={cn(
@@ -36,14 +42,14 @@ export const ReplyTweet: React.FC<Omit<TweetProps, "author">> = ({
             )}
           />
           <span className="sr-only">like</span>
-        </Button>
+        </ReplyPostModal>
         <span
           className={cn(
             "h-fit pl-0.5 font-sans text-[13px] leading-4 xs:px-2 md:cursor-pointer",
             "font-normal transition duration-300 group-hover:text-primary group-focus:text-primary"
           )}
         >
-          ??
+          {posteply && posteply?.length >= 1 && posteply?.length}
         </span>
       </div>
     </div>

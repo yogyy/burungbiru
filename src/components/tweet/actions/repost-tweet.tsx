@@ -26,7 +26,7 @@ export const RepostTweet: React.FC<
     },
   });
 
-  const postId = post.type === "REPOST" ? post.repostId ?? "" : post.id;
+  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { data } = api.action.postActions.useQuery(
     {
       postId,
