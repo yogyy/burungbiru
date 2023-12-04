@@ -16,7 +16,7 @@ const filterUserForClient = (user: User) => {
 const addUserDataToPosts = async (posts: Post[]) => {
   const users = (
     await clerkClient.users.getUserList({
-      userId: posts.map((post) => post.authorId),
+      userId: posts.map((post) => post.authorRepostId || post.authorId),
       limit: 100,
     })
   ).map(filterUserForClient);
