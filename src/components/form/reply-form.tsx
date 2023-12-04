@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { api } from "~/utils/api";
 import { z } from "zod";
@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { createTweetActions } from "~/constant";
-import { GlobeIcon, ImageIcon } from "../icons";
+import { ImageIcon } from "../icons";
 import { UserAvatar } from "../avatar";
 import {
   Form,
@@ -22,22 +22,9 @@ import { ImageModal } from "../modal/image-modal";
 import { useUploadImage } from "~/hooks/use-upload-img";
 import { uploadImage } from "~/lib/cloudinary";
 import { LuX } from "react-icons/lu";
-import { useReplyModal, useTweetModal } from "~/hooks/store";
 import { TweetProps } from "../tweet";
-
-const tweetSchema = z.object({
-  text: z
-    .string()
-    .min(1, { message: "tweet must contain at least 1 character(s)" }),
-  image: z
-    .object({
-      public_id: z.string(),
-      secure_url: z.string(),
-    })
-    .optional(),
-});
-
-type CreateTweetVariant = "default" | "modal";
+import { useTextarea } from "~/hooks/use-adjust-textarea";
+import { CreateTweetVariant, tweetSchema } from ".";
 
 type CommentForm = Pick<TweetProps, "post"> &
   React.FormHTMLAttributes<HTMLFormElement> & {
@@ -51,10 +38,10 @@ const CreateReply: React.FC<CommentForm> = ({
   post,
   ...props
 }) => {
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const { textareaRef, adjustTextareaHeight } = useTextarea();
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [submitBtn, setSubmitBtn] = useState(false);
-  //   const setTweetModal = useReplyModal((state) => state.setShow);
+  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { image, ImagePrev, setImagePrev, handleImageChange } =
     useUploadImage();
 
@@ -76,8 +63,10 @@ const CreateReply: React.FC<CommentForm> = ({
     onSuccess: () => {
       setImagePrev("");
       form.reset();
-      ctx.profile.userPosts.invalidate();
-      ctx.post.detailPost.invalidate({ id: post.id }).then(() => {
+      ctx.action.replies
+        .invalidate({ postId })
+        .then(() => ctx.post.postReplies.invalidate({ postId }));
+      ctx.post.detailPost.invalidate({ id: postId }).then(() => {
         adjustTextareaHeight();
       });
       if (!ImagePrev) toast.success("Your Post was sent.");
@@ -121,40 +110,19 @@ const CreateReply: React.FC<CommentForm> = ({
           secure_url: values.image?.secure_url || "",
         },
         type: "COMMENT",
-        postId: post.id,
+        postId,
       });
       setSubmitBtn((prev) => !prev);
     }
   }
 
-  function adjustTextareaHeight() {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight + 5}px`;
-  }
-
-  useEffect(() => {
-    const { current } = textareaRef;
-    if (!current) return;
-    current.addEventListener("input", adjustTextareaHeight);
-    adjustTextareaHeight();
-
-    return () => {
-      current.removeEventListener("input", adjustTextareaHeight);
-    };
-  }, [textareaRef]);
-
   if (!user) return null;
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn(
-          "relative flex w-full flex-col pb-2",
-          variant === "modal" && "px-4",
-          className
-        )}
+        className={cn("relative flex w-full flex-col pb-2", className)}
         {...props}
       >
         <FormField
@@ -169,11 +137,17 @@ const CreateReply: React.FC<CommentForm> = ({
                   : "max-h-[calc(100dvh_-_148px)] sm:max-h-[calc(90dvh_-_148px)]"
               )}
             >
-              <div className="relative flex h-auto w-auto items-start gap-4">
+              <div
+                className={cn(
+                  "relative flex h-auto w-auto items-start gap-4",
+                  "px-4 pt-1"
+                )}
+              >
                 <UserAvatar
                   username={user.username}
                   profileImg={user.imageUrl}
                   className="flex-shrink-0"
+                  // tabIndex={variant === "modal" ? -1 : 0}
                   onClick={(e) => {
                     variant === "modal" ? e.preventDefault() : null;
                   }}
@@ -234,7 +208,7 @@ const CreateReply: React.FC<CommentForm> = ({
           )}
         />
         <>
-          <div className="flex justify-between">
+          <div className="flex justify-between px-4">
             <div
               className={cn(
                 variant === "default" ? "ml-12" : "ml-0",

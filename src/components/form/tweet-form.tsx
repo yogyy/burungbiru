@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { api } from "~/utils/api";
 import { z } from "zod";
@@ -23,25 +23,14 @@ import { useUploadImage } from "~/hooks/use-upload-img";
 import { uploadImage } from "~/lib/cloudinary";
 import { LuX } from "react-icons/lu";
 import { useTweetModal } from "~/hooks/store";
-
-const tweetSchema = z.object({
-  text: z
-    .string()
-    .min(1, { message: "tweet must contain at least 1 character(s)" }),
-  image: z
-    .object({
-      public_id: z.string(),
-      secure_url: z.string(),
-    })
-    .optional(),
-});
-
-type CreateTweetVariant = "default" | "modal";
+import { useTextarea } from "~/hooks/use-adjust-textarea";
+import { CreateTweetVariant, tweetSchema } from ".";
 
 const CreateTweet: React.FC<
   React.FormHTMLAttributes<HTMLFormElement> & { variant?: CreateTweetVariant }
 > = ({ variant = "default", className, ...props }) => {
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const { textareaRef, adjustTextareaHeight } = useTextarea();
+
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [submitBtn, setSubmitBtn] = useState(false);
   const setTweetModal = useTweetModal((state) => state.setShow);
@@ -66,7 +55,7 @@ const CreateTweet: React.FC<
     onSuccess: () => {
       setImagePrev("");
       form.reset();
-      ctx.post.userPosts.invalidate();
+      ctx.profile.userPosts.invalidate();
       ctx.post.timeline.invalidate().then(() => {
         adjustTextareaHeight();
       });
@@ -109,30 +98,14 @@ const CreateTweet: React.FC<
           public_id: values.image?.public_id || "",
           secure_url: values.image?.secure_url || "",
         },
+        type: "POST",
       });
       setSubmitBtn((prev) => !prev);
     }
   }
 
-  function adjustTextareaHeight() {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight + 5}px`;
-  }
-
-  useEffect(() => {
-    const { current } = textareaRef;
-    if (!current) return;
-    current.addEventListener("input", adjustTextareaHeight);
-    adjustTextareaHeight();
-
-    return () => {
-      current.removeEventListener("input", adjustTextareaHeight);
-    };
-  }, [textareaRef]);
-
   if (!user) return null;
+
   return (
     <Form {...form}>
       <form
