@@ -25,10 +25,6 @@ model User {
   followers Follow[] @relation("Follower")
   following Follow[] @relation("Following")
 
-  post      Post[]
-  likes     Like[]
-  bookmarks Bookmark[]
-
   @@index([id, username])
 }
 
@@ -58,7 +54,6 @@ model Post {
   authorRepostId String?
   repost         Repost[]
   type           PostType   @default(POST)
-  user           User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   view           Int        @default(0)
 
   @@index([authorId, id])
@@ -92,7 +87,6 @@ model Like {
   userId    String
   postId    String
   post      Post     @relation("postLikes", fields: [postId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([postId])
@@ -104,7 +98,6 @@ model Bookmark {
   userId    String
   postId    String
   post      Post     @relation("postBookmarks", fields: [postId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
 
   @@index([postId])
   @@index([userId])
