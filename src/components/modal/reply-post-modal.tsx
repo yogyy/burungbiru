@@ -8,15 +8,13 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Button, ButtonProps } from "../ui/button";
-import { useReplyModal, useTweetModal } from "~/hooks/store";
 import { IoArrowBack, IoClose } from "react-icons/io5";
-import { CommentIcon, TweetIcon } from "../icons";
 import { cn } from "~/lib/utils";
-import dynamic from "next/dynamic";
 import { TweetPost, TweetProps } from "../tweet";
 import CreateReply from "../form/reply-form";
+import dynamic from "next/dynamic";
 
-const LazyForm = dynamic(() => import("~/components/form"));
+const LazyReplyForm = dynamic(() => import("~/components/form/reply-form"));
 
 type ReplyProps = ButtonProps & TweetProps;
 
@@ -59,10 +57,10 @@ export const ReplyPostModal: React.FC<ReplyProps> = ({
       >
         <DialogHeader className="relative flex flex-col space-y-0">
           <DialogDescription asChild>
-            <div className="sticky top-0 flex h-[53px] w-full items-center justify-between px-4 backdrop-blur-sm">
+            <div className="sticky top-0 z-20 flex h-[53px] w-full items-center justify-between px-4 backdrop-blur-sm">
               <button
                 onClick={() => setShow((prev) => !prev)}
-                className="-ml-2 flex h-9 w-9 items-center justify-center rounded-full focus-within:bg-[rgba(239,243,244,0.1)] hover:bg-[rgba(239,243,244,0.1)]"
+                className="-ml-2 flex h-9 w-9 items-center justify-center rounded-full  hover:bg-[rgba(239,243,244,0.1)]"
               >
                 <IoArrowBack size={26} className="block sm:hidden" />
                 <IoClose size={26} className="hidden sm:block" />
@@ -78,16 +76,15 @@ export const ReplyPostModal: React.FC<ReplyProps> = ({
               </DialogTitle>
             </div>
           </DialogDescription>
-          <div className="">
-            <TweetPost
-              author={author}
-              post={post}
-              repostAuthor={repostAuthor}
-              variant="parent"
-              className="border-none"
-            />
-          </div>
-          <CreateReply
+          <TweetPost
+            author={author}
+            post={post}
+            repostAuthor={repostAuthor}
+            variant="parent"
+            type="modal"
+            className="border-none"
+          />
+          <LazyReplyForm
             post={post}
             variant="modal"
             setShowReplyModal={setShow}
