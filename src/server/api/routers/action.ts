@@ -29,7 +29,7 @@ export const actionRouter = createTRPCRouter({
       return unlike;
     }),
 
-  postActions: publicProcedure
+  postActions: privateProcedure
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
       const likes = await ctx.prisma.like.findMany({
@@ -49,6 +49,52 @@ export const actionRouter = createTRPCRouter({
       if (!likes || !bookmarks) throw new TRPCError({ code: "NOT_FOUND" });
 
       return { repost, likes, bookmarks, replies };
+    }),
+
+  bookmarks: privateProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const bookmarks = await ctx.prisma.bookmark.findMany({
+        where: { postId: input.postId },
+      });
+      if (!bookmarks) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return bookmarks;
+    }),
+
+  reposts: privateProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const repost = await ctx.prisma.repost.findMany({
+        where: { postId: input.postId },
+      });
+      if (!repost) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return repost;
+    }),
+
+  likes: privateProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const likes = await ctx.prisma.like.findMany({
+        where: { postId: input.postId },
+      });
+      if (!likes) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return likes;
+    }),
+
+  replies: privateProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const replies = await ctx.prisma.reply.findMany({
+        where: {
+          parentId: input.postId,
+        },
+      });
+      if (!replies) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return replies;
     }),
 
   bookmarkPost: privateProcedure
