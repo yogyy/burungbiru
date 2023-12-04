@@ -39,7 +39,7 @@ export const ImageModal: React.FC<ImageProps> = ({
           width="600"
           height="400"
           alt={alt!}
-          className="max-h-[85vh] w-full rounded-md bg-red-600/60 bg-center object-contain p-0 xs:min-w-[382.5px]"
+          className="max-h-[85vh] w-full rounded-md bg-transparent bg-center object-contain p-0 xs:min-w-[382.5px]"
         />
       </DialogContent>
     </Dialog>
