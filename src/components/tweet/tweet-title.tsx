@@ -23,6 +23,7 @@ export const TweetTitle: React.FC<TweetProps> = ({
   repostAuthor,
   variant,
   className,
+  type,
   ...props
 }) => {
   const isClient = useIsClient();
@@ -40,7 +41,7 @@ export const TweetTitle: React.FC<TweetProps> = ({
       <div
         className={cn("flex flex-wrap", variant === "details" && "flex-col")}
       >
-        {isClient && onDekstop ? (
+        {isClient && onDekstop && type === "default" ? (
           <>
             <UserCard author={author}>
               <Link
@@ -91,7 +92,7 @@ export const TweetTitle: React.FC<TweetProps> = ({
             </Link>
           </>
         )}
-        {variant === "default" ? (
+        {variant !== "details" ? (
           <>
             <span className="px-1 text-[15px] leading-5 text-accent">·</span>
             <Link
@@ -121,8 +122,9 @@ export const TweetTitle: React.FC<TweetProps> = ({
           </>
         ) : null}
       </div>
-
-      <TweetMenu post={post} author={author} repostAuthor={repostAuthor} />
+      {type !== "modal" && (
+        <TweetMenu post={post} author={author} repostAuthor={repostAuthor} />
+      )}
     </div>
   );
 };
