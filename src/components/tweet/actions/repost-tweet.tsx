@@ -1,10 +1,9 @@
 import { useUser } from "@clerk/nextjs";
-import React from "react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
 import { TweetProps } from "../tweet-post";
-import { CommentIcon, LikeIcon, RetweetIcon } from "~/components/icons";
+import { RetweetIcon } from "~/components/icons";
 
 export const RepostTweet: React.FC<
   Omit<TweetProps, "author" | "repostAuthor">
@@ -13,7 +12,7 @@ export const RepostTweet: React.FC<
   const { mutateAsync: repost } = api.action.retweetPost.useMutation({
     onMutate() {},
     onSuccess() {
-      ctx.action.postActions.invalidate({ postId: post.id });
+      ctx.action.reposts.invalidate({ postId: post.id });
       ctx.post.timeline.invalidate();
       ctx.profile.userPosts.invalidate();
     },
@@ -21,19 +20,18 @@ export const RepostTweet: React.FC<
   const { mutateAsync: deleteRepost } = api.action.unretweetPost.useMutation({
     onMutate() {},
     onSuccess() {
-      ctx.action.postActions.invalidate({ postId: post.id });
+      ctx.action.reposts.invalidate({ postId: post.id });
       ctx.post.timeline.invalidate();
     },
   });
 
   const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
-  const { data } = api.action.postActions.useQuery(
+  const { data: postRepost } = api.action.reposts.useQuery(
     {
       postId,
     },
     { refetchOnWindowFocus: false }
   );
-  const postRepost = data?.repost;
   const { user: currentUser } = useUser();
   function retweetPost() {
     if (!postRepost?.some((repost) => repost.userId === currentUser?.id)) {

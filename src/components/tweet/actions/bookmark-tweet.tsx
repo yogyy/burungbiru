@@ -1,5 +1,4 @@
 import { useUser } from "@clerk/nextjs";
-import React from "react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
@@ -10,43 +9,32 @@ import { toast } from "react-hot-toast";
 export const BookmarkTweet: React.FC<
   Omit<TweetProps, "author" | "repostAuthor">
 > = ({ variant, className, post, ...props }) => {
-  const [bookmarkBtn, setBookmarkBtn] = React.useState(false);
   const ctx = api.useUtils();
-  const { mutateAsync: addToBookmark } = api.action.bookmarkPost.useMutation({
-    onMutate() {
-      setBookmarkBtn((prev) => !prev);
-    },
+  const { mutate: addToBookmark } = api.action.bookmarkPost.useMutation({
     onSuccess() {
-      setBookmarkBtn((prev) => !prev);
-      ctx.action.postActions.invalidate({ postId: post.id });
+      ctx.action.bookmarks.invalidate({ postId: post.id });
+      ctx.post.interactions.invalidate({ id: post.id });
       toast.success("Added to your Bookmarks", {
         id: `${post.id}-addbookmark`,
       });
     },
   });
-  const { mutateAsync: deleteBookmark } = api.action.unbookmarkPost.useMutation(
-    {
-      onMutate() {
-        setBookmarkBtn((prev) => !prev);
-      },
-      onSuccess() {
-        // console.log(data);
-        setBookmarkBtn((prev) => !prev);
-        ctx.action.postActions.invalidate({ postId: post.id });
-        ctx.profile.userBookmarkedPosts.invalidate().then(() =>
-          toast.success("Removed from your Bookmarks", {
-            id: `${post.id}-removebookmark`,
-          })
-        );
-      },
-    }
-  );
+  const { mutate: deleteBookmark } = api.action.unbookmarkPost.useMutation({
+    onSuccess() {
+      ctx.post.interactions.invalidate({ id: post.id });
+      ctx.profile.userBookmarkedPosts.invalidate().then(() =>
+        toast.success("Removed from your Bookmarks", {
+          id: `${post.id}-removebookmark`,
+        })
+      );
+    },
+  });
 
   const { user: currentUser } = useUser();
 
-  const { data } = api.action.postActions.useQuery(
+  const { data } = api.post.interactions.useQuery(
     {
-      postId: post.id,
+      id: post.id,
     },
     { refetchOnWindowFocus: false }
   );
@@ -65,7 +53,6 @@ export const BookmarkTweet: React.FC<
       >
         <Button
           variant="ghost"
-          disabled={bookmarkBtn}
           onClick={() => {
             if (
               !postBookmark?.some((mark) => mark.userId === currentUser?.id)

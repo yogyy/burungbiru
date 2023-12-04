@@ -1,7 +1,6 @@
-import React from "react";
 import { cn } from "~/lib/utils";
 import { TweetProps } from "../tweet-post";
-import { CommentIcon, LikeIcon } from "~/components/icons";
+import { CommentIcon } from "~/components/icons";
 import { ReplyPostModal } from "~/components/modal";
 import { api } from "~/utils/api";
 
@@ -13,13 +12,12 @@ export const ReplyTweet: React.FC<TweetProps> = ({
   repostAuthor,
   ...props
 }) => {
-  const { data } = api.action.postActions.useQuery(
+  const { data: replies } = api.action.replies.useQuery(
     {
       postId: post.id,
     },
     { refetchOnWindowFocus: false }
   );
-  const posteply = data?.replies;
 
   return (
     <div className="flex w-full flex-1 text-accent">
@@ -49,7 +47,7 @@ export const ReplyTweet: React.FC<TweetProps> = ({
             "font-normal transition duration-300 group-hover:text-primary group-focus:text-primary"
           )}
         >
-          {posteply && posteply?.length >= 1 && posteply?.length}
+          {replies && replies?.length >= 1 && replies?.length}
         </span>
       </div>
     </div>

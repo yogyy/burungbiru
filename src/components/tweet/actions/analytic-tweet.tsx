@@ -8,9 +8,14 @@ import { api } from "~/utils/api";
 export const AnalyticTweet: React.FC<
   Omit<TweetProps, "author" | "repostAuthor">
 > = ({ variant, className, post, ...props }) => {
-  const { data, isLoading } = api.post.postViews.useQuery({
-    id: post.type === "REPOST" ? post.parentId ?? "" : post.id,
-  });
+  const { data, isLoading } = api.post.interactions.useQuery(
+    {
+      id: post.type === "REPOST" ? post.parentId ?? "" : post.id,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <div

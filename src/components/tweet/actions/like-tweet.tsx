@@ -18,9 +18,8 @@ export const LikeTweet: React.FC<
       setLikeBtn((prev) => !prev);
     },
     onSuccess() {
-      // console.log(data);
       setLikeBtn((prev) => !prev);
-      ctx.action.postActions.invalidate({ postId });
+      ctx.action.likes.invalidate({ postId });
     },
   });
   const { mutate: unlike } = api.action.unlikePost.useMutation({
@@ -29,21 +28,19 @@ export const LikeTweet: React.FC<
     },
     onSuccess() {
       setLikeBtn((prev) => !prev);
-      ctx.action.postActions
+      ctx.action.likes
         .invalidate({ postId })
         .then(() => ctx.profile.userLikedPosts.invalidate());
     },
   });
   const { user: currentUser } = useUser();
 
-  const { data } = api.action.postActions.useQuery(
+  const { data: postLike } = api.action.likes.useQuery(
     {
       postId,
     },
     { refetchOnWindowFocus: false }
   );
-
-  const postLike = data?.likes;
 
   function LikePost() {
     if (!postLike?.some((like) => like.userId === currentUser?.id)) {
