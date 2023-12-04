@@ -25,7 +25,7 @@ import {
 } from "~/components/ui/tooltip";
 import { AnalyticIcon } from "~/components/icons";
 import { Feed, PageLayout } from "~/components/layouts";
-import { LoadingSpinner } from "~/components/loading";
+import { LoadingItem } from "~/components/loading";
 import CreateReply from "~/components/form/reply-form";
 
 const SinglePostPage = ({
@@ -44,12 +44,9 @@ const SinglePostPage = ({
   const { data: replies, isLoading: repliesloading } =
     api.post.postReplies.useQuery({ postId: post.id });
 
-  const { data: parent } = api.post.parentPost.useQuery(
-    {
-      parentId: post.parentId ?? "",
-    },
-    { refetchOnWindowFocus: false }
-  );
+  const { data: parent } = api.post.parentPost.useQuery({
+    parentId: post.parentId ?? "",
+  });
 
   return (
     <>
@@ -69,37 +66,28 @@ const SinglePostPage = ({
               "relative w-full max-w-full border-b border-border outline-none"
             )}
           >
-            {post.type === "COMMENT" && (
-              <>
-                {/* <pre className="w-full overflow-x-scroll">
-                  {JSON.stringify(parent, null, 2)}
-                </pre>{" "} */}
-                {parent?.map((i) => (
-                  <TweetPost
-                    author={i.author}
-                    post={i.post}
-                    repostAuthor={i.repostAuthor}
-                    key={i.post.id}
-                    className={cn(
-                      "focus-wihtin:bg-white/[.03] border-none hover:bg-white/[.03]",
-                      "group/post transition-colors duration-200 ease-linear"
-                    )}
-                    variant="parent"
-                  />
-                ))}
-              </>
-            )}
+            {post.type === "COMMENT" &&
+              parent?.map((i) => (
+                <TweetPost
+                  author={i.author}
+                  post={i.post}
+                  repostAuthor={i.repostAuthor}
+                  key={i.post.id}
+                  className={cn(
+                    "focus-wihtin:bg-white/[.03] border-none hover:bg-white/[.03]",
+                    "group/post transition-colors duration-200 ease-linear"
+                  )}
+                  variant="parent"
+                />
+              ))}
             {isLoading ? (
-              <div className="flex h-20 items-center justify-center">
-                <LoadingSpinner size={24} />
-              </div>
+              <LoadingItem />
             ) : (
               <div
-                className="relative flex w-full scroll-mt-[52px] flex-col px-4"
-                onClick={() => console.log(post)}
+                className="relative flex w-full scroll-mt-[52px] flex-col"
                 id={post.type.toLowerCase()}
               >
-                <div className="flex">
+                <div className="flex px-4">
                   <div className="mr-3 flex flex-shrink-0 basis-10 flex-col">
                     <div
                       className={cn(
@@ -126,7 +114,7 @@ const SinglePostPage = ({
                     className=" pt-3"
                   />
                 </div>
-                <div className="relative mt-3 w-full flex-col">
+                <div className="relative mt-3 w-full flex-col px-4">
                   <div className="flex w-fit justify-start">
                     <TweetText
                       content={renderText(post.content)}
@@ -142,6 +130,7 @@ const SinglePostPage = ({
                             alt={`${post.id}'s image`}
                             width="600"
                             height="400"
+                            priority
                             className="h-full w-full object-contain object-center"
                           />
                         </div>
@@ -180,13 +169,10 @@ const SinglePostPage = ({
                     </p>
                   </div>
                   {currentUser?.id === post.authorId ? (
-                    <Link
-                      href={`#comment`}
-                      className="flex w-full border-y py-3 text-[15px] leading-5 text-accent hover:bg-white/[.03]"
-                    >
+                    <button className="flex w-full border-y py-3 text-[15px] leading-5 text-accent hover:bg-white/[.03]">
                       <AnalyticIcon className="h-5 w-5 fill-accent" />
                       &nbsp;<span>View post engagements</span>
-                    </Link>
+                    </button>
                   ) : null}
                   <TweetAction
                     post={post}
@@ -195,21 +181,18 @@ const SinglePostPage = ({
                     repostAuthor={repostAuthor}
                   />
                   <hr className="border-1 mb-1 mt-3" />
-                  <p className="ml-14 text-[15px] leading-5 text-accent">
-                    Replyign to&nbsp;
-                    <span className="text-primary">{`@${author.username}`}</span>
-                  </p>
-                  <CreateReply post={post} />
+                  {!repliesloading && (
+                    <p className="ml-14 text-[15px] leading-5 text-accent">
+                      Replyign to&nbsp;
+                      <span className="text-primary">{`@${author.username}`}</span>
+                    </p>
+                  )}
                 </div>
+                {!repliesloading && <CreateReply post={post} />}
               </div>
             )}
           </div>
-          {!repliesloading && replies && replies?.length !== 0 ? (
-            <Feed post={replies} postLoading={repliesloading} />
-          ) : null}
-          {/* <pre className="w-full overflow-x-scroll"> */}
-          {/* {JSON.stringify(replies, null, 2)} */}
-          {/* </pre> */}
+          <Feed post={replies} postLoading={repliesloading} />
           <div className="h-[90vh]" />
         </div>
       </PageLayout>
@@ -219,21 +202,6 @@ const SinglePostPage = ({
 
 export default SinglePostPage;
 
-// export const getServerSideProps = async (
-//   ctx: GetServerSidePropsContext<{ id: string }>
-// ) => {
-//   const ssg = generateSSGHelper();
-//   const id = ctx.params?.id as string;
-
-//   await ssg.post.detailPost.prefetch({ id });
-
-//   return {
-//     props: {
-//       trpcState: ssg.dehydrate(),
-//       id,
-//     },
-//   };
-// };
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = generateSSGHelper();
 
