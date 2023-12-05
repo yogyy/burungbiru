@@ -19,7 +19,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-[rgba(91,112,131,0.4)] duration-100 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-[rgb(91,112,131,0.4)] duration-100 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
     {...props}
@@ -31,10 +31,11 @@ const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     close?: boolean;
+    overlayClassName?: string | undefined;
   }
->(({ className, children, close = false, ...props }, ref) => (
+>(({ className, children, close = false, overlayClassName, ...props }, ref) => (
   <DialogPortal>
-    <DialogOverlay />
+    <DialogOverlay className={overlayClassName} />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
@@ -45,7 +46,7 @@ const DialogContent = React.forwardRef<
     >
       {children}
       {close ? (
-        <DialogPrimitive.Close className="focus:ring-ring data-[state=open]:text-muted-foreground fixed right-4 top-4 rounded-full p-1 opacity-70 ring-offset-background transition-opacity hover:bg-background hover:opacity-100 focus:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent">
+        <DialogPrimitive.Close className="focus:ring-ring data-[state=open]:text-muted-foreground fixed left-4 top-4 rounded-full p-1 opacity-70 ring-offset-background transition-opacity hover:bg-background hover:opacity-100 focus:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent md:hidden">
           <LuX className="h-5 w-5" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>

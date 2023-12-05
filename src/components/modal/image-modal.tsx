@@ -1,6 +1,5 @@
-// /* eslint-disable @next/next/no-img-element */
 import Image, { ImageProps } from "next/image";
-import React, { useState } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,13 +14,13 @@ export const ImageModal: React.FC<ImageProps> = ({
   className,
   ...props
 }) => {
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = React.useState(false);
   return (
     <Dialog open={showModal} onOpenChange={setShowModal}>
       <DialogTrigger asChild>
         <Image
-          src={src as string}
-          alt={alt as string}
+          src={src || ""}
+          alt={alt || ""}
           className={cn("cursor-pointer object-cover", className)}
           {...props}
         />
@@ -33,11 +32,14 @@ export const ImageModal: React.FC<ImageProps> = ({
       <DialogContent
         close
         className="h-full w-screen min-w-fit max-w-max items-center overflow-hidden rounded-md border-none border-transparent bg-transparent shadow-none outline-none md:h-auto [&>button]:bg-background"
+        overlayClassName="bg-background/80"
       >
         <Image
-          src={src!}
+          src={src || ""}
+          width="600"
+          height="400"
           alt={alt!}
-          className="max-h-screen w-full rounded-md bg-background/60 bg-center object-contain p-0 xs:min-w-[382.5px]"
+          className="max-h-[85vh] w-full rounded-md bg-red-600/60 bg-center object-contain p-0 xs:min-w-[382.5px]"
         />
       </DialogContent>
     </Dialog>

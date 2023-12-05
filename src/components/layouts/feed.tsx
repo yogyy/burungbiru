@@ -1,30 +1,27 @@
-import React from "react";
 import { LoadingSpinner } from "../loading";
 import { RouterOutputs } from "~/utils/api";
 import { useRouter } from "next/navigation";
 import { cn } from "~/lib/utils";
 import { TweetPost } from "../tweet";
 
-type FeedType = {
-  post: RouterOutputs["posts"]["getAll"];
+export const Feed: React.FC<{
+  post: RouterOutputs["post"]["timeline"] | undefined;
   postLoading: boolean;
-};
-
-const Feed = ({ post, postLoading }: FeedType) => {
+}> = ({ post, postLoading }) => {
   const router = useRouter();
   return (
     <div className="h-auto w-full">
-      {postLoading === true ? (
-        <div className="flex h-screen items-center justify-center">
-          <LoadingSpinner size={60} />
+      {postLoading ? (
+        <div className="flex h-20 items-center justify-center">
+          <LoadingSpinner size={24} />
         </div>
       ) : (
-        post.map((fullPost) => (
+        post?.map((fullPost) => (
           <TweetPost
             variant="default"
             {...fullPost}
             key={fullPost.post.id}
-            onClick={(e) => {
+            onClick={() => {
               router.push(`/post/${fullPost.post.id}`);
             }}
             className={cn(
@@ -37,5 +34,3 @@ const Feed = ({ post, postLoading }: FeedType) => {
     </div>
   );
 };
-
-export default Feed;

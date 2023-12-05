@@ -1,6 +1,4 @@
-import { z } from "zod";
-
-type FileUploadInfo = {
+interface FileUploadInfo {
   event: string;
   info: {
     access_mode: string;
@@ -28,6 +26,6 @@ type FileUploadInfo = {
     version_id: string;
     width: number;
   };
-};
+}
 
 export type { FileUploadInfo };

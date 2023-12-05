@@ -1,8 +1,8 @@
 {
   "git": {
     "deploymentEnabled": {
-      "main": false,
-      "before-using-drizzle": true
+      "main": true,
+      "before-using-drizzle": false
     }
   }
 }

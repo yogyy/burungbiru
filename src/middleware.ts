@@ -2,10 +2,17 @@ import { authMiddleware } from "@clerk/nextjs/server";
 
 export default authMiddleware({
   publicRoutes: [
-    "/api/trpc/posts.getAll",
+    "/api/trpc/post.timeline",
     "/api/trpc/profile.getUserRandomUser",
+    "/api/trpc/profile.getUserRandomUser,post.timeline",
+    "/api/trpc/post.timeline,profile.getUserRandomUser",
   ],
-  ignoredRoutes: ["/android-chrome-192x192.png", "/favicon-32x32.png"],
+  ignoredRoutes: [
+    "/favicon.ico",
+    "/fonts/chirp-medium-web.woff",
+    "/fonts/chirp-bold-web.woff",
+    "/fonts/chirp-regular-web.woff",
+  ],
 });
 
 export const config = {

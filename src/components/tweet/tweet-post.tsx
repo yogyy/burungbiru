@@ -1,31 +1,26 @@
 import Image from "next/image";
 import { RouterOutputs } from "~/utils/api";
-import LocalizedFormat from "dayjs/plugin/localizedFormat";
-import dayjs from "dayjs";
-import { useUser } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { renderText } from "~/lib/tweet";
-import { TweetTitle } from "./tweet-title";
-import { TweetText } from "./tweet-text";
-import { TweetAction } from "./tweet-action";
 import { UserCard } from "../user-hover-card";
-import { ImageModal } from "../modal/image-modal";
+import { ImageModal } from "../modal";
+import { TweetTitle, TweetText, TweetAction } from "./";
+import dayjs from "dayjs";
+import LocalizedFormat from "dayjs/plugin/localizedFormat";
 dayjs.extend(LocalizedFormat);
 
 type VariantTweet = "default" | "details";
 
-export type TweetType = RouterOutputs["posts"]["getAll"][number] &
+export type TweetProps = RouterOutputs["post"]["timeline"][number] &
   React.HTMLAttributes<HTMLDivElement> & { variant?: VariantTweet };
 
-export const TweetPost: React.FC<TweetType> = ({
+export const TweetPost: React.FC<TweetProps> = ({
   post,
   author,
   variant = "default",
   className,
   ...props
 }) => {
-  const { user } = useUser();
-
   return (
     <div
       key={post.id}
@@ -39,8 +34,8 @@ export const TweetPost: React.FC<TweetType> = ({
         <div className="mt-2 h-auto w-10 flex-shrink-0 basis-10">
           <UserCard author={author}>
             <Image
-              width={40}
-              height={40}
+              width="40"
+              height="40"
               draggable={false}
               src={author.profileImg}
               alt={`@${author.username || author.lastName}'s profile picture`}
@@ -58,18 +53,23 @@ export const TweetPost: React.FC<TweetType> = ({
               className="relative flex h-fit w-full xs:w-fit"
               onClick={(e) => e.stopPropagation()}
             >
-              <button className="relative mt-3 flex w-full items-start justify-center overflow-hidden rounded-2xl border xs:w-fit">
-                <div className="relative h-full w-fit max-w-full transition-colors duration-200 hover:bg-secondary xs:w-full">
+              <button
+                className="relative mt-3 flex w-full items-start justify-center overflow-hidden rounded-2xl border xs:w-fit"
+                type="button"
+              >
+                <div className="relative h-full w-full max-w-full transition-colors duration-200 hover:bg-secondary">
                   <ImageModal
-                    src={post.image as string}
-                    alt="test"
+                    src={post.image}
+                    width="600"
+                    height="400"
+                    alt={`${author.username}'s image`}
                     className="max-h-[510px] w-full object-cover xs:min-w-[382.5px]"
                   />
                 </div>
               </button>
             </div>
           ) : null}
-          <TweetAction />
+          <TweetAction variant={variant} />
         </div>
       </div>
     </div>
