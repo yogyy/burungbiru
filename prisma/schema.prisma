@@ -11,13 +11,100 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id        String   @id @unique
+  name      String   @db.Char(50)
+  username  String   @unique @db.Char(15)
+  imageUrl  String
+  bannerUrl String?
+  bio       String?  @db.Char(160)
+  location  String?  @db.Char(30)
+  website   String?  @db.Char(100)
+  createdAt DateTime
+  updatedAt DateTime @updatedAt
+  followers Follow[] @relation("Follower")
+  following Follow[] @relation("Following")
+
+  @@index([id, username])
+}
+
+model Follow {
+  id          String @id @default(uuid())
+  followerId  String
+  followingId String
+
+  user      User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@index([followerId])
+  @@index([followingId])
+}
+
 model Post {
+  id             String     @id @default(cuid())
+  createdAt      DateTime   @default(now())
+  content        String     @db.VarChar(255)
+  image          String?
+  imageId        String?
+  authorId       String
+  replies        Reply[]    @relation("postReplies")
+  likes          Like[]     @relation("postLikes")
+  bookmarks      Bookmark[] @relation("postBookmarks")
+  parentId       String?
+  authorRepostId String?
+  repost         Repost[]
+  type           PostType   @default(POST)
+  view           Int        @default(0)
+
+  @@index([authorId, id])
+}
+
+model Repost {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
-  content   String   @db.VarChar(255)
-  image     String?
-  imageId   String?
-  authorId  String
+  userId    String
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-  @@index([authorId])
+  @@index([postId])
+}
+
+model Reply {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  userId    String
+  parentId  String
+  postId    String
+  post      Post     @relation("postReplies", fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([parentId])
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  userId    String
+  postId    String
+  post      Post     @relation("postLikes", fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([postId])
+}
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  userId    String
+  postId    String
+  post      Post     @relation("postBookmarks", fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([userId])
+}
+
+enum PostType {
+  POST
+  REPOST
+  COMMENT
 }

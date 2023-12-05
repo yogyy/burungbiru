@@ -6,7 +6,7 @@ const navbarLink = [
   { name: "Notifications", icon: icon.BellIcon, link: "/#notification" },
   { name: "Messages", icon: icon.MessageIcon, link: "#messages" },
   { name: "Lists", icon: icon.ListIcon, link: "/#list" },
-  { name: "Bookmarks", icon: icon.BookmarkIcon, link: "#bookmark" },
+  { name: "Bookmarks", icon: icon.BookmarkIcon, link: "/i/bookmarks" },
   { name: "Communities", icon: icon.GroupIcon, link: "/#group" },
   { name: "Premium", icon: icon.LogoIcon, link: "/#premium" },
   { name: "Profile", icon: icon.PersonIcon, link: "/profile" },
@@ -25,7 +25,7 @@ const hamburgerNavbarLink = [
 const userMenu = [
   { name: "Posts", href: "" },
   { name: "Replies", href: "/with_replies" },
-  { name: "Highlights", href: "/hightlights" },
+  { name: "Highlights", href: "/highlights" },
   { name: "Media", href: "/media" },
   { name: "Likes", href: "/likes" },
 ];

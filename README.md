@@ -26,8 +26,6 @@ This web application is built using the T3 Stack, incorporating Next.js, Tailwin
 
 
 ## Usage
-- Provide instructions on how to use your application.
-- Include any configuration steps if necessary.
 
 ```bash
 cp .env.example .env
@@ -36,6 +34,7 @@ cp .env.example .env
 ## Technologies
 - [Next.js](https://nextjs.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
 - [tRPC](https://trpc.io/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Prisma](https://www.prisma.io/)

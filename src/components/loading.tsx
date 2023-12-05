@@ -1,4 +1,4 @@
-export const LoadingSpinner = (props: { size?: number }) => {
+const LoadingSpinner = (props: { size?: number }) => {
   return (
     <div role="status">
       <svg
@@ -24,10 +24,20 @@ export const LoadingSpinner = (props: { size?: number }) => {
   );
 };
 
-export const LoadingPage = () => {
+const LoadingItem = () => {
+  return (
+    <div className="flex h-20 items-center justify-center">
+      <LoadingSpinner size={24} />
+    </div>
+  );
+};
+
+const LoadingPage = () => {
   return (
     <div className="fixed right-0 top-0 flex h-[110vh] w-screen items-center justify-center">
       <LoadingSpinner size={60} />
     </div>
   );
 };
+
+export { LoadingItem, LoadingPage, LoadingSpinner };

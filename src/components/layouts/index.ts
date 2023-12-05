@@ -4,3 +4,4 @@ export * from "./hamburger-menu";
 export * from "./mobile-navbar";
 export * from "./navbar";
 export * from "./root-layout";
+export * from "./user-layout";

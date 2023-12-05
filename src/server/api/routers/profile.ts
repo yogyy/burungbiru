@@ -2,8 +2,15 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { filterUserForClient } from "~/server/helper/filterforClient";
+import {
+  createTRPCRouter,
+  privateProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
+import {
+  addUserDataToPosts,
+  filterUserForClient,
+} from "~/server/helper/dbHelper";
 
 export const profileRouter = createTRPCRouter({
   getUserByUsername: publicProcedure
@@ -32,4 +39,78 @@ export const profileRouter = createTRPCRouter({
 
     return users;
   }),
+
+  userPosts: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .query(({ ctx, input }) =>
+      ctx.prisma.post
+        .findMany({
+          include: { repost: true },
+          where: {
+            OR: [
+              { type: "POST", authorId: input.userId },
+              { type: "REPOST", authorRepostId: input.userId },
+            ],
+          },
+          orderBy: [{ createdAt: "desc" }],
+        })
+        .then(addUserDataToPosts)
+    ),
+
+  userPostwithMedia: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const media = await ctx.prisma.post.findMany({
+        where: { authorId: input.userId, NOT: { image: "" } },
+      });
+      return addUserDataToPosts(media);
+    }),
+
+  userLikedPosts: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.like
+        .findMany({
+          where: { userId: input.userId },
+          orderBy: [{ createdAt: "asc" }],
+          include: {
+            post: true,
+          },
+        })
+        .then((liked) => liked.map((like) => like.post))
+        .then(addUserDataToPosts);
+    }),
+
+  userBookmarkedPosts: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const bookmark = await ctx.prisma.post.findMany({
+        where: {
+          bookmarks: { some: { userId: input.userId } },
+        },
+        orderBy: [{ createdAt: "desc" }],
+      });
+      return addUserDataToPosts(bookmark);
+    }),
+
+  userActions: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const likes = await ctx.prisma.like.findMany({
+        where: { userId: input.userId },
+      });
+      const bookmarks = await ctx.prisma.bookmark.findMany({
+        where: { userId: input.userId },
+      });
+      const repost = await ctx.prisma.repost.findMany({
+        where: { userId: input.userId },
+      });
+      if (!likes || !bookmarks) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return { repost, likes, bookmarks };
+    }),
 });

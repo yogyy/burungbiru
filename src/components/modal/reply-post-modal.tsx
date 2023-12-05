@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,22 +8,28 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Button, ButtonProps } from "../ui/button";
-import { useTweetModal } from "~/hooks/store";
 import { IoArrowBack, IoClose } from "react-icons/io5";
-import { TweetIcon } from "../icons";
 import { cn } from "~/lib/utils";
+import { TweetPost, TweetProps } from "../tweet";
+import CreateReply from "../form/reply-form";
 import dynamic from "next/dynamic";
 
-const LazyForm = dynamic(() => import("~/components/form"));
+const LazyReplyForm = dynamic(() => import("~/components/form/reply-form"));
 
-export const CreatePostModal: React.FC<ButtonProps> = ({
+type ReplyProps = ButtonProps & TweetProps;
+
+export const ReplyPostModal: React.FC<ReplyProps> = ({
   className,
+  children,
+  author,
+  post,
+  repostAuthor,
   ...props
 }) => {
-  const { show, setShow } = useTweetModal();
+  const [show, setShow] = useState(false);
 
   return (
-    <Dialog open={show} onOpenChange={setShow}>
+    <Dialog open={show} onOpenChange={setShow} key={post.id}>
       <DialogTrigger
         asChild
         onClick={(e) => {
@@ -31,16 +37,15 @@ export const CreatePostModal: React.FC<ButtonProps> = ({
         }}
       >
         <Button
+          variant="ghost"
           type="button"
-          variant="default"
+          size="icon"
           className={cn(
-            "h-[50px] w-[50px] rounded-full p-0 font-semibold xl:min-h-[52px] xl:w-full xl:min-w-[52px]",
-            className
+            "group/button z-10 -mr-2 flex border-2 transition-all ease-in last:mr-0",
+            "hover:bg-primary/10 focus-visible:border-primary/50 focus-visible:bg-primary/10 group-hover:bg-primary/10"
           )}
-          {...props}
         >
-          <TweetIcon size={24} className="block fill-foreground xl:hidden" />
-          <span className="hidden text-[17px] xl:block">Post</span>
+          {children}
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -50,13 +55,12 @@ export const CreatePostModal: React.FC<ButtonProps> = ({
           "max-[570px]:data-[state=open]:!slide-in-from-bottom-[48%]"
         )}
       >
-        <DialogHeader className="relative flex flex-col-reverse space-y-0">
-          <LazyForm variant="modal" />
+        <DialogHeader className="relative flex flex-col space-y-0">
           <DialogDescription asChild>
-            <div className="sticky top-0 flex h-[53px] w-full items-center justify-between bg-background/10 px-4 backdrop-blur-sm">
+            <div className="sticky top-0 z-20 flex h-[53px] w-full items-center justify-between px-4 backdrop-blur-sm">
               <button
                 onClick={() => setShow((prev) => !prev)}
-                className="-ml-2 flex h-9 w-9 items-center justify-center rounded-full focus-within:bg-[rgba(239,243,244,0.1)] hover:bg-[rgba(239,243,244,0.1)]"
+                className="-ml-2 flex h-9 w-9 items-center justify-center rounded-full  hover:bg-[rgba(239,243,244,0.1)]"
               >
                 <IoArrowBack size={26} className="block sm:hidden" />
                 <IoClose size={26} className="hidden sm:block" />
@@ -72,6 +76,19 @@ export const CreatePostModal: React.FC<ButtonProps> = ({
               </DialogTitle>
             </div>
           </DialogDescription>
+          <TweetPost
+            author={author}
+            post={post}
+            repostAuthor={repostAuthor}
+            variant="parent"
+            type="modal"
+            className="border-none"
+          />
+          <LazyReplyForm
+            post={post}
+            variant="modal"
+            setShowReplyModal={setShow}
+          />
         </DialogHeader>
       </DialogContent>
     </Dialog>

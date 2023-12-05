@@ -20,12 +20,15 @@ import { useIsClient } from "~/hooks/use-client";
 export const TweetTitle: React.FC<TweetProps> = ({
   author,
   post,
+  repostAuthor,
   variant,
   className,
+  type,
   ...props
 }) => {
   const isClient = useIsClient();
   const onDekstop = useMediaQuery("(min-width: 768px)");
+  const authorPost = post.type === "POST" ? author : repostAuthor;
 
   return (
     <div
@@ -38,7 +41,7 @@ export const TweetTitle: React.FC<TweetProps> = ({
       <div
         className={cn("flex flex-wrap", variant === "details" && "flex-col")}
       >
-        {isClient && onDekstop ? (
+        {isClient && onDekstop && type === "default" ? (
           <>
             <UserCard author={author}>
               <Link
@@ -89,7 +92,7 @@ export const TweetTitle: React.FC<TweetProps> = ({
             </Link>
           </>
         )}
-        {variant === "default" ? (
+        {variant !== "details" ? (
           <>
             <span className="px-1 text-[15px] leading-5 text-accent">·</span>
             <Link
@@ -119,8 +122,9 @@ export const TweetTitle: React.FC<TweetProps> = ({
           </>
         ) : null}
       </div>
-
-      <TweetMenu post={post} author={author} />
+      {type !== "modal" && (
+        <TweetMenu post={post} author={author} repostAuthor={repostAuthor} />
+      )}
     </div>
   );
 };

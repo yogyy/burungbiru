@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { createTweetActions } from "~/constant";
-import { GlobeIcon, ImageIcon } from "../icons";
+import { ImageIcon } from "../icons";
 import { UserAvatar } from "../avatar";
 import {
   Form,
@@ -22,18 +22,26 @@ import { ImageModal } from "../modal/image-modal";
 import { useUploadImage } from "~/hooks/use-upload-img";
 import { uploadImage } from "~/lib/cloudinary";
 import { LuX } from "react-icons/lu";
-import { useTweetModal } from "~/hooks/store";
+import { TweetProps } from "../tweet";
 import { useTextarea } from "~/hooks/use-adjust-textarea";
 import { CreateTweetVariant, tweetSchema } from ".";
 
-const CreateTweet: React.FC<
-  React.FormHTMLAttributes<HTMLFormElement> & { variant?: CreateTweetVariant }
-> = ({ variant = "default", className, ...props }) => {
-  const { textareaRef, adjustTextareaHeight } = useTextarea();
+type CommentForm = Pick<TweetProps, "post"> &
+  React.FormHTMLAttributes<HTMLFormElement> & {
+    variant?: CreateTweetVariant;
+  } & { setShowReplyModal?: React.Dispatch<React.SetStateAction<boolean>> };
 
+const CreateReply: React.FC<CommentForm> = ({
+  variant = "default",
+  className,
+  setShowReplyModal,
+  post,
+  ...props
+}) => {
+  const { textareaRef, adjustTextareaHeight } = useTextarea();
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [submitBtn, setSubmitBtn] = useState(false);
-  const setTweetModal = useTweetModal((state) => state.setShow);
+  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { image, ImagePrev, setImagePrev, handleImageChange } =
     useUploadImage();
 
@@ -51,16 +59,19 @@ const CreateTweet: React.FC<
     },
   });
 
-  const { mutate, isLoading: isPosting } = api.post.createPost.useMutation({
+  const { mutate, isLoading: isPosting } = api.action.replyPost.useMutation({
     onSuccess: () => {
       setImagePrev("");
       form.reset();
-      ctx.profile.userPosts.invalidate();
-      ctx.post.timeline.invalidate().then(() => {
+      ctx.action.replies
+        .invalidate({ postId })
+        .then(() => ctx.post.postReplies.invalidate({ postId }));
+      ctx.post.detailPost.invalidate({ id: postId }).then(() => {
         adjustTextareaHeight();
       });
       if (!ImagePrev) toast.success("Your Post was sent.");
-      if (variant === "modal") setTweetModal((prev) => !prev);
+      if (variant === "modal" && setShowReplyModal)
+        setShowReplyModal((prev) => !prev);
     },
     onError: (err) => {
       adjustTextareaHeight();
@@ -98,7 +109,8 @@ const CreateTweet: React.FC<
           public_id: values.image?.public_id || "",
           secure_url: values.image?.secure_url || "",
         },
-        type: "POST",
+        type: "COMMENT",
+        postId,
       });
       setSubmitBtn((prev) => !prev);
     }
@@ -119,17 +131,23 @@ const CreateTweet: React.FC<
           render={({ field }) => (
             <div
               className={cn(
-                "hide-scrollbar w-full overflow-y-scroll px-4",
+                "hide-scrollbar w-full overflow-y-scroll",
                 variant === "default"
                   ? "max-h-[calc(100dvh_-_148px)]"
                   : "max-h-[calc(100dvh_-_148px)] sm:max-h-[calc(90dvh_-_148px)]"
               )}
             >
-              <div className="relative flex h-auto w-auto items-start gap-4">
+              <div
+                className={cn(
+                  "relative flex h-auto w-auto items-start gap-4",
+                  "px-4 pt-1"
+                )}
+              >
                 <UserAvatar
                   username={user.username}
                   profileImg={user.imageUrl}
-                  className="mt-3 flex-shrink-0"
+                  className="flex-shrink-0"
+                  // tabIndex={variant === "modal" ? -1 : 0}
                   onClick={(e) => {
                     variant === "modal" ? e.preventDefault() : null;
                   }}
@@ -146,10 +164,10 @@ const CreateTweet: React.FC<
                         {...field}
                         ref={textareaRef}
                         maxLength={500}
-                        placeholder="What is happening?"
+                        placeholder="Post your reply"
                         className={cn(
                           "flex max-h-[35rem] min-h-[53px] w-full flex-1 resize-none bg-transparent",
-                          "pt-3 text-xl leading-6 outline-none placeholder:font-thin",
+                          "text-xl leading-6 outline-none placeholder:font-thin",
                           isPosting && "text-accent",
                           textareaRef.current?.value.length! >= 255 &&
                             "text-desctructive",
@@ -189,25 +207,8 @@ const CreateTweet: React.FC<
             </div>
           )}
         />
-        <div className="mt-3 px-4">
-          <div
-            className={cn(
-              "-mt-3 pb-3",
-              variant === "default" ? "ml-11" : "-ml-1"
-            )}
-          >
-            <span
-              className={cn(
-                "flex h-6 w-fit items-center rounded-full px-3 font-sans font-semibold text-primary",
-                "text-[15px] leading-5 transition-colors duration-200 ease-out hover:bg-primary/10",
-                "cursor-not-allowed"
-              )}
-            >
-              <GlobeIcon className="mr-1" /> Everyone can reply
-            </span>
-          </div>
-          <hr className={cn(variant === "default" ? "ml-12" : "ml-0")} />
-          <div className="mt-2 flex justify-between">
+        <>
+          <div className="flex justify-between px-4">
             <div
               className={cn(
                 variant === "default" ? "ml-12" : "ml-0",
@@ -247,23 +248,27 @@ const CreateTweet: React.FC<
                   </FormItem>
                 )}
               />
-              {createTweetActions.map((btn) => (
-                <Button
-                  size={"icon"}
-                  variant={"ghost"}
-                  key={btn.name}
-                  disabled={btn.name !== "Media"}
-                  type="button"
-                  className={cn(
-                    "h-8 w-8 rounded-full fill-primary text-primary hover:bg-primary/25",
-                    "relative last:hover:bg-transparent",
-                    btn.name !== "Media" && "cursor-not-allowed"
-                  )}
-                >
-                  <btn.icon size={20} className="fill-primary" />
-                  <span className="sr-only">Add {btn.name}</span>
-                </Button>
-              ))}
+              {createTweetActions.map(
+                (btn) =>
+                  btn.name !== "Schedule" &&
+                  btn.name !== "Poll" && (
+                    <Button
+                      size={"icon"}
+                      variant={"ghost"}
+                      key={btn.name}
+                      disabled={btn.name !== "Media"}
+                      type="button"
+                      className={cn(
+                        "h-8 w-8 rounded-full fill-primary text-primary hover:bg-primary/25",
+                        "relative last:hover:bg-transparent",
+                        btn.name !== "Media" && "cursor-not-allowed"
+                      )}
+                    >
+                      <btn.icon size={20} className="fill-primary" />
+                      <span className="sr-only">Add {btn.name}</span>
+                    </Button>
+                  )
+              )}
             </div>
             <Button
               type="submit"
@@ -280,13 +285,13 @@ const CreateTweet: React.FC<
                   : ""
               )}
             >
-              Post
+              Reply
             </Button>
           </div>
-        </div>
+        </>
       </form>
     </Form>
   );
 };
 
-export default CreateTweet;
+export default CreateReply;

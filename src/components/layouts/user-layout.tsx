@@ -1,40 +1,44 @@
-import { GetStaticPaths, GetStaticProps, NextPage } from "next";
+import React from "react";
+import ButtonBack from "../ButtonBack";
+import { PageLayout } from "./root-layout";
 import Head from "next/head";
-import { api } from "~/utils/api";
-import Image from "next/image";
-import { LoadingSpinner } from "~/components/loading";
-import ButtonBack from "~/components/ButtonBack";
-import { generateSSGHelper } from "~/server/helper/ssgHelper";
-import { Button } from "~/components/ui/button";
-import { userMenu } from "~/constant";
-import { cn } from "~/lib/utils";
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogOverlay,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import UserNotFound from "../user-not-found";
 import { useUser } from "@clerk/nextjs";
-import { PageLayout, Feed } from "~/components/layouts";
-import { ImageModal } from "~/components/modal";
-import UserNotFound from "~/components/user-not-found";
+import { GetStaticPaths, GetStaticProps, NextPage } from "next";
+import { generateSSGHelper } from "~/server/helper/ssgHelper";
+import { cn } from "~/lib/utils";
+import { userMenu } from "~/constant";
+import { Button } from "../ui/button";
+import Image from "next/image";
+import { RouterOutputs, api } from "~/utils/api";
+import { ImageModal } from "../modal";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
+import { toast } from "react-hot-toast";
 
-const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const [showModal, setShowModal] = useState(false);
-  const { data: user } = api.profile.getUserByUsername.useQuery({
-    username,
-  });
+interface LayoutUser {
+  children: React.ReactNode;
+  topbar: React.ReactNode;
+  user: RouterOutputs["profile"]["getUserByUsername"];
+}
 
-  const { user: currentUser } = useUser();
+export const UserLayout: NextPage<LayoutUser> = ({
+  children,
+  topbar,
+  user,
+}) => {
+  const [showModal, setShowModal] = React.useState(false);
+  const { user: currentUser, isLoaded } = useUser();
+  const pathname = usePathname();
 
-  if (!user) return <UserNotFound username={username} />;
-
-  const { data: posts, isLoading: userpostLoading } =
-    api.post.userPosts.useQuery({
-      userId: user?.id,
-    });
-
+  //   console.log(pathname.substring(1));
   return (
     <>
       <Head>
@@ -51,14 +55,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
               <div className="-ml-2 w-14">
                 <ButtonBack />
               </div>
-              <div className="flex w-max flex-shrink flex-col justify-center">
-                <h1 className="font-sans text-lg font-bold leading-6">
-                  {`${user?.firstName} ${user?.lastName ? user?.lastName : ""}`}
-                </h1>
-                <p className="text-[13px] font-thin leading-4 text-accent ">
-                  {userpostLoading ? ".." : posts?.length} posts
-                </p>
-              </div>
+              {topbar}
             </div>
           </div>
           <div className="relative aspect-[3/1] w-full overflow-hidden">
@@ -68,7 +65,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
               width="600"
               height="200"
               priority
-              className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover brightness-75"
+              className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover"
             />
           </div>
           <div className="px-4 pb-3 pt-3">
@@ -109,15 +106,17 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                   </DialogContent>
                 </Dialog>
               </div>
-              {currentUser?.id === user.id ? (
+              {isLoaded && currentUser?.id === user.id && (
                 <Button
                   variant="outline"
                   className="focus-visible:border-1 rounded-full border-border py-4 hover:bg-[rgba(239,243,244,0.1)] focus-visible:bg-[rgba(239,243,244,0.1)]"
                   type="button"
+                  onClick={() => toast(pathname, { id: "router" })}
                 >
                   Edit Profile
                 </Button>
-              ) : (
+              )}
+              {isLoaded && currentUser?.id !== user.id && (
                 <Button
                   variant="outline"
                   className="border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
@@ -136,60 +135,31 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             {userMenu.map(
               (menu) =>
                 (menu.name !== "Highlights" || user.id === currentUser?.id) && (
-                  <button
+                  <Link
                     key={menu.name}
+                    href={`/@${user.username}${menu.href}`}
                     className={cn(
-                      "flex flex-1 justify-center px-4 text-[16px] leading-5 text-accent first:font-semibold first:text-white",
-                      "hover:bg-white/[.03] focus-visible:bg-white/[.03]"
+                      "flex flex-1 justify-center px-4 text-[16px] leading-5 text-accent",
+                      "-outline-offset-1 hover:bg-white/[.03] focus-visible:bg-white/[.03] focus-visible:outline-2",
+                      user.username + menu.href ===
+                        pathname.substring(1).replace("@", "") &&
+                        "font-semibold text-white"
                     )}
                   >
                     <div className="relative flex justify-center px-2 py-4">
                       {menu.name}
-                      {menu.href === "" ? (
+                      {`${user.username}${menu.href}` ===
+                      pathname.substring(1).replace("@", "") ? (
                         <div className="absolute bottom-0 h-1 w-full rounded-md bg-primary" />
                       ) : null}
                     </div>
-                  </button>
+                  </Link>
                 )
             )}
           </div>
-          <div className="flex w-full flex-col items-center">
-            {userpostLoading ? (
-              <div className="flex h-20 items-center justify-center">
-                <LoadingSpinner size={24} />
-              </div>
-            ) : null}
-            {!userpostLoading && posts && posts?.length !== 0 ? (
-              <Feed post={posts} postLoading={userpostLoading} />
-            ) : null}
-          </div>
+          <div className="flex w-full flex-col items-center">{children}</div>
         </div>
       </PageLayout>
     </>
   );
 };
-
-export const getStaticProps: GetStaticProps = async (context) => {
-  const ssg = generateSSGHelper();
-
-  const slug = context.params?.slug;
-
-  if (typeof slug !== "string") throw new Error("no slug");
-
-  const username = slug.replace("@", "");
-
-  await ssg.profile.getUserByUsername.prefetch({ username });
-
-  return {
-    props: {
-      trpcState: ssg.dehydrate(),
-      username,
-    },
-  };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return { paths: [], fallback: "blocking" };
-};
-
-export default ProfilePage;
