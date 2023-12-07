@@ -39,14 +39,14 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
       {/* <pre className="w-full overflow-x-scroll">
         {JSON.stringify(posts, null, 2)}
       </pre> */}
-      {userpostLoading ? (
+      {userpostLoading && (
         <div className="flex h-20 items-center justify-center">
           <LoadingSpinner size={24} />
         </div>
-      ) : null}
-      {!userpostLoading && posts && posts?.length !== 0 ? (
+      )}
+      {!userpostLoading && posts && posts?.length !== 0 && (
         <Feed post={posts} postLoading={userpostLoading} />
-      ) : null}
+      )}
     </UserLayout>
   );
 };

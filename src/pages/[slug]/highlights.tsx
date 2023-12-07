@@ -1,9 +1,8 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Link from "next/link";
 import React from "react";
-import { Feed, UserLayout } from "~/components/layouts";
-import { LoadingSpinner } from "~/components/loading";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { UserLayout } from "~/components/layouts";
+import { buttonVariants } from "~/components/ui/button";
 import UserNotFound from "~/components/user-not-found";
 import { cn } from "~/lib/utils";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
@@ -15,25 +14,8 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   });
   if (!user) return <UserNotFound username={username} />;
 
-  const { data: posts, isLoading: userpostLoading } =
-    api.profile.userPosts.useQuery({
-      userId: user?.id,
-    });
-
   return (
-    <UserLayout
-      user={user}
-      topbar={
-        <div className="flex w-max flex-shrink flex-col justify-center">
-          <h1 className="font-sans text-lg font-bold leading-6">
-            {`${user?.firstName} ${user?.lastName ? user?.lastName : ""}`}
-          </h1>
-          <p className="text-[13px] font-thin leading-4 text-accent ">
-            {userpostLoading ? ".." : posts?.length} posts
-          </p>
-        </div>
-      }
-    >
+    <UserLayout user={user}>
       <div className="mx-auto my-8 flex w-full max-w-[calc(5*80px)] flex-col items-center px-8">
         <div className="w-full">
           <h2 className="mb-2 break-words text-left text-[31px] font-extrabold leading-8">

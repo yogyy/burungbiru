@@ -12,37 +12,23 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   });
   if (!user) return <UserNotFound username={username} />;
 
-  const { data, isLoading } = api.profile.userActions.useQuery({
+  const { data: replies, isLoading } = api.profile.userWithReplies.useQuery({
     userId: user.id,
   });
 
-  const replies = data?.repost;
-
   return (
-    <UserLayout
-      user={user}
-      topbar={
-        <div className="flex w-max flex-shrink flex-col justify-center">
-          <h1 className="font-sans text-lg font-bold leading-6">
-            {`${user?.firstName} ${user?.lastName ? user?.lastName : ""}`}
-          </h1>
-          <p className="text-[13px] font-thin leading-4 text-accent ">
-            {isLoading ? ".." : replies?.length} posts
-          </p>
-        </div>
-      }
-    >
+    <UserLayout user={user}>
       <pre className="w-full overflow-x-scroll">
         {JSON.stringify(replies, null, 2)}
       </pre>
-      {/* {userpostLoading ? (
+      {isLoading && (
         <div className="flex h-20 items-center justify-center">
           <LoadingSpinner size={24} />
         </div>
-      ) : null}
-      {!userpostLoading && posts && posts?.length !== 0 ? (
-        <Feed post={posts} postLoading={userpostLoading} />
-      ) : null} */}
+      )}
+      {!isLoading && replies && replies?.length !== 0 && (
+        <Feed post={replies} postLoading={isLoading} />
+      )}
     </UserLayout>
   );
 };

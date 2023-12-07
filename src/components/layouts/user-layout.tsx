@@ -8,10 +8,8 @@ import {
   DialogOverlay,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import UserNotFound from "../user-not-found";
 import { useUser } from "@clerk/nextjs";
-import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import { generateSSGHelper } from "~/server/helper/ssgHelper";
+import { NextPage } from "next";
 import { cn } from "~/lib/utils";
 import { userMenu } from "~/constant";
 import { Button } from "../ui/button";
@@ -19,13 +17,12 @@ import Image from "next/image";
 import { RouterOutputs, api } from "~/utils/api";
 import { ImageModal } from "../modal";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { usePathname } from "next/navigation";
 import { toast } from "react-hot-toast";
 
 interface LayoutUser {
   children: React.ReactNode;
-  topbar: React.ReactNode;
+  topbar?: React.ReactNode;
   user: RouterOutputs["profile"]["getUserByUsername"];
 }
 
@@ -37,6 +34,10 @@ export const UserLayout: NextPage<LayoutUser> = ({
   const [showModal, setShowModal] = React.useState(false);
   const { user: currentUser, isLoaded } = useUser();
   const pathname = usePathname();
+  const { data: posts, isLoading: userpostLoading } =
+    api.profile.userPosts.useQuery({
+      userId: user?.id,
+    });
 
   //   console.log(pathname.substring(1));
   return (
@@ -50,12 +51,25 @@ export const UserLayout: NextPage<LayoutUser> = ({
       </Head>
       <PageLayout className="flex">
         <div className="flex h-full w-full max-w-[600px] flex-col border-x border-border">
-          <div className="sticky top-0 z-20 flex h-auto w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">
+          <div className="sticky top-0 z-[25] flex h-auto w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">
             <div className="relative flex h-[53px] w-full items-center md:max-w-[600px]">
               <div className="-ml-2 w-14">
                 <ButtonBack />
               </div>
-              {topbar}
+              {topbar ? (
+                topbar
+              ) : (
+                <div className="flex w-max flex-shrink flex-col justify-center">
+                  <h1 className="font-sans text-lg font-bold leading-6">
+                    {`${user?.firstName} ${
+                      user?.lastName ? user?.lastName : ""
+                    }`}
+                  </h1>
+                  <p className="text-[13px] font-thin leading-4 text-accent ">
+                    {userpostLoading ? ".." : posts?.length} posts
+                  </p>
+                </div>
+              )}
             </div>
           </div>
           <div className="relative aspect-[3/1] w-full overflow-hidden">
@@ -65,7 +79,7 @@ export const UserLayout: NextPage<LayoutUser> = ({
               width="600"
               height="200"
               priority
-              className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover"
+              className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover invert"
             />
           </div>
           <div className="px-4 pb-3 pt-3">

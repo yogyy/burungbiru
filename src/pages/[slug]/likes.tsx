@@ -1,12 +1,9 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import { RouterOutputs, api } from "~/utils/api";
+import { api } from "~/utils/api";
 import { LoadingSpinner } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
-
-import { PageLayout, Feed, UserLayout } from "~/components/layouts";
+import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
-
-type likedProps = RouterOutputs["profile"]["userLikedPosts"];
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({
@@ -18,12 +15,6 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     api.profile.userLikedPosts.useQuery({
       userId: user?.id,
     });
-
-  // const { data } = api.profile.userActions.useQuery({
-  //   userId: user.id,
-  // });
-
-  // console.log(data);
 
   return (
     <UserLayout
@@ -43,14 +34,14 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         {JSON.stringify(likes, null, 2)}
       </pre> */}
       <div className="flex w-full flex-col items-center">
-        {userLikeLoading ? (
+        {userLikeLoading && (
           <div className="flex h-20 items-center justify-center">
             <LoadingSpinner size={24} />
           </div>
-        ) : null}
-        {!userLikeLoading && likes && likes?.length !== 0 ? (
+        )}
+        {!userLikeLoading && likes && likes?.length !== 0 && (
           <Feed post={likes} postLoading={userLikeLoading} />
-        ) : null}
+        )}
       </div>
     </UserLayout>
   );

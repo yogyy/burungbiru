@@ -1,9 +1,7 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import Head from "next/head";
 import { api } from "~/utils/api";
 import { LoadingSpinner } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
-
 import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 
@@ -19,27 +17,15 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     });
 
   return (
-    <UserLayout
-      user={user}
-      topbar={
-        <div className="flex w-max flex-shrink flex-col justify-center">
-          <h1 className="font-sans text-lg font-bold leading-6">
-            {`${user?.firstName} ${user?.lastName ? user?.lastName : ""}`}
-          </h1>
-          <p className="text-[13px] font-thin leading-4 text-accent ">
-            {userpostLoading ? ".." : posts?.length} posts
-          </p>
-        </div>
-      }
-    >
-      {userpostLoading ? (
+    <UserLayout user={user}>
+      {userpostLoading && (
         <div className="flex h-20 items-center justify-center">
           <LoadingSpinner size={24} />
         </div>
-      ) : null}
-      {!userpostLoading && posts && posts?.length !== 0 ? (
+      )}
+      {!userpostLoading && posts && posts?.length !== 0 && (
         <Feed post={posts} postLoading={userpostLoading} />
-      ) : null}
+      )}
     </UserLayout>
   );
 };
