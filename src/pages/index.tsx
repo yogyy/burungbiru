@@ -2,7 +2,6 @@ import { type NextPage } from "next";
 import { useUser } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import { LogoIcon } from "~/components/icons";
-import { cn } from "~/lib/utils";
 import { BurgerMenu, PageLayout, Feed } from "~/components/layouts";
 import { useMediaQuery } from "~/hooks/use-media-q";
 import dynamic from "next/dynamic";
@@ -25,11 +24,7 @@ const Home: NextPage = () => {
     <PageLayout className="flex">
       <div className="flex w-full max-w-[600px] flex-shrink flex-col border-x border-border">
         {showBurgerMenu && <BurgerMenu isSignedIn={isSignedIn} user={user} />}
-        <div
-          className={cn(
-            "sticky top-0 z-20 h-auto w-full border-b border-border bg-background/[.65] backdrop-blur-md"
-          )}
-        >
+        <div className="sticky top-0 z-[25] h-auto w-full border-b border-border bg-background/[.65] backdrop-blur-md">
           <div className="flex h-[53px] items-center">
             <div className="relative  flex h-full w-full flex-1 items-center justify-center px-4 font-semibold hover:cursor-pointer">
               <div className="relative flex h-full w-fit items-center">
@@ -42,9 +37,12 @@ const Home: NextPage = () => {
             </div>
           </div>
         </div>
-        <div className="hidden border-b border-border min-[570px]:flex">
-          {isSignedIn && !showBurgerMenu && <LazyForm />}
-        </div>
+
+        {isSignedIn && !showBurgerMenu && (
+          <div className="hidden border-b border-border min-[570px]:flex">
+            <LazyForm />
+          </div>
+        )}
         {<Feed post={data} postLoading={postLoading} />}
       </div>
     </PageLayout>
