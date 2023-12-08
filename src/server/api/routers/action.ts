@@ -51,7 +51,7 @@ export const actionRouter = createTRPCRouter({
       return { repost, likes, bookmarks, replies };
     }),
 
-  bookmarks: privateProcedure
+  bookmarks: publicProcedure
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
       const bookmarks = await ctx.prisma.bookmark.findMany({
@@ -62,7 +62,7 @@ export const actionRouter = createTRPCRouter({
       return bookmarks;
     }),
 
-  reposts: privateProcedure
+  reposts: publicProcedure
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
       const repost = await ctx.prisma.repost.findMany({
@@ -73,7 +73,7 @@ export const actionRouter = createTRPCRouter({
       return repost;
     }),
 
-  likes: privateProcedure
+  likes: publicProcedure
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
       const likes = await ctx.prisma.like.findMany({
@@ -84,7 +84,7 @@ export const actionRouter = createTRPCRouter({
       return likes;
     }),
 
-  replies: privateProcedure
+  replies: publicProcedure
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
       const replies = await ctx.prisma.reply.findMany({

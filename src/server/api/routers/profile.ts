@@ -40,7 +40,7 @@ export const profileRouter = createTRPCRouter({
     return users;
   }),
 
-  userPosts: publicProcedure
+  userPosts: privateProcedure
     .input(
       z.object({
         userId: z.string(),
@@ -61,7 +61,7 @@ export const profileRouter = createTRPCRouter({
         .then(addUserDataToPosts)
     ),
 
-  userPostwithMedia: publicProcedure
+  userPostwithMedia: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
       const media = await ctx.prisma.post.findMany({
@@ -70,7 +70,7 @@ export const profileRouter = createTRPCRouter({
       return addUserDataToPosts(media);
     }),
 
-  userLikedPosts: publicProcedure
+  userLikedPosts: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.like
@@ -85,7 +85,7 @@ export const profileRouter = createTRPCRouter({
         .then(addUserDataToPosts);
     }),
 
-  userBookmarkedPosts: publicProcedure
+  userBookmarkedPosts: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
       const bookmark = await ctx.prisma.post.findMany({
@@ -97,7 +97,21 @@ export const profileRouter = createTRPCRouter({
       return addUserDataToPosts(bookmark);
     }),
 
-  userActions: publicProcedure
+  userWithReplies: privateProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.reply
+        .findMany({
+          where: {
+            userId: input.userId,
+          },
+          include: { post: true },
+        })
+        .then((replies) => replies.map((reply) => reply.post))
+        .then(addUserDataToPosts);
+    }),
+
+  userActions: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
       const likes = await ctx.prisma.like.findMany({

@@ -39,19 +39,45 @@ export const UserLayout: NextPage<LayoutUser> = ({
       userId: user?.id,
     });
 
-  //   console.log(pathname.substring(1));
+  const [showFollow, setShowFollow] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY >= 250) {
+        setShowFollow(true);
+      } else {
+        setShowFollow(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const ScrollToTop = () => {
+    if (window !== undefined) {
+      window.scrollTo(0, 0);
+    } else {
+      null;
+    }
+  };
+
   return (
     <>
       <Head>
         <title>
-          {`${user?.firstName} ${user?.lastName || null} (@${
+          {`${user?.firstName} ${user?.lastName || ""} (@${
             user?.username
           }) / burbir`}
         </title>
       </Head>
       <PageLayout className="flex">
         <div className="flex h-full w-full max-w-[600px] flex-col border-x border-border">
-          <div className="sticky top-0 z-[25] flex h-auto w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">
+          <div
+            className="sticky top-0 z-[25] flex h-auto w-full items-center scroll-smooth bg-background/[.65] px-4 font-semibold backdrop-blur-md hover:cursor-pointer"
+            onClick={ScrollToTop}
+          >
             <div className="relative flex h-[53px] w-full items-center md:max-w-[600px]">
               <div className="-ml-2 w-14">
                 <ButtonBack />
@@ -69,6 +95,15 @@ export const UserLayout: NextPage<LayoutUser> = ({
                     {userpostLoading ? ".." : posts?.length} posts
                   </p>
                 </div>
+              )}
+              {isLoaded && showFollow && currentUser?.id !== user.id && (
+                <Button
+                  variant="outline"
+                  className="sticky ml-auto border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
+                  disabled
+                >
+                  Follow
+                </Button>
               )}
             </div>
           </div>
@@ -133,7 +168,7 @@ export const UserLayout: NextPage<LayoutUser> = ({
               {isLoaded && currentUser?.id !== user.id && (
                 <Button
                   variant="outline"
-                  className="border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
+                  className="sticky border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
                   disabled
                 >
                   Follow

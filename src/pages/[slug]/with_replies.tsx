@@ -18,9 +18,6 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
 
   return (
     <UserLayout user={user}>
-      <pre className="w-full overflow-x-scroll">
-        {JSON.stringify(replies, null, 2)}
-      </pre>
       {isLoading && (
         <div className="flex h-20 items-center justify-center">
           <LoadingSpinner size={24} />
