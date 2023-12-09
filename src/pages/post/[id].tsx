@@ -188,7 +188,7 @@ const SinglePostPage = ({
                     </p>
                   )}
                 </div>
-                {!repliesloading && <CreateReply post={post} />}
+                <CreateReply post={post} />
               </div>
             )}
           </div>
