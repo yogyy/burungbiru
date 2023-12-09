@@ -1,16 +1,22 @@
+import { GoGear } from "react-icons/go";
 import * as icon from "~/components/icons";
+import {
+  BookmarkLink,
+  HomeLink,
+  ProfileLink,
+} from "~/components/navbar/navlink";
 
 const navbarLink = [
-  { name: "Home", icon: icon.HomeIcon, link: "/" },
+  { name: "Home", icon: HomeLink, link: "/" },
   { name: "Explore", icon: icon.SearchIcon, link: "#explore" },
   { name: "Notifications", icon: icon.BellIcon, link: "/#notification" },
   { name: "Messages", icon: icon.MessageIcon, link: "#messages" },
   { name: "Lists", icon: icon.ListIcon, link: "/#list" },
-  { name: "Bookmarks", icon: icon.BookmarkIcon, link: "/i/bookmarks" },
+  { name: "Bookmarks", icon: BookmarkLink, link: "/i/bookmarks" },
   { name: "Communities", icon: icon.GroupIcon, link: "/#group" },
   { name: "Premium", icon: icon.LogoIcon, link: "/#premium" },
-  { name: "Profile", icon: icon.PersonIcon, link: "/profile" },
-  { name: "More", icon: icon.MenuIcon, link: "/#more" },
+  { name: "Profile", icon: ProfileLink, link: "/profile" },
+  // { name: "More", icon: icon.MenuIcon, link: "/#more" },
 ];
 
 const hamburgerNavbarLink = [
@@ -20,6 +26,14 @@ const hamburgerNavbarLink = [
   { name: "Bookmarks", icon: icon.BookmarkIcon, link: "#bookmark" },
   { name: "Communities", icon: icon.GroupIcon, link: "#group" },
   { name: "Monetization", icon: icon.MonetIcon, link: "#monetization" },
+];
+
+const SettingsAndSupport = [
+  { name: "Settings and privacy", icon: GoGear },
+  { name: "Help Center", icon: icon.HelpIcon },
+  { name: "Data Saver", icon: icon.DataSaverIcon },
+  { name: "Display", icon: icon.DisplayIcon },
+  { name: "Keyboard shortcuts", icon: icon.ShortcutIcon },
 ];
 
 const userMenu = [
@@ -53,4 +67,5 @@ export {
   createTweetActions,
   userMenu,
   hamburgerNavbarLink,
+  SettingsAndSupport,
 };

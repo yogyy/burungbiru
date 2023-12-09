@@ -1,5 +1,5 @@
 import React from "react";
-import { BellIcon, HomeIcon, MessageIcon, SearchIcon } from "../icons";
+import { BellIcon, MessageIcon, SearchIcon } from "../icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { cn } from "~/lib/utils";
@@ -7,9 +7,10 @@ import { CreatePostModal } from "../modal/create-post-modal";
 
 import { useScroll } from "~/hooks/use-scroll";
 import { useAuth } from "@clerk/nextjs";
+import { HomeLink } from "./navlink";
 
 const mobileNavbar = [
-  { name: "Home", icon: HomeIcon, link: "/" },
+  { name: "Home", icon: HomeLink, link: "/" },
   { name: "Search", icon: SearchIcon, link: "#srch" },
   { name: "Notification", icon: BellIcon, link: "#notif" },
   { name: "Message", icon: MessageIcon, link: "#msg" },

@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { navbarLink } from "~/constant";
 import { NavbarLogout } from "../nav-logout";
 import { CreatePostModal } from "../modal";
+import { MenuNavbarButton } from "../menu-button";
 
 export const Navbar = () => {
   const { user, isSignedIn } = useUser();
@@ -53,13 +54,7 @@ export const Navbar = () => {
                         : link.link
                     }
                   >
-                    <link.icon
-                      className={cn(
-                        baseRoute === link.link &&
-                          "w-6 fill-current stroke-none"
-                      )}
-                      size={26.25}
-                    />
+                    <link.icon size={26.25} />
                     <span
                       className={cn(
                         "ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block",
@@ -71,6 +66,9 @@ export const Navbar = () => {
                   </Link>
                 </li>
               ))}
+              <li className="flex w-full justify-center py-0.5 xl:justify-start">
+                <MenuNavbarButton user={user} />
+              </li>
             </ul>
           </nav>
           <div className="my-1 flex w-full items-center justify-center xl:w-[90%] 2xl:my-4">

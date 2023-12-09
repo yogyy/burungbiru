@@ -24,8 +24,9 @@ import { cn } from "~/lib/utils";
 import { SignInButton } from "@clerk/nextjs";
 
 import { Button } from "../ui/button";
-import { BurgerMenuItem } from "../burger-menu-item";
 import { useBurgerMenu } from "~/hooks/store";
+import { hamburgerNavbarLink } from "~/constant";
+import { MoreNavbar } from "../navbar/more";
 
 export const BurgerMenu: React.FC<
   React.HTMLAttributes<HTMLDivElement> & {
@@ -40,7 +41,7 @@ export const BurgerMenu: React.FC<
   return (
     <div
       className={cn(
-        "sticky top-0 z-[25] flex h-[53px] items-center justify-between px-4",
+        "sticky top-0 z-30 flex h-[53px] items-center justify-between px-4",
         className
       )}
       {...props}
@@ -95,7 +96,41 @@ export const BurgerMenu: React.FC<
                 </div>
               </SheetTitle>
               <SheetDescription asChild>
-                <BurgerMenuItem user={user} />
+                <>
+                  <ul className="flex w-full flex-col">
+                    {hamburgerNavbarLink.map((link) => (
+                      <li
+                        key={link.name}
+                        className={cn("flex w-full justify-start py-0.5")}
+                      >
+                        <Link
+                          className={cn(
+                            "flex w-full items-center border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
+                            "hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]"
+                          )}
+                          href={
+                            link.link === "/profile"
+                              ? `/@${user?.username}`
+                              : link.link
+                          }
+                        >
+                          <link.icon
+                            className={cn("fill-current stroke-none")}
+                            size="24"
+                          />
+                          <span
+                            className={cn(
+                              "ml-5 mr-4 text-xl font-semibold leading-6 tracking-wide"
+                            )}
+                          >
+                            <p>{link.name}</p>
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <MoreNavbar user={user} type="mobile" />
+                </>
               </SheetDescription>
             </SheetHeader>
           </SheetContent>
