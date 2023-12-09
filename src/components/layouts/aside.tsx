@@ -40,7 +40,7 @@ export const RightAside: React.FC<React.ComponentProps<"aside">> = ({
           />
         </div>
       </div>
-      <div className="mb-4 min-h-[15rem] rounded-2xl bg-card">
+      <div className="mb-4 min-h-[15rem] overflow-hidden rounded-2xl bg-card">
         {isLoading ? (
           <div className="flex min-h-[15rem] w-full items-center justify-center">
             <LoadingSpinner size={24} />
