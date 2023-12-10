@@ -33,7 +33,7 @@ export const MenuNavbarButton: React.FC<
         side="bottom"
         sideOffset={-220}
         align="start"
-        className="hidden flex-col p-0 duration-0 md:flex"
+        className="hidden flex-col p-0 duration-0 min-[570px]:flex"
       >
         <Link
           href="/#monet"

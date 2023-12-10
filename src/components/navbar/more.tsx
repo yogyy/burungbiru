@@ -5,15 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import {
-  AdsIcon,
-  AnalyticIcon,
-  DisplayIcon,
-  HelpIcon,
-  LogOutIcon,
-  ShortcutIcon,
-} from "../icons";
-import { GoGear } from "react-icons/go";
+import { AdsIcon, AnalyticIcon, LogOutIcon } from "../icons";
 import { LogoutModal } from "../modal";
 import { UserResource } from "@clerk/types/dist";
 import { SettingsAndSupport } from "~/constant";
@@ -52,24 +44,28 @@ export const MoreNavbar: React.FC<MoreProps> = ({ user, type }) => {
           Settings and Support
         </AccordionTrigger>
         <AccordionContent className="p-0 duration-0">
-          {SettingsAndSupport.map((btn) => (
-            <button
-              key={btn.name}
-              className={cn(
-                "flex w-full p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]",
-                type === "dekstop" && btn.name === "Data Saver" && "hidden"
-              )}
-            >
-              <btn.icon size="18.75" className="mr-3" />
-              {btn.name}
-            </button>
-          ))}
-          <LogoutModal user={user}>
-            <button className="flex w-full p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]">
-              <LogOutIcon size="18.75" className="mr-3" />
-              Log Out @{user?.username}
-            </button>
-          </LogoutModal>
+          {SettingsAndSupport.map(
+            (btn) =>
+              (type === "mobile" || btn.name !== "Data Saver") && (
+                <button
+                  key={btn.name}
+                  className={cn(
+                    "flex w-full p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]"
+                  )}
+                >
+                  <btn.icon size="18.75" className="mr-3" />
+                  {btn.name}
+                </button>
+              )
+          )}
+          {type === "mobile" && (
+            <LogoutModal user={user}>
+              <button className="flex w-full p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]">
+                <LogOutIcon size="18.75" className="mr-3" />
+                Log Out @{user?.username}
+              </button>
+            </LogoutModal>
+          )}
         </AccordionContent>
       </AccordionItem>
     </Accordion>
