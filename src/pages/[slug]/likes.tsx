@@ -4,14 +4,16 @@ import { LoadingSpinner } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
+import { useUser } from "@clerk/nextjs";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({
     username,
   });
+  const { user: currentUser } = useUser();
   if (!user) return <UserNotFound username={username} />;
 
-  const { data: likes, isLoading: userLikeLoading } =
+  const { data: likes, isLoading: userLikesLoading } =
     api.profile.userLikedPosts.useQuery({
       userId: user?.id,
     });
@@ -25,22 +27,33 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             {`${user?.firstName} ${user?.lastName ? user?.lastName : ""}`}
           </h1>
           <p className="text-[13px] font-thin leading-4 text-accent ">
-            {userLikeLoading ? ".." : likes?.length} likes
+            {userLikesLoading ? ".." : likes?.length} Likes
           </p>
         </div>
       }
     >
-      {/* <pre className="w-full overflow-x-scroll">
-        {JSON.stringify(likes, null, 2)}
-      </pre> */}
       <div className="flex w-full flex-col items-center">
-        {userLikeLoading && (
+        {userLikesLoading ? (
           <div className="flex h-20 items-center justify-center">
             <LoadingSpinner size={24} />
           </div>
-        )}
-        {!userLikeLoading && likes && likes?.length !== 0 && (
-          <Feed post={likes} postLoading={userLikeLoading} />
+        ) : likes && likes?.length >= 1 ? (
+          <Feed post={likes} postLoading={userLikesLoading} />
+        ) : (
+          <div className="mx-auto my-8 flex w-full max-w-[calc(5*80px)] flex-col items-center px-8">
+            <div className="w-full">
+              <h2 className="mb-2 break-words text-left text-[31px] font-extrabold leading-8">
+                {user.id !== currentUser?.id
+                  ? `@${user.username} hasn’t liked any posts`
+                  : "Lights, camera … attachments!"}
+              </h2>
+              <p className="mb-8 break-words text-left text-[15px] leading-5 text-accent">
+                {user.id !== currentUser?.id
+                  ? "Once they do, those posts will show up here."
+                  : "When you post photos or videos, they will show up here."}
+              </p>
+            </div>
+          </div>
         )}
       </div>
     </UserLayout>

@@ -18,13 +18,15 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
   return (
     <UserLayout user={user}>
-      {userpostLoading && (
+      {userpostLoading ? (
         <div className="flex h-20 items-center justify-center">
           <LoadingSpinner size={24} />
         </div>
-      )}
-      {!userpostLoading && posts && posts?.length !== 0 && (
-        <Feed post={posts} postLoading={userpostLoading} />
+      ) : (
+        posts &&
+        posts?.length >= 1 && (
+          <Feed post={posts} postLoading={userpostLoading} />
+        )
       )}
     </UserLayout>
   );

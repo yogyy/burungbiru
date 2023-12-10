@@ -18,13 +18,13 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
 
   return (
     <UserLayout user={user}>
-      {isLoading && (
+      {isLoading ? (
         <div className="flex h-20 items-center justify-center">
           <LoadingSpinner size={24} />
         </div>
-      )}
-      {!isLoading && replies && replies?.length !== 0 && (
-        <Feed post={replies} postLoading={isLoading} />
+      ) : (
+        replies &&
+        replies?.length >= 1 && <Feed post={replies} postLoading={isLoading} />
       )}
     </UserLayout>
   );
