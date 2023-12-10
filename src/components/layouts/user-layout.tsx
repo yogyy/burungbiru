@@ -92,7 +92,7 @@ export const UserLayout: NextPage<LayoutUser> = ({
                     }`}
                   </h1>
                   <p className="text-[13px] font-thin leading-4 text-accent ">
-                    {userpostLoading ? ".." : posts?.length} posts
+                    {userpostLoading ? ".." : posts?.posts.length} posts
                   </p>
                 </div>
               )}
@@ -175,9 +175,9 @@ export const UserLayout: NextPage<LayoutUser> = ({
                 </Button>
               )}
             </div>
-            <h2 className="text-lg font-bold leading-6">{`${user?.firstName} ${
-              user.lastName || ""
-            }`}</h2>
+            <h2 className="text-xl font-extrabold leading-6">{`${
+              user?.firstName
+            } ${user.lastName || ""}`}</h2>
             <p className="text-[15px] text-accent">@{user.username}</p>
           </div>
           <div className="hide-scrollbar flex h-fit w-full items-center overflow-x-scroll border-b border-border">

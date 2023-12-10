@@ -1,33 +1,49 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { api } from "~/utils/api";
-import { LoadingSpinner } from "~/components/loading";
+import { LoadingItem } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
+import { useInView } from "react-intersection-observer";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({
     username,
   });
+
+  const { ref, inView } = useInView({
+    rootMargin: "40% 0px",
+  });
+
   if (!user) return <UserNotFound username={username} />;
 
-  const { data: posts, isLoading: userpostLoading } =
-    api.profile.userPosts.useQuery({
+  const {
+    data: posts,
+    isLoading: userpostLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = api.profile.userPosts.useInfiniteQuery(
+    {
       userId: user?.id,
-    });
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    }
+  );
+
+  if (hasNextPage && inView && !userpostLoading) {
+    fetchNextPage();
+  }
 
   return (
     <UserLayout user={user}>
-      {userpostLoading ? (
-        <div className="flex h-20 items-center justify-center">
-          <LoadingSpinner size={24} />
-        </div>
-      ) : (
-        posts &&
-        posts?.length >= 1 && (
-          <Feed post={posts} postLoading={userpostLoading} />
-        )
-      )}
+      <Feed
+        post={posts?.pages.flatMap((page) => page.posts)}
+        postLoading={userpostLoading}
+      />
+      {inView && isFetchingNextPage && <LoadingItem />}
+      <div ref={ref} data-ref="test" />
     </UserLayout>
   );
 };

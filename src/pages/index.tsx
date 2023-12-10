@@ -5,13 +5,36 @@ import { LogoIcon } from "~/components/icons";
 import { BurgerMenu, PageLayout, Feed } from "~/components/layouts";
 import { useMediaQuery } from "~/hooks/use-media-q";
 import dynamic from "next/dynamic";
+import { useInView } from "react-intersection-observer";
+import { LoadingItem } from "~/components/loading";
+import React from "react";
 
 const LazyForm = dynamic(() => import("~/components/form"));
 
 const Home: NextPage = () => {
   const { user, isLoaded: userLoaded, isSignedIn } = useUser();
-  const { data, isLoading: postLoading } = api.post.timeline.useQuery();
   const showBurgerMenu = useMediaQuery("(max-width: 570px)");
+
+  const { ref, inView } = useInView({
+    rootMargin: "40% 0px",
+  });
+
+  const {
+    data,
+    isLoading: postLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = api.post.timeline.useInfiniteQuery(
+    {},
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    }
+  );
+
+  if (hasNextPage && inView && !postLoading) {
+    fetchNextPage();
+  }
 
   if (!userLoaded)
     return (
@@ -37,13 +60,17 @@ const Home: NextPage = () => {
             </div>
           </div>
         </div>
-
         {isSignedIn && !showBurgerMenu && (
           <div className="hidden border-b border-border min-[570px]:flex">
             <LazyForm />
           </div>
         )}
-        {<Feed post={data} postLoading={postLoading} />}
+        <Feed
+          post={data?.pages.flatMap((page) => page.posts)}
+          postLoading={postLoading}
+        />
+        {inView && isFetchingNextPage && <LoadingItem />}
+        <div ref={ref} data-ref="test" />
       </div>
     </PageLayout>
   );

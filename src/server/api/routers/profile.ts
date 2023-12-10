@@ -44,28 +44,53 @@ export const profileRouter = createTRPCRouter({
     .input(
       z.object({
         userId: z.string(),
+        limit: z.number().optional(),
+        cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       })
     )
-    .query(({ ctx, input }) =>
-      ctx.prisma.post
+    .query(async ({ ctx, input: { limit = 10, cursor, userId } }) => {
+      const posts = await ctx.prisma.post
         .findMany({
-          include: { repost: true },
+          take: limit + 1,
+          cursor: cursor ? { createdAt_id: cursor } : undefined,
           where: {
             OR: [
-              { type: "POST", authorId: input.userId },
-              { type: "REPOST", authorRepostId: input.userId },
+              { type: "POST", authorId: userId },
+              { type: "REPOST", authorRepostId: userId },
             ],
           },
+          include: { repost: true },
           orderBy: [{ createdAt: "desc" }],
         })
-        .then(addUserDataToPosts)
-    ),
+        .then(addUserDataToPosts);
+
+      let nextCursor: typeof cursor | undefined;
+      if (posts.length > limit) {
+        const nextItem = posts.pop();
+        if (nextItem != null) {
+          nextCursor = {
+            id: nextItem?.post.id,
+            createdAt: nextItem?.post?.createdAt,
+          };
+        }
+      }
+
+      return {
+        posts,
+        nextCursor,
+      };
+    }),
 
   userPostwithMedia: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
       const media = await ctx.prisma.post.findMany({
-        where: { authorId: input.userId, NOT: { image: "" } },
+        where: {
+          authorId: input.userId,
+          NOT: { image: "" },
+          type: { not: "REPOST" },
+        },
+        orderBy: [{ createdAt: "desc" }],
       });
       return addUserDataToPosts(media);
     }),

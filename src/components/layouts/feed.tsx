@@ -4,7 +4,7 @@ import { cn } from "~/lib/utils";
 import { TweetPost } from "../tweet";
 
 export const Feed: React.FC<{
-  post: RouterOutputs["post"]["timeline"] | undefined;
+  post: RouterOutputs["post"]["timeline"]["posts"] | undefined;
   postLoading: boolean;
 }> = ({ post, postLoading }) => {
   return (
@@ -25,6 +25,7 @@ export const Feed: React.FC<{
             )}
           />
         ))
+        // <pre className="overflow-x-scroll">{JSON.stringify(post, null, 2)}</pre>
       )}
     </div>
   );

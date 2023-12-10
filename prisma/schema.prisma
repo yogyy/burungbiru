@@ -56,6 +56,7 @@ model Post {
   type           PostType   @default(POST)
   view           Int        @default(0)
 
+  @@unique([createdAt, id])
   @@index([authorId, id])
 }
 
