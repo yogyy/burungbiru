@@ -1,4 +1,3 @@
-import React from "react";
 import { LuSearch } from "react-icons/lu";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
@@ -63,7 +62,7 @@ export const RightAside: React.FC<React.ComponentProps<"aside">> = ({
                   <div className="flex flex-col">
                     <span className="text-[15px] font-bold leading-5">{`${
                       ppl.firstName
-                    } ${ppl.lastName || null}`}</span>
+                    } ${ppl.lastName || ""}`}</span>
                     <span className="text-accent">@{ppl.username}</span>
                   </div>
                 </div>
