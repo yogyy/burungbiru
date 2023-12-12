@@ -1,6 +1,7 @@
 import { authMiddleware } from "@clerk/nextjs/server";
 
 export default authMiddleware({
+  publicRoutes: ["/api/webhook(.*)"],
   ignoredRoutes: [
     "/favicon.ico",
     "/fonts/chirp-medium-web.woff",
