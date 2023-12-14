@@ -18,7 +18,7 @@ export const UserCard = ({ children, author, ...props }: UserCardT) => {
       </HoverCardTrigger>
       <HoverCardContent
         onClick={(e) => e.stopPropagation()}
-        className="flex cursor-default flex-col gap-2 rounded-2xl !duration-100"
+        className="flex cursor-default flex-col gap-2 rounded-2xl border-none shadow-x"
       >
         <div className="flex w-full items-start justify-between">
           <Link href={`/@${author.username}`}>

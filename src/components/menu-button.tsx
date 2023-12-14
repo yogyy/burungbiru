@@ -1,4 +1,3 @@
-import React from "react";
 import { cn } from "~/lib/utils";
 import Link from "next/link";
 import { MenuIcon, MonetIcon } from "./icons";
@@ -33,7 +32,7 @@ export const MenuNavbarButton: React.FC<
         side="bottom"
         sideOffset={-220}
         align="start"
-        className="hidden flex-col p-0 duration-0 min-[570px]:flex"
+        className="hidden flex-col p-0 shadow-x duration-0 min-[570px]:flex"
       >
         <Link
           href="/#monet"
