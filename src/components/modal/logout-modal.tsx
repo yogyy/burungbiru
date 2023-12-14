@@ -22,6 +22,13 @@ export const LogoutModal: React.FC<{
   const closeUserPopover = useUserPopover((state) => state.setShow);
   const { signOut } = useClerk();
 
+  function Logout() {
+    signOut();
+    setModalSignOut((prev) => !prev);
+    closeBurgerMenu((prev) => !prev);
+    closeUserPopover((prev) => !prev);
+  }
+
   return (
     <Dialog open={modalSignOut} onOpenChange={setModalSignOut}>
       <DialogTrigger
@@ -35,7 +42,7 @@ export const LogoutModal: React.FC<{
       <DialogContent
         close={false}
         className="!rounded-2xl border-none p-8 text-start [&>button]:invisible"
-        overlayClassName="bg-background/90"
+        overlayClassName="bg-[rgba(91,_112,_131,_0.4)]"
       >
         <DialogHeader className="space-y-0">
           <BsTwitterX className="mb-4 h-9 w-full text-3xl" />
@@ -51,12 +58,7 @@ export const LogoutModal: React.FC<{
               <div className="flex flex-col text-[17px] font-bold">
                 <Button
                   variant="secondary"
-                  onClick={() => {
-                    signOut();
-                    setModalSignOut((prev) => !prev);
-                    closeBurgerMenu((prev) => !prev);
-                    closeUserPopover((prev) => !prev);
-                  }}
+                  onClick={Logout}
                   className="mb-3 min-h-[44px] min-w-[44px] text-[15px]"
                 >
                   Log out
