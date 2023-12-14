@@ -3,11 +3,11 @@ import { useUser } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import { LogoIcon } from "~/components/icons";
 import { BurgerMenu, PageLayout, Feed } from "~/components/layouts";
-import { useMediaQuery } from "~/hooks/use-media-q";
 import dynamic from "next/dynamic";
 import { useInView } from "react-intersection-observer";
 import { LoadingItem } from "~/components/loading";
 import React from "react";
+import { useMediaQuery } from "usehooks-ts";
 
 const LazyForm = dynamic(() => import("~/components/form"));
 

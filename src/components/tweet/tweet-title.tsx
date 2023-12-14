@@ -1,6 +1,4 @@
 import Link from "next/link";
-import React from "react";
-
 import {
   Tooltip,
   TooltipContent,
@@ -14,8 +12,7 @@ import { cn } from "~/lib/utils";
 import { tweetTime } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
 import { TweetMenu } from "./tweet-menu";
-import { useMediaQuery } from "~/hooks/use-media-q";
-import { useIsClient } from "~/hooks/use-client";
+import { useIsClient, useMediaQuery } from "usehooks-ts";
 
 export const TweetTitle: React.FC<TweetProps> = ({
   author,
@@ -28,7 +25,6 @@ export const TweetTitle: React.FC<TweetProps> = ({
 }) => {
   const isClient = useIsClient();
   const onDekstop = useMediaQuery("(min-width: 768px)");
-  const authorPost = post.type === "POST" ? author : repostAuthor;
 
   return (
     <div

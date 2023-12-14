@@ -1,6 +1,6 @@
+import { useMediaQuery } from "usehooks-ts";
 import { cn } from "~/lib/utils";
 import { RightAside } from ".";
-import { useMediaQuery } from "~/hooks/use-media-q";
 import { Navbar } from "../navbar";
 import { MobileNav } from "../navbar/mobile-navbar";
 

@@ -1,13 +1,10 @@
 import { useUser } from "@clerk/nextjs";
-import React from "react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import { api } from "~/utils/api";
 import { TweetProps } from "../tweet-post";
 import { ShareIcon } from "~/components/icons";
-import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
-import { useCopyToClipboard } from "~/hooks/use-copy-to-clipboard";
+import { useCopyToClipboard } from "usehooks-ts";
 
 export const ShareTweet: React.FC<Omit<TweetProps, "repostAuthor">> = ({
   variant,
