@@ -13,7 +13,8 @@ import { IconBaseProps } from "../icons/type";
 const ProfileLink: React.FC<IconBaseProps> = (props) => {
   const { asPath } = useRouter();
   const { user } = useUser();
-  return asPath === `/@${user?.username}` ? (
+  const arrOfRoute = asPath.split("/");
+  return arrOfRoute[1] === `@${user?.username}` ? (
     <PersonIconFill size={26.25} {...props} />
   ) : (
     <PersonIcon size={26.25} {...props} />
