@@ -39,7 +39,7 @@ const Home: NextPage = () => {
   if (!userLoaded)
     return (
       <div className="flex h-[100dvh] w-screen items-center justify-center">
-        <LogoIcon size={80} className="text-white sm:text-white/10" />
+        <LogoIcon size={80} className="text-white" />
       </div>
     );
 
