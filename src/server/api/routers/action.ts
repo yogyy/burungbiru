@@ -192,4 +192,20 @@ export const actionRouter = createTRPCRouter({
 
       return post;
     }),
+
+  followUser: privateProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.follow.create({
+        data: { followingId: ctx.userId, followerId: input.userId },
+      });
+    }),
+
+  unfollowUser: privateProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.follow.deleteMany({
+        where: { followingId: ctx.userId, followerId: input.userId },
+      });
+    }),
 });
