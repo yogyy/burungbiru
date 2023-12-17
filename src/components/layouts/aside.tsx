@@ -1,19 +1,17 @@
 import { LuSearch } from "react-icons/lu";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
-import { Button } from "../ui/button";
 import { UserAvatar } from "../avatar";
 import { LoadingSpinner } from "../loading";
 import { useRouter } from "next/router";
+import { FollowButton } from "../button-follow";
 
 export const RightAside: React.FC<React.ComponentProps<"aside">> = ({
   className,
   ...props
 }) => {
-  const { data: peoples, isLoading } = api.profile.getUserRandomUser.useQuery(
-    {},
-    { refetchOnWindowFocus: false, refetchOnMount: false }
-  );
+  const { data: peoples, isLoading } =
+    api.profile.getUserRandomUserDB.useQuery();
   const { push } = useRouter();
 
   return (
@@ -46,35 +44,37 @@ export const RightAside: React.FC<React.ComponentProps<"aside">> = ({
           </div>
         ) : (
           <>
-            <h1 className="px-4 py-3">You Might Like</h1>
+            <h1 className="break-words px-4 py-3 text-xl font-extrabold leading-6">
+              Who to follow
+            </h1>
             {peoples?.map((ppl) => (
               <div
-                className="flex cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[.03]"
+                className="group relative flex cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[.03]"
                 key={ppl.username}
-                onClick={() => push(`/${ppl.username}`)}
+                onClick={() => push(`/@${ppl.username}`)}
               >
-                <div className="flex flex-grow basis-10">
+                <div className="flex w-full overflow-hidden">
                   <UserAvatar
-                    profileImg={ppl.profileImg}
+                    profileImg={ppl.imageUrl}
                     username={ppl.username}
                     className="mr-3 aspect-square h-10 rounded-full"
                   />
-                  <div className="flex flex-col">
-                    <span className="text-[15px] font-bold leading-5">{`${
-                      ppl.firstName
-                    } ${ppl.lastName || ""}`}</span>
+                  <div className="flex min-w-full flex-shrink flex-col">
+                    <span className="text-[15px] font-bold leading-5">
+                      {ppl.name}
+                    </span>
                     <span className="text-accent">@{ppl.username}</span>
                   </div>
                 </div>
-                <Button
-                  variant="outline"
-                  className="border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Follow
-                </Button>
+                <FollowButton user={ppl} className="ml-3" />
               </div>
             ))}
+            <button
+              type="button"
+              className="w-full p-4 text-left text-primary hover:bg-white/[.03]"
+            >
+              Show More
+            </button>
           </>
         )}
       </div>

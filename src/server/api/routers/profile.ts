@@ -29,6 +29,24 @@ export const profileRouter = createTRPCRouter({
       return filterUserForClient(user);
     }),
 
+  getUserByUsernameDB: publicProcedure
+    .input(z.object({ username: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: { username: input.username },
+        include: { followers: true, following: true },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "User not found",
+        });
+      }
+
+      return user;
+    }),
+
   getUserRandomUser: publicProcedure.input(z.object({})).query(async () => {
     const users = (
       await clerkClient.users.getUserList({
@@ -40,6 +58,15 @@ export const profileRouter = createTRPCRouter({
     return users;
   }),
 
+  getUserRandomUserDB: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.user.findMany({
+      take: 3,
+      where: { id: { not: { equals: ctx.userId ?? "" } } },
+      orderBy: { createdAt: "desc" },
+      include: { followers: true, following: true },
+    });
+  }),
+
   userPosts: privateProcedure
     .input(
       z.object({
@@ -48,7 +75,7 @@ export const profileRouter = createTRPCRouter({
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       })
     )
-    .query(async ({ ctx, input: { limit = 10, cursor, userId } }) => {
+    .query(async ({ ctx, input: { limit = 30, cursor, userId } }) => {
       const posts = await ctx.prisma.post
         .findMany({
           take: limit + 1,
@@ -136,20 +163,12 @@ export const profileRouter = createTRPCRouter({
         .then(addUserDataToPosts);
     }),
 
-  userActions: privateProcedure
+  userFollower: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const likes = await ctx.prisma.like.findMany({
-        where: { userId: input.userId },
+      return await ctx.prisma.user.findUnique({
+        where: { id: input.userId },
+        select: { followers: true, following: true },
       });
-      const bookmarks = await ctx.prisma.bookmark.findMany({
-        where: { userId: input.userId },
-      });
-      const repost = await ctx.prisma.repost.findMany({
-        where: { userId: input.userId },
-      });
-      if (!likes || !bookmarks) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return { repost, likes, bookmarks };
     }),
 });

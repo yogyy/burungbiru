@@ -7,7 +7,7 @@ import UserNotFound from "~/components/user-not-found";
 import { useInView } from "react-intersection-observer";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = api.profile.getUserByUsername.useQuery({
+  const { data: user } = api.profile.getUserByUsernameDB.useQuery({
     username,
   });
 
@@ -43,6 +43,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         postLoading={userpostLoading}
       />
       {inView && isFetchingNextPage && <LoadingItem />}
+      <div className="h-screen" />
       <div ref={ref} data-ref="test" />
     </UserLayout>
   );
@@ -57,7 +58,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const username = slug.replace("@", "");
 
-  await ssg.profile.getUserByUsername.prefetch({ username });
+  await ssg.profile.getUserByUsernameDB.prefetch({ username });
 
   return {
     props: {

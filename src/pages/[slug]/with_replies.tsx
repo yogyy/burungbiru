@@ -7,7 +7,7 @@ import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { api } from "~/utils/api";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = api.profile.getUserByUsername.useQuery({
+  const { data: user } = api.profile.getUserByUsernameDB.useQuery({
     username,
   });
   if (!user) return <UserNotFound username={username} />;
@@ -39,7 +39,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const username = slug.replace("@", "");
 
-  await ssg.profile.getUserByUsername.prefetch({ username });
+  await ssg.profile.getUserByUsernameDB.prefetch({ username });
 
   return {
     props: {
