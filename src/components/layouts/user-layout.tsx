@@ -19,11 +19,12 @@ import { ImageModal } from "../modal";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { FollowButton } from "../button-follow";
 
 interface LayoutUser {
   children: React.ReactNode;
   topbar?: React.ReactNode;
-  user: RouterOutputs["profile"]["getUserByUsername"];
+  user: RouterOutputs["profile"]["getUserByUsernameDB"];
 }
 
 export const UserLayout: NextPage<LayoutUser> = ({
@@ -38,7 +39,10 @@ export const UserLayout: NextPage<LayoutUser> = ({
     api.profile.userPosts.useQuery({
       userId: user?.id,
     });
-
+  const { data: follow, isLoading: LoadingFollow } =
+    api.profile.userFollower.useQuery({
+      userId: user.id,
+    });
   const [showFollow, setShowFollow] = React.useState(false);
 
   React.useEffect(() => {
@@ -66,11 +70,7 @@ export const UserLayout: NextPage<LayoutUser> = ({
   return (
     <>
       <Head>
-        <title>
-          {`${user?.firstName} ${user?.lastName || ""} (@${
-            user?.username
-          }) / burbir`}
-        </title>
+        <title>{`${user?.name} (@${user?.username}) / burbir`}</title>
       </Head>
       <PageLayout className="flex">
         <div className="flex h-full w-full max-w-[600px] flex-col border-x border-border">
@@ -87,23 +87,21 @@ export const UserLayout: NextPage<LayoutUser> = ({
               ) : (
                 <div className="flex w-max flex-shrink flex-col justify-center">
                   <h1 className="font-sans text-lg font-bold leading-6">
-                    {`${user?.firstName} ${
-                      user?.lastName ? user?.lastName : ""
-                    }`}
+                    {user.name}
                   </h1>
-                  <p className="text-[13px] font-thin leading-4 text-accent ">
-                    {userpostLoading ? ".." : posts?.posts.length} posts
+                  <p className="text-[13px] font-thin leading-4 text-accent">
+                    {userpostLoading ? (
+                      <span className="select-none text-background">
+                        loading
+                      </span>
+                    ) : (
+                      <span>{posts?.posts.length} posts</span>
+                    )}
                   </p>
                 </div>
               )}
               {isLoaded && showFollow && currentUser?.id !== user.id && (
-                <Button
-                  variant="outline"
-                  className="sticky ml-auto border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
-                  disabled
-                >
-                  Follow
-                </Button>
+                <FollowButton user={user} className="sticky ml-auto" />
               )}
             </div>
           </div>
@@ -123,10 +121,8 @@ export const UserLayout: NextPage<LayoutUser> = ({
                 <Dialog open={showModal} onOpenChange={setShowModal}>
                   <DialogTrigger className="rounded-full">
                     <Image
-                      src={user?.profileImg}
-                      alt={`${
-                        user?.username ?? user?.firstName ?? "unknown"
-                      }'s profile pic`}
+                      src={user?.imageUrl}
+                      alt={`${user?.username ?? user?.name}'s profile pic`}
                       width="140"
                       height="140"
                       className={cn(
@@ -144,10 +140,8 @@ export const UserLayout: NextPage<LayoutUser> = ({
                     overlayClassName="bg-background/40"
                   >
                     <Image
-                      src={user?.profileImg}
-                      alt={`${
-                        user?.username ?? user?.firstName ?? "unknown"
-                      }'s profile pic`}
+                      src={user?.imageUrl}
+                      alt={`${user?.username ?? user?.name}'s profile pic`}
                       width="370"
                       height="370"
                       className="w-full rounded-full bg-background/60"
@@ -166,19 +160,44 @@ export const UserLayout: NextPage<LayoutUser> = ({
                 </Button>
               )}
               {isLoaded && currentUser?.id !== user.id && (
-                <Button
-                  variant="outline"
-                  className="sticky border-2 border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary"
-                  disabled
-                >
-                  Follow
-                </Button>
+                <FollowButton user={user} />
               )}
             </div>
-            <h2 className="text-xl font-extrabold leading-6">{`${
-              user?.firstName
-            } ${user.lastName || ""}`}</h2>
-            <p className="text-[15px] text-accent">@{user.username}</p>
+            <div className="-mt-1 mb-1 flex flex-col">
+              <h2 className="flex text-xl font-extrabold leading-6">
+                {user.name}
+              </h2>
+              <p className="flex text-[15px] leading-6 text-accent">
+                @{user.username}
+              </p>
+            </div>
+            <div className="mb-3" id="bio"></div>
+            <div className="flex flex-wrap text-base leading-5 text-accent  ">
+              <Link
+                href="/#follow"
+                className="mr-5 break-words text-[15px] leading-4 hover:underline"
+              >
+                <span className="font-bold text-[rgb(231,233,234)]">
+                  {LoadingFollow
+                    ? user.following.length
+                    : follow?.following.length}
+                  &nbsp;
+                </span>
+                Following
+              </Link>
+              <Link
+                href="/#follow"
+                className="break-words text-[15px] leading-4 hover:underline"
+              >
+                <span className="font-bold text-[rgb(231,233,234)]">
+                  {LoadingFollow
+                    ? user.followers.length
+                    : follow?.followers.length}
+                  &nbsp;
+                </span>
+                Follower
+              </Link>
+            </div>
           </div>
           <div className="hide-scrollbar flex h-fit w-full items-center overflow-x-scroll border-b border-border">
             {userMenu.map(
