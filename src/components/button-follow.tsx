@@ -67,7 +67,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
       variant="ghost"
       type="button"
       className={cn(
-        "border border-border text-white hover:border-[rgb(244,33,46)] hover:bg-[rgb(244,33,46)]/[.15] hover:text-[rgb(244,33,46)] focus-visible:border-white",
+        "min-w-[101.05px] border border-border text-white hover:border-[rgb(244,33,46)] hover:bg-[rgb(244,33,46)]/[.15] hover:text-[rgb(244,33,46)] focus-visible:border-white",
         className
       )}
       disabled={following.isLoading}
