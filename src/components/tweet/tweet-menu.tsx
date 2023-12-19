@@ -96,7 +96,7 @@ export const TweetMenu: React.FC<
         sideOffset={-30}
         alignOffset={8}
         align="start"
-        className="z-20 overflow-hidden p-0"
+        className="z-20 overflow-hidden rounded-xl p-0 shadow-x"
       >
         {user?.id !== post.authorId ? (
           <Button
