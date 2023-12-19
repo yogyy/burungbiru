@@ -30,3 +30,29 @@ export function convertToHttps(url: string):
     };
   }
 }
+
+export function formatViews(num: number, precision = 1) {
+  if (Math.abs(num) < 1000) {
+    // If num is less than 999, no formatting needed
+    return num;
+  }
+
+  const precisionToUse = Math.abs(num) > 10000 ? 0 : precision;
+
+  const map = [
+    { suffix: "T", threshold: 1e12 },
+    { suffix: "B", threshold: 1e9 },
+    { suffix: "M", threshold: 1e6 },
+    { suffix: "K", threshold: 1e3 },
+    { suffix: "", threshold: 1 },
+  ];
+
+  const found = map.find((x) => Math.abs(num) >= x.threshold);
+  if (found) {
+    const formatted =
+      (num / found.threshold).toFixed(precisionToUse) + found.suffix;
+    return formatted;
+  }
+
+  return num;
+}

@@ -1,22 +1,11 @@
-import React from "react";
 import { Button } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
+import { cn, formatViews } from "~/lib/utils";
 import { TweetProps } from "../tweet-post";
 import { AnalyticIcon } from "~/components/icons";
-import { api } from "~/utils/api";
 
 export const AnalyticTweet: React.FC<
   Omit<TweetProps, "author" | "repostAuthor">
 > = ({ variant, className, post, ...props }) => {
-  const { data, isLoading } = api.post.interactions.useQuery(
-    {
-      id: post.type === "REPOST" ? post.parentId ?? "" : post.id,
-    },
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
-
   return (
     <div
       className={cn(
@@ -55,7 +44,7 @@ export const AnalyticTweet: React.FC<
             "font-normal transition duration-300 group-hover:text-primary group-focus:text-primary"
           )}
         >
-          {data && data.view >= 1 && data.view}
+          {post.view !== 0 ? formatViews(post.view) : ""}
         </span>
       </div>
     </div>
