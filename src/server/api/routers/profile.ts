@@ -58,14 +58,16 @@ export const profileRouter = createTRPCRouter({
     return users;
   }),
 
-  getUserRandomUserDB: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.user.findMany({
-      take: 3,
-      where: { id: { not: { equals: ctx.userId ?? "" } } },
-      orderBy: { createdAt: "desc" },
-      include: { followers: true, following: true },
-    });
-  }),
+  getUserRandomUserDB: publicProcedure
+    .input(z.object({}))
+    .query(async ({ ctx }) => {
+      return await ctx.prisma.user.findMany({
+        take: 3,
+        where: { id: { not: { equals: ctx.userId ?? "" } } },
+        orderBy: { createdAt: "desc" },
+        include: { followers: true, following: true },
+      });
+    }),
 
   userPosts: privateProcedure
     .input(
@@ -158,6 +160,7 @@ export const profileRouter = createTRPCRouter({
             userId: input.userId,
           },
           include: { post: true },
+          orderBy: [{ createdAt: "desc" }],
         })
         .then((replies) => replies.map((reply) => reply.post))
         .then(addUserDataToPosts);

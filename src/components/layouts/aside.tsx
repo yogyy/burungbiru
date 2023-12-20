@@ -10,8 +10,10 @@ export const RightAside: React.FC<React.ComponentProps<"aside">> = ({
   className,
   ...props
 }) => {
-  const { data: peoples, isLoading } =
-    api.profile.getUserRandomUserDB.useQuery();
+  const { data: peoples, isLoading } = api.profile.getUserRandomUserDB.useQuery(
+    {},
+    { refetchOnWindowFocus: false, refetchOnMount: false }
+  );
   const { push } = useRouter();
 
   return (
