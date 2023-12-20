@@ -4,6 +4,7 @@ import { useHover } from "usehooks-ts";
 import { api, RouterOutputs } from "~/utils/api";
 import { Button, ButtonProps } from "./ui/button";
 import { cn } from "~/lib/utils";
+import { getUserFollower } from "~/hooks/query";
 
 interface FollowButtonProps extends ButtonProps {
   user: RouterOutputs["profile"]["getUserByUsernameDB"];
@@ -13,13 +14,12 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
   user,
   className,
 }) => {
+  const { user: currentUser } = useUser();
   const hoverRef = React.useRef(null);
   const isHover = useHover(hoverRef);
   const ctx = api.useUtils();
 
-  const { data: follower } = api.profile.userFollower.useQuery({
-    userId: user.id,
-  });
+  const follower = getUserFollower({ userId: user.id });
   const following = api.action.followUser.useMutation({
     onSuccess: () => {
       ctx.profile.userFollower.invalidate({ userId: user.id });
@@ -32,9 +32,8 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
       ctx.profile.getUserRandomUserDB.invalidate();
     },
   });
-  const { user: currentUser } = useUser();
 
-  const userInFollowing = !follower?.followers.some(
+  const userInFollowing = !follower.data?.followers.some(
     (foll) => foll.followingId === currentUser?.id
   );
 
@@ -47,6 +46,8 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
     }
   }
 
+  if (follower.isLoading) return null;
+
   return userInFollowing ? (
     <Button
       ref={hoverRef}
@@ -56,7 +57,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
         "border border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary",
         className
       )}
-      disabled={unfollow.isLoading}
+      disabled={unfollow.isLoading || follower.isLoading}
       onClick={FollowAction}
     >
       Follow
@@ -70,7 +71,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
         "min-w-[101.05px] border border-border text-white hover:border-[rgb(244,33,46)] hover:bg-[rgb(244,33,46)]/[.15] hover:text-[rgb(244,33,46)] focus-visible:border-white",
         className
       )}
-      disabled={following.isLoading}
+      disabled={following.isLoading || follower.isLoading}
       onClick={FollowAction}
     >
       {isHover ? "Unfollow" : "Following"}
