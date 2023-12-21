@@ -2,24 +2,16 @@ import React from "react";
 import ButtonBack from "../ButtonBack";
 import { PageLayout } from "./root-layout";
 import Head from "next/head";
-import {
-  Dialog,
-  DialogContent,
-  DialogOverlay,
-  DialogTrigger,
-} from "~/components/ui/dialog";
 import { useUser } from "@clerk/nextjs";
 import { NextPage } from "next";
 import { cn } from "~/lib/utils";
 import { userMenu } from "~/constant";
-import { Button } from "../ui/button";
-import Image from "next/image";
 import { RouterOutputs, api } from "~/utils/api";
 import { ImageModal } from "../modal";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { toast } from "react-hot-toast";
 import { FollowButton } from "../button-follow";
+import { UserDetails } from "./user-details";
 
 interface LayoutUser {
   children: React.ReactNode;
@@ -32,18 +24,13 @@ export const UserLayout: NextPage<LayoutUser> = ({
   topbar,
   user,
 }) => {
-  const [showModal, setShowModal] = React.useState(false);
+  const [showFollow, setShowFollow] = React.useState(false);
   const { user: currentUser, isLoaded } = useUser();
   const pathname = usePathname();
   const { data: posts, isLoading: userpostLoading } =
     api.profile.userPosts.useQuery({
       userId: user?.id,
     });
-  const { data: follow, isLoading: LoadingFollow } =
-    api.profile.userFollower.useQuery({
-      userId: user.id,
-    });
-  const [showFollow, setShowFollow] = React.useState(false);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -108,97 +95,17 @@ export const UserLayout: NextPage<LayoutUser> = ({
           <div className="relative aspect-[3/1] w-full overflow-hidden">
             <ImageModal
               alt={`banner @${user?.username}`}
-              src="https://pbs.twimg.com/media/F8H50sjbYAAUr-1?format=webp&name=small"
+              src={
+                user.bannerUrl ??
+                "https://pbs.twimg.com/media/F8H50sjbYAAUr-1?format=webp&name=small"
+              }
               width="600"
               height="200"
               priority
-              className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover invert"
+              className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover"
             />
           </div>
-          <div className="px-4 pb-3 pt-3">
-            <div className="relative flex w-full flex-wrap justify-between">
-              <div className="-mt-[15%] mb-3 h-auto w-1/4 min-w-[48px]">
-                <Dialog open={showModal} onOpenChange={setShowModal}>
-                  <DialogTrigger className="rounded-full">
-                    <Image
-                      src={user?.imageUrl}
-                      alt={`${user?.username ?? user?.name}'s profile pic`}
-                      width="140"
-                      height="140"
-                      className={cn(
-                        "cursor-pointer rounded-full border-background bg-background object-cover p-1"
-                      )}
-                      draggable={false}
-                    />
-                  </DialogTrigger>
-                  <DialogOverlay
-                    className="bg-background/90 duration-75"
-                    onClick={() => setShowModal((prev) => !prev)}
-                  />
-                  <DialogContent
-                    className="h-full max-w-md items-center overflow-hidden rounded-md border-none border-transparent bg-transparent shadow-none outline-none md:h-auto"
-                    overlayClassName="bg-background/40"
-                  >
-                    <Image
-                      src={user?.imageUrl}
-                      alt={`${user?.username ?? user?.name}'s profile pic`}
-                      width="370"
-                      height="370"
-                      className="w-full rounded-full bg-background/60"
-                    />
-                  </DialogContent>
-                </Dialog>
-              </div>
-              {isLoaded && currentUser?.id === user.id && (
-                <Button
-                  variant="outline"
-                  className="focus-visible:border-1 rounded-full border-border py-4 hover:bg-[rgba(239,243,244,0.1)] focus-visible:bg-[rgba(239,243,244,0.1)]"
-                  type="button"
-                  onClick={() => toast(pathname, { id: "router" })}
-                >
-                  Edit Profile
-                </Button>
-              )}
-              {isLoaded && currentUser?.id !== user.id && (
-                <FollowButton user={user} />
-              )}
-            </div>
-            <div className="-mt-1 mb-1 flex flex-col">
-              <h2 className="flex text-xl font-extrabold leading-6">
-                {user.name}
-              </h2>
-              <p className="flex text-[15px] leading-6 text-accent">
-                @{user.username}
-              </p>
-            </div>
-            <div className="mb-3" id="bio"></div>
-            <div className="flex flex-wrap text-base leading-5 text-accent  ">
-              <Link
-                href="/#follow"
-                className="mr-5 break-words text-[15px] leading-4 hover:underline"
-              >
-                <span className="font-bold text-[rgb(231,233,234)]">
-                  {LoadingFollow
-                    ? user.following.length
-                    : follow?.following.length}
-                  &nbsp;
-                </span>
-                Following
-              </Link>
-              <Link
-                href="/#follow"
-                className="break-words text-[15px] leading-4 hover:underline"
-              >
-                <span className="font-bold text-[rgb(231,233,234)]">
-                  {LoadingFollow
-                    ? user.followers.length
-                    : follow?.followers.length}
-                  &nbsp;
-                </span>
-                Follower
-              </Link>
-            </div>
-          </div>
+          <UserDetails user={user} currentUser={currentUser} isLoaded />
           <div className="hide-scrollbar flex h-fit w-full items-center overflow-x-scroll border-b border-border">
             {userMenu.map(
               (menu) =>
@@ -225,7 +132,9 @@ export const UserLayout: NextPage<LayoutUser> = ({
                 )
             )}
           </div>
-          <div className="flex w-full flex-col items-center">{children}</div>
+          <div className="flex min-h-[88dvh] w-full flex-col items-center">
+            {children}
+          </div>
         </div>
       </PageLayout>
     </>

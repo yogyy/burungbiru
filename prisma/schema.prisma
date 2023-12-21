@@ -12,18 +12,19 @@ generator client {
 }
 
 model User {
-  id        String   @id @unique
-  name      String   @db.Char(50)
-  username  String   @unique
+  id        String    @id @unique
+  name      String    @db.Char(50)
+  username  String    @unique
   imageUrl  String
   bannerUrl String?
-  bio       String?  @db.Char(160)
-  location  String?  @db.Char(30)
-  website   String?  @db.Char(100)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  followers Follow[] @relation("Follower")
-  following Follow[] @relation("Following")
+  bio       String?   @db.Char(160)
+  location  String?   @db.Char(30)
+  website   String?   @db.Char(100)
+  birthDate DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  followers Follow[]  @relation("Follower")
+  following Follow[]  @relation("Following")
 
   @@index([id, username])
 }
