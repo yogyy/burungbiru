@@ -106,7 +106,7 @@ export const UserDetails: React.FC<UserDetailProps> = ({
           @{user.username}
         </p>
       </div>
-      <div className="mb-3">{user.bio}</div>
+      {user.bio && <div className="mb-3">{user.bio}</div>}
       <div className="mb-3 flex w-full flex-wrap items-center justify-start gap-x-2.5 break-words text-base leading-3 text-accent">
         {user.location && (
           <span className="flex items-center gap-1">
