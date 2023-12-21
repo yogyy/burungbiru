@@ -5,11 +5,10 @@ import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 import { useUser } from "@clerk/nextjs";
+import { getUserbyUsername } from "~/hooks/query";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = api.profile.getUserByUsernameDB.useQuery({
-    username,
-  });
+  const { data: user } = getUserbyUsername({ username });
   const { user: currentUser, isLoaded } = useUser();
   if (!user) return <UserNotFound username={username} />;
 

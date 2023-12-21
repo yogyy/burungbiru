@@ -7,4 +7,11 @@ function getUserFollower({ userId }: { userId: string }) {
   );
 }
 
-export { getUserFollower };
+function getUserbyUsername({ username }: { username: string }) {
+  return api.profile.getUserByUsernameDB.useQuery(
+    { username },
+    { refetchOnWindowFocus: false, refetchOnMount: false }
+  );
+}
+
+export { getUserFollower, getUserbyUsername };

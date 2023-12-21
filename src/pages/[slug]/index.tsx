@@ -5,12 +5,10 @@ import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 import { useInView } from "react-intersection-observer";
+import { getUserbyUsername } from "~/hooks/query";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = api.profile.getUserByUsernameDB.useQuery({
-    username,
-  });
-
+  const { data: user } = getUserbyUsername({ username });
   const { ref, inView } = useInView({
     rootMargin: "40% 0px",
   });
@@ -24,12 +22,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     fetchNextPage,
     isFetchingNextPage,
   } = api.profile.userPosts.useInfiniteQuery(
-    {
-      userId: user?.id,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
+    { userId: user?.id },
+    { getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
 
   if (hasNextPage && inView && !userpostLoading) {
@@ -43,8 +37,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         postLoading={userpostLoading}
       />
       {inView && isFetchingNextPage && <LoadingItem />}
-      <div className="h-screen" />
-      <div ref={ref} data-ref="test" />
+      {hasNextPage && <div ref={ref} />}
     </UserLayout>
   );
 };

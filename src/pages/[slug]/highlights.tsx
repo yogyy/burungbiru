@@ -4,14 +4,12 @@ import React from "react";
 import { UserLayout } from "~/components/layouts";
 import { buttonVariants } from "~/components/ui/button";
 import UserNotFound from "~/components/user-not-found";
+import { getUserbyUsername } from "~/hooks/query";
 import { cn } from "~/lib/utils";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
-import { api } from "~/utils/api";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = api.profile.getUserByUsernameDB.useQuery({
-    username,
-  });
+  const { data: user } = getUserbyUsername({ username });
   if (!user) return <UserNotFound username={username} />;
 
   return (

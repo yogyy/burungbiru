@@ -3,13 +3,12 @@ import React from "react";
 import { Feed, UserLayout } from "~/components/layouts";
 import { LoadingSpinner } from "~/components/loading";
 import UserNotFound from "~/components/user-not-found";
+import { getUserbyUsername } from "~/hooks/query";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { api } from "~/utils/api";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = api.profile.getUserByUsernameDB.useQuery({
-    username,
-  });
+  const { data: user } = getUserbyUsername({ username });
   if (!user) return <UserNotFound username={username} />;
 
   const { data: replies, isLoading } = api.profile.userWithReplies.useQuery({
