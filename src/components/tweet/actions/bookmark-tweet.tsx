@@ -39,6 +39,14 @@ export const BookmarkTweet: React.FC<
     { refetchOnWindowFocus: false }
   );
   const postBookmark = data?.bookmarks;
+
+  function bookmarkAction() {
+    if (!postBookmark?.some((mark) => mark.userId === currentUser?.id)) {
+      addToBookmark({ postId: post.id });
+    } else {
+      deleteBookmark({ postId: post.id });
+    }
+  }
   return (
     <div
       className={cn(
@@ -53,15 +61,7 @@ export const BookmarkTweet: React.FC<
       >
         <Button
           variant="ghost"
-          onClick={() => {
-            if (
-              !postBookmark?.some((mark) => mark.userId === currentUser?.id)
-            ) {
-              addToBookmark({ postId: post.id });
-            } else {
-              deleteBookmark({ postId: post.id });
-            }
-          }}
+          onClick={bookmarkAction}
           type="button"
           size="icon"
           className={cn(

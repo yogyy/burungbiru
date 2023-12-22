@@ -12,10 +12,9 @@ export const ReplyTweet: React.FC<TweetProps> = ({
   repostAuthor,
   ...props
 }) => {
+  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { data: replies } = api.action.replies.useQuery(
-    {
-      postId: post.id,
-    },
+    { postId },
     { refetchOnWindowFocus: false }
   );
 

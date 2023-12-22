@@ -20,7 +20,8 @@ export const TweetTitle: React.FC<TweetProps> = ({
   repostAuthor,
   variant,
   className,
-  type,
+  type = "default",
+  children,
   ...props
 }) => {
   const isClient = useIsClient();
@@ -118,9 +119,7 @@ export const TweetTitle: React.FC<TweetProps> = ({
           </>
         ) : null}
       </div>
-      {type !== "modal" && (
-        <TweetMenu post={post} author={author} repostAuthor={repostAuthor} />
-      )}
+      {children}
     </div>
   );
 };
