@@ -86,6 +86,7 @@ export const profileRouter = createTRPCRouter({
             OR: [
               { type: "POST", authorId: userId },
               { type: "REPOST", authorRepostId: userId },
+              { type: "COMMENT", authorId: userId },
             ],
           },
           include: { repost: true },
@@ -130,7 +131,7 @@ export const profileRouter = createTRPCRouter({
       return await ctx.prisma.like
         .findMany({
           where: { userId: input.userId },
-          orderBy: [{ createdAt: "asc" }],
+          orderBy: [{ createdAt: "desc" }],
           include: {
             post: true,
           },
