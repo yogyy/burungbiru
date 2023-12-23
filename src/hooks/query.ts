@@ -14,4 +14,8 @@ function getUserbyUsername({ username }: { username: string }) {
   );
 }
 
-export { getUserFollower, getUserbyUsername };
+function getCurrentUser() {
+  return api.profile.getCurrentUser.useQuery();
+}
+
+export { getUserFollower, getUserbyUsername, getCurrentUser };
