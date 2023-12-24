@@ -5,14 +5,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
-
 import dayjs from "dayjs";
 import { TweetProps } from "./tweet-post";
 import { cn } from "~/lib/utils";
 import { tweetTime } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
-import { TweetMenu } from "./tweet-menu";
-import { useIsClient, useMediaQuery } from "usehooks-ts";
 
 export const TweetTitle: React.FC<TweetProps> = ({
   author,
@@ -24,9 +21,6 @@ export const TweetTitle: React.FC<TweetProps> = ({
   children,
   ...props
 }) => {
-  const isClient = useIsClient();
-  const onDekstop = useMediaQuery("(min-width: 768px)");
-
   return (
     <div
       className={cn(
@@ -36,60 +30,36 @@ export const TweetTitle: React.FC<TweetProps> = ({
       {...props}
     >
       <div
-        className={cn("flex flex-wrap", variant === "details" && "flex-col")}
-      >
-        {isClient && onDekstop && type === "default" ? (
-          <>
-            <UserCard author={author}>
-              <Link
-                onClick={(e) => e.stopPropagation()}
-                className="-mt-0.5 flex flex-shrink-0 items-start text-base font-bold outline-none focus-within:underline hover:underline"
-                href={`/@${author.username}`}
-              >
-                {`${author.firstName} ${
-                  author.lastName !== null ? author.lastName : ""
-                }`}
-              </Link>
-            </UserCard>
-            <UserCard author={author}>
-              <Link
-                tabIndex={-1}
-                onClick={(e) => e.stopPropagation()}
-                className={cn(
-                  "inline-flex text-accent outline-none",
-                  variant === "details" ? "" : "ml-2"
-                )}
-                href={`/@${author.username}`}
-              >
-                {`@${author.username}`}
-              </Link>
-            </UserCard>
-          </>
-        ) : (
-          <>
-            <Link
-              onClick={(e) => e.stopPropagation()}
-              className={cn(
-                "-mt-0.5 flex flex-shrink-0 items-start text-base font-bold outline-none focus-within:underline hover:underline",
-                variant === "details" ? "" : "mr-2"
-              )}
-              href={`/@${author.username}`}
-            >
-              {`${author.firstName} ${
-                author.lastName !== null ? author.lastName : ""
-              }`}
-            </Link>
-            <Link
-              tabIndex={-1}
-              onClick={(e) => e.stopPropagation()}
-              className={cn("inline-flex text-accent outline-none")}
-              href={`/@${author.username}`}
-            >
-              {`@${author.username}`}
-            </Link>
-          </>
+        className={cn(
+          "flex w-full overflow-hidden",
+          variant === "details" && "flex-col"
         )}
-        {variant !== "details" ? (
+      >
+        <UserCard username={author.username}>
+          <Link
+            onClick={(e) => e.stopPropagation()}
+            className="-mt-0.5 flex flex-shrink-0 items-start text-base font-bold outline-none focus-within:underline hover:underline"
+            href={`/@${author.username}`}
+          >
+            {`${author.firstName} ${
+              author.lastName !== null ? author.lastName : ""
+            }`}
+          </Link>
+        </UserCard>
+        <UserCard username={author.username}>
+          <Link
+            tabIndex={-1}
+            onClick={(e) => e.stopPropagation()}
+            className={cn(
+              "inline-flex text-accent outline-none",
+              variant === "details" ? "" : "ml-2"
+            )}
+            href={`/@${author.username}`}
+          >
+            {`@${author.username}`}
+          </Link>
+        </UserCard>
+        {variant !== "details" && (
           <>
             <span className="px-1 text-[15px] leading-5 text-accent">·</span>
             <Link
@@ -117,7 +87,7 @@ export const TweetTitle: React.FC<TweetProps> = ({
               </TooltipProvider>
             </Link>
           </>
-        ) : null}
+        )}
       </div>
       {children}
     </div>

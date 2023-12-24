@@ -1,24 +1,25 @@
 import React from "react";
 import { HoverCardTriggerProps } from "@radix-ui/react-hover-card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
-import { api, RouterOutputs } from "~/utils/api";
 import Image from "next/image";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { FollowButton } from "./button-follow";
 import { getUserbyUsername } from "~/hooks/query";
+import { useIsClient, useMediaQuery } from "usehooks-ts";
 
-interface UserCardProps extends HoverCardTriggerProps {
-  author: RouterOutputs["profile"]["getUserByUsername"];
-}
-
-export const UserCard = ({ children, author, ...props }: UserCardProps) => {
+export const UserCard: React.FC<
+  HoverCardTriggerProps & { username: string }
+> = ({ children, username, className, ...props }) => {
   const { user: currentUser } = useUser();
   const { data: user } = getUserbyUsername({
-    username: author.username!,
+    username,
   });
 
-  return (
+  const isClient = useIsClient();
+  const onDekstop = useMediaQuery("(min-width: 768px)");
+
+  return isClient && onDekstop ? (
     <HoverCard>
       <HoverCardTrigger asChild {...props}>
         {children}
@@ -61,5 +62,7 @@ export const UserCard = ({ children, author, ...props }: UserCardProps) => {
         </div>
       </HoverCardContent>
     </HoverCard>
+  ) : (
+    <>{children}</>
   );
 };
