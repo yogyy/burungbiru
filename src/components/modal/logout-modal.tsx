@@ -12,9 +12,10 @@ import { BsTwitterX } from "react-icons/bs";
 import { useClerk } from "@clerk/nextjs";
 import { UserResource } from "@clerk/types/dist";
 import { useBurgerMenu, useUserPopover } from "~/hooks/store";
+import { RouterOutputs } from "~/utils/api";
 
 export const LogoutModal: React.FC<{
-  user: UserResource | null | undefined;
+  user: RouterOutputs["profile"]["getCurrentUser"];
   children: React.ReactNode;
 }> = ({ user, children }) => {
   const [modalSignOut, setModalSignOut] = React.useState(false);

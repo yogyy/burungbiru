@@ -138,7 +138,7 @@ export const UserDetails: React.FC<UserDetailProps> = ({
           Joined {joined}
         </span>
       </div>
-      <div className="flex flex-wrap text-base leading-5 text-accent  ">
+      <div className="flex flex-wrap text-base leading-5 text-accent">
         <Link
           href="/#follow"
           className="mr-5 break-words text-[15px] leading-4 hover:underline"

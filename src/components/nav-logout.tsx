@@ -12,10 +12,11 @@ import { Button } from "./ui/button";
 import { cn } from "~/lib/utils";
 import { LogoutModal } from "./modal/logout-modal";
 import { useUserPopover } from "~/hooks/store";
+import { RouterOutputs } from "~/utils/api";
 
 export const NavbarLogout: React.FC<
   React.HTMLAttributes<HTMLDivElement> & {
-    user: UserResource | null | undefined;
+    user: RouterOutputs["profile"]["getCurrentUser"];
   }
 > = ({ user, className, ...props }) => {
   const { show, setShow } = useUserPopover();
@@ -46,7 +47,7 @@ export const NavbarLogout: React.FC<
                   <div className="hidden h-[41.06px] xl:flex">
                     <div className="mx-3 flex flex-col items-start">
                       <span className="text-base font-semibold leading-5">
-                        {user?.fullName}
+                        {user?.name}
                       </span>
                       <span className="font-thin leading-5 text-accent">
                         @{user?.username}

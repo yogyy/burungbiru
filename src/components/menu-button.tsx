@@ -9,10 +9,11 @@ import {
 } from "~/components/ui/popover";
 import { MoreNavbar } from "./navbar/more";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { RouterOutputs } from "~/utils/api";
 
 export const MenuNavbarButton: React.FC<
   PopoverPrimitive.PopoverProps & {
-    user: UserResource | null | undefined;
+    user: RouterOutputs["profile"]["getCurrentUser"];
   }
 > = ({ user, ...props }) => {
   return (
