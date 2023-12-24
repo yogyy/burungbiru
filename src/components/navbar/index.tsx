@@ -49,7 +49,7 @@ export const Navbar = () => {
                       "-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
                       "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
                     )}
-                    onClick={(e) => (!isLoading ? e.preventDefault() : null)}
+                    onClick={(e) => (!user ? e.preventDefault() : null)}
                     href={
                       link.link === "/profile"
                         ? `/@${user?.username}`
