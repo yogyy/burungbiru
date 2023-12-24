@@ -1,29 +1,38 @@
 import { clerkClient } from "@clerk/nextjs";
-import type { User } from "@clerk/nextjs/api";
-import type { Post } from "@prisma/client";
+// import type { User } from "@clerk/nextjs/api";
+import type { Post, User } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { prisma } from "../db";
 
 const filterUserForClient = (user: User) => {
   return {
     id: user.id,
     username: user.username,
     profileImg: user.imageUrl,
-    firstName: user.firstName,
-    lastName: user.lastName,
+    firstName: user.name,
+    lastName: "",
   };
 };
 
 const addUserDataToPosts = async (posts: Post[]) => {
-  const users = (
-    await clerkClient.users.getUserList({
-      userId: posts.map((post) => post.authorRepostId || post.authorId),
-      limit: 100,
+  // const users = (
+  //   await clerkClient.users.getUserList({
+  //     userId: posts.map((post) => post.authorId || post.authorRepostId!),
+  //     limit: 100,
+  //   })
+  // ).map(filterUserForClient);
+
+  const userDB = await prisma.user
+    .findMany({
+      where: {
+        id: { in: posts.map((post) => post.authorId || post.authorRepostId!) },
+      },
     })
-  ).map(filterUserForClient);
+    .then((item) => item.map(filterUserForClient));
 
   return posts.map((post) => {
-    const author = users.find((user) => user.id === post.authorId);
-    const repostAuthor = users.find((user) => user.id === post.authorRepostId);
+    const author = userDB.find((user) => user.id === post.authorId);
+    const repostAuthor = userDB.find((user) => user.id === post.authorRepostId);
 
     if (!author)
       throw new TRPCError({
@@ -33,10 +42,7 @@ const addUserDataToPosts = async (posts: Post[]) => {
 
     return {
       post,
-      author: {
-        ...author,
-        username: author.username,
-      },
+      author: { ...author },
       repostAuthor: { ...repostAuthor },
     };
   });
