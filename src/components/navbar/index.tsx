@@ -1,4 +1,4 @@
-import { useUser, SignInButton } from "@clerk/nextjs";
+import { SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { cn } from "~/lib/utils";
@@ -8,13 +8,16 @@ import { navbarLink } from "~/constant";
 import { NavbarLogout } from "../nav-logout";
 import { CreatePostModal } from "../modal";
 import { MenuNavbarButton } from "../menu-button";
+import { getCurrentUser } from "~/hooks/query";
 
 export const Navbar = () => {
-  const { user, isSignedIn } = useUser();
+  const { data: user, isLoading } = getCurrentUser();
 
   let r = useRouter();
   const arrOfRoute = r.route.split("/");
   const baseRoute = "/" + arrOfRoute[1];
+
+  if (!user) return null;
 
   return (
     <header className="relative hidden min-[570px]:flex">
@@ -25,7 +28,6 @@ export const Navbar = () => {
               href="/"
               className="rounded-full border border-transparent p-2.5 transition-colors duration-300 hover:bg-border/30"
             >
-              {/* <Logo width="30" height="30" className="fill-current" /> */}
               <BsTwitterX size={27} className="fill-current" />
               <span className="sr-only">logo</span>
             </Link>
@@ -47,7 +49,7 @@ export const Navbar = () => {
                       "-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
                       "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
                     )}
-                    onClick={(e) => (!isSignedIn ? e.preventDefault() : null)}
+                    onClick={(e) => (!isLoading ? e.preventDefault() : null)}
                     href={
                       link.link === "/profile"
                         ? `/@${user?.username}`
@@ -72,7 +74,7 @@ export const Navbar = () => {
             </ul>
           </nav>
           <div className="my-1 flex w-full items-center justify-center xl:w-[90%] 2xl:my-4">
-            {!isSignedIn ? (
+            {!user ? (
               <Button
                 asChild
                 className="h-[50px] w-[50px] rounded-full p-0 text-xs font-semibold xl:min-h-[52px] xl:w-full xl:min-w-[52px] xl:text-base"

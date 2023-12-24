@@ -7,14 +7,14 @@ import {
 } from "../ui/accordion";
 import { AdsIcon, AnalyticIcon, LogOutIcon } from "../icons";
 import { LogoutModal } from "../modal";
-import { UserResource } from "@clerk/types/dist";
 import { SettingsAndSupport } from "~/constant";
 import { cn } from "~/lib/utils";
+import { RouterOutputs } from "~/utils/api";
 
 type TYPE = "mobile" | "dekstop";
 
 interface MoreProps {
-  user: UserResource | null | undefined;
+  user: RouterOutputs["profile"]["getCurrentUser"];
   type: TYPE;
 }
 

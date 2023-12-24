@@ -27,16 +27,22 @@ import { Button } from "../ui/button";
 import { useBurgerMenu } from "~/hooks/store";
 import { hamburgerNavbarLink } from "~/constant";
 import { MoreNavbar } from "../navbar/more";
+import { RouterOutputs } from "~/utils/api";
+import { getUserFollower } from "~/hooks/query";
 
 export const BurgerMenu: React.FC<
   React.HTMLAttributes<HTMLDivElement> & {
-    user: UserResource | null | undefined;
+    user: RouterOutputs["profile"]["getCurrentUser"];
     isSignedIn: boolean | undefined;
   }
 > = ({ user, isSignedIn, className, ...props }) => {
   const { show, setShow } = useBurgerMenu();
 
   if (!user) return null;
+
+  const { data: follow, isLoading: LoadingFollow } = getUserFollower({
+    userId: user.id,
+  });
 
   return (
     <div
@@ -73,9 +79,7 @@ export const BurgerMenu: React.FC<
                     className="flex items-start break-words text-base font-bold outline-none focus-within:underline hover:underline"
                     href={`/${user?.username}`}
                   >
-                    {`${user?.firstName} ${
-                      user?.lastName !== null ? user?.lastName : ""
-                    }`}
+                    {user.name}
                   </Link>
                   <Link
                     className="flex font-thin text-accent outline-none"
@@ -85,13 +89,20 @@ export const BurgerMenu: React.FC<
                     {`@${user?.username}`}
                   </Link>
                 </div>
-                <div className="mt-3 flex justify-start gap-2 text-[14px] text-base font-medium leading-4 text-foreground">
+                <div className="mt-3 flex justify-start gap-2 text-[14px] text-base font-medium leading-4 text-accent">
                   <p>
-                    ? <span className="font-normal text-accent">Following</span>
+                    <span className="font-bold text-[rgb(231,233,234)]">
+                      {!LoadingFollow && follow?.following.length}
+                      &nbsp;
+                    </span>
+                    Following
                   </p>
                   <p>
-                    ??{" "}
-                    <span className="font-normal text-accent">Followers</span>
+                    <span className="font-bold text-[rgb(231,233,234)]">
+                      {!LoadingFollow && follow?.followers.length}
+                      &nbsp;
+                    </span>
+                    Follower
                   </p>
                 </div>
               </SheetTitle>

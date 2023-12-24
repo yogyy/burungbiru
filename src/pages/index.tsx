@@ -8,11 +8,13 @@ import { useInView } from "react-intersection-observer";
 import { LoadingItem } from "~/components/loading";
 import React from "react";
 import { useMediaQuery } from "usehooks-ts";
+import { getCurrentUser } from "~/hooks/query";
 
 const LazyForm = dynamic(() => import("~/components/form"));
 
 const Home: NextPage = () => {
-  const { user, isLoaded: userLoaded, isSignedIn } = useUser();
+  const { isLoaded: userLoaded, isSignedIn } = useUser();
+  const { data: user } = getCurrentUser();
   const showBurgerMenu = useMediaQuery("(max-width: 570px)");
 
   const { ref, inView } = useInView({
@@ -46,7 +48,7 @@ const Home: NextPage = () => {
   return (
     <PageLayout className="flex">
       <div className="flex w-full max-w-[600px] flex-shrink flex-col border-x border-border">
-        {showBurgerMenu && <BurgerMenu isSignedIn={isSignedIn} user={user} />}
+        {showBurgerMenu && <BurgerMenu isSignedIn={isSignedIn} user={user!} />}
         <div className="sticky top-0 z-[25] h-auto w-full border-b border-border bg-background/[.65] backdrop-blur-md">
           <div className="flex h-[53px] items-center">
             <div className="relative  flex h-full w-full flex-1 items-center justify-center px-4 font-semibold hover:cursor-pointer">
@@ -70,7 +72,7 @@ const Home: NextPage = () => {
           postLoading={postLoading}
         />
         {inView && isFetchingNextPage && <LoadingItem />}
-        <div ref={ref} data-ref="test" />
+        {hasNextPage && !isFetchingNextPage && <div ref={ref} />}
       </div>
     </PageLayout>
   );
