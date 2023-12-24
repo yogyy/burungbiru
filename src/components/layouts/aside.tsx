@@ -57,7 +57,7 @@ export const RightAside: React.FC<React.ComponentProps<"aside">> = ({
               >
                 <div className="flex w-full overflow-hidden">
                   <UserAvatar
-                    profileImg={ppl.imageUrl}
+                    imageUrl={ppl.imageUrl}
                     username={ppl.username}
                     className="mr-3 aspect-square h-10 rounded-full"
                   />

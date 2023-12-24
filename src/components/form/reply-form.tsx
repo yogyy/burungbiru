@@ -145,7 +145,7 @@ const CreateReply: React.FC<CommentForm> = ({
               >
                 <UserAvatar
                   username={user.username}
-                  profileImg={user.imageUrl}
+                  imageUrl={user.imageUrl}
                   className="flex-shrink-0"
                   // tabIndex={variant === "modal" ? -1 : 0}
                   onClick={(e) => {

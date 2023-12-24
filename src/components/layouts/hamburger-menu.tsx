@@ -70,7 +70,7 @@ export const BurgerMenu: React.FC<
               <SheetTitle className="p-4 text-base leading-5  ">
                 <div className="w-fit">
                   <UserAvatar
-                    profileImg={user?.imageUrl}
+                    imageUrl={user?.imageUrl}
                     username={user?.username}
                   />
                 </div>

@@ -5,15 +5,15 @@ import Link from "next/link";
 import { cn } from "~/lib/utils";
 
 type AvatarType = Pick<
-  RouterOutputs["profile"]["getUserByUsername"],
-  "username" | "profileImg"
+  RouterOutputs["profile"]["getUserByUsernameDB"],
+  "username" | "imageUrl"
 > &
   React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
 export const UserAvatar: React.FC<AvatarType> = ({
   className,
   username,
-  profileImg,
+  imageUrl,
   ...props
 }) => {
   return (
@@ -26,7 +26,7 @@ export const UserAvatar: React.FC<AvatarType> = ({
       {...props}
     >
       <Avatar>
-        <AvatarImage src={profileImg} alt={`@${username}`} />
+        <AvatarImage src={imageUrl} alt={`@${username}`} />
         <AvatarFallback className="bg-background text-primary">
           {username?.slice(0, 2)}
         </AvatarFallback>

@@ -127,8 +127,8 @@ const CreateTweet: React.FC<
             >
               <div className="relative flex h-auto w-auto items-start gap-4">
                 <UserAvatar
-                  username={user.username}
-                  profileImg={user.imageUrl}
+                  username={currentUser?.username}
+                  imageUrl={currentUser?.imageUrl}
                   className="mt-3 flex-shrink-0"
                   onClick={(e) => {
                     variant === "modal" ? e.preventDefault() : null;
