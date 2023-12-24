@@ -6,6 +6,7 @@ import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 import { useInView } from "react-intersection-observer";
 import { getUserbyUsername } from "~/hooks/query";
+import { SEO } from "~/components/simple-seo";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = getUserbyUsername({ username });
@@ -31,7 +32,10 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   }
 
   return (
-    <UserLayout user={user}>
+    <UserLayout
+      user={user}
+      title={`${user?.name} (@${user?.username}) / burbir`}
+    >
       <Feed
         post={posts?.pages.flatMap((page) => page.posts)}
         postLoading={userpostLoading}

@@ -6,6 +6,7 @@ import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 import { useUser } from "@clerk/nextjs";
 import { getUserbyUsername } from "~/hooks/query";
+import { SEO } from "~/components/simple-seo";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = getUserbyUsername({ username });
@@ -39,6 +40,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   return (
     <UserLayout
       user={user}
+      title={`Post Liked by ${user?.name} (@${user?.username}) / burbir`}
       topbar={
         <div className="flex w-max flex-shrink flex-col justify-center">
           <h1 className="font-sans text-lg font-bold leading-6">{user.name}</h1>

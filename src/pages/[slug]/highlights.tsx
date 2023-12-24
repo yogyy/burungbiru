@@ -13,7 +13,10 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   if (!user) return <UserNotFound username={username} />;
 
   return (
-    <UserLayout user={user}>
+    <UserLayout
+      user={user}
+      title={`${user?.name} (@${user?.username}) / burbir`}
+    >
       <div className="mx-auto my-8 flex w-full max-w-[calc(5*80px)] flex-col items-center px-8">
         <div className="w-full">
           <h2 className="mb-2 break-words text-left text-[31px] font-extrabold leading-8">

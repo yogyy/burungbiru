@@ -12,10 +12,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FollowButton } from "../button-follow";
 import { UserDetails } from "./user-details";
+import { SEO } from "../simple-seo";
 
 interface LayoutUser {
   children: React.ReactNode;
   topbar?: React.ReactNode;
+  title: string;
   user: RouterOutputs["profile"]["getUserByUsernameDB"];
 }
 
@@ -23,6 +25,7 @@ export const UserLayout: NextPage<LayoutUser> = ({
   children,
   topbar,
   user,
+  title,
 }) => {
   const [showFollow, setShowFollow] = React.useState(false);
   const { user: currentUser, isLoaded } = useUser();
@@ -56,9 +59,7 @@ export const UserLayout: NextPage<LayoutUser> = ({
 
   return (
     <>
-      <Head>
-        <title>{`${user?.name} (@${user?.username}) / burbir`}</title>
-      </Head>
+      <SEO title={title} />
       <PageLayout className="flex">
         <div className="flex h-full w-full max-w-[600px] flex-col border-x border-border">
           <div

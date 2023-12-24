@@ -2,6 +2,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import React from "react";
 import { Feed, UserLayout } from "~/components/layouts";
 import { LoadingSpinner } from "~/components/loading";
+import { SEO } from "~/components/simple-seo";
 import UserNotFound from "~/components/user-not-found";
 import { getUserbyUsername } from "~/hooks/query";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
@@ -16,14 +17,19 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   });
 
   return (
-    <UserLayout user={user}>
+    <UserLayout
+      user={user}
+      title={`Post with replies by ${user?.name} (@${user?.username}) / burbir`}
+    >
       {isLoading ? (
         <div className="flex h-20 items-center justify-center">
           <LoadingSpinner size={24} />
         </div>
       ) : (
         replies &&
-        replies?.length >= 1 && <Feed post={replies} postLoading={isLoading} />
+        replies?.length >= 1 && (
+          <Feed post={replies} postLoading={isLoading} showParent={true} />
+        )
       )}
     </UserLayout>
   );

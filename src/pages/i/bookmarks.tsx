@@ -4,6 +4,7 @@ import React from "react";
 import ButtonBack from "~/components/ButtonBack";
 import { Feed, PageLayout } from "~/components/layouts";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
+import { SEO } from "~/components/simple-seo";
 import { api } from "~/utils/api";
 
 const Bookmarks = () => {
@@ -19,9 +20,7 @@ const Bookmarks = () => {
 
   return (
     <>
-      <Head>
-        <title>{`Bookmarks / burbir`}</title>
-      </Head>
+      <SEO title={`Bookmarks / burbir`} />
       <PageLayout className="flex">
         <div className="flex h-full min-h-screen w-full max-w-[600px] flex-col border-x border-border">
           <div className="sticky top-0 z-[25] flex h-auto w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">
@@ -40,7 +39,6 @@ const Bookmarks = () => {
             </div>
           </div>
 
-          {/* <pre>{JSON.stringify(user, null, 2)}</pre> */}
           <div className="flex w-full flex-col items-center">
             {userBookmarkLoading && (
               <div className="flex h-20 items-center justify-center">

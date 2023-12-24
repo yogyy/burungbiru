@@ -3,17 +3,13 @@ import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import Head from "next/head";
 import { Toaster } from "react-hot-toast";
+import { SEO } from "~/components/simple-seo";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider>
-      <Head>
-        <title>burbir</title>
-        <meta name="twitter clone using t3 stack" content="burbir" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <SEO />
       <Component {...pageProps} />
       <Toaster
         position="top-right"
