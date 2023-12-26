@@ -71,14 +71,15 @@ export const UserLayout: NextPage<LayoutUser> = ({
               <div className="-ml-2 w-14">
                 <ButtonBack />
               </div>
-              {topbar ? (
-                topbar
-              ) : (
-                <div className="flex w-max flex-shrink flex-col justify-center">
-                  <h1 className="inline-flex h-auto items-end font-sans text-lg font-bold leading-6">
-                    {user.name}
-                    <Badge variant={user.type} />
-                  </h1>
+
+              <div className="flex w-max flex-shrink flex-col justify-center">
+                <h1 className="inline-flex h-auto items-end font-sans text-lg font-bold leading-6">
+                  {user.name}
+                  <Badge variant={user.type} />
+                </h1>
+                {topbar ? (
+                  topbar
+                ) : (
                   <p className="text-[13px] font-thin leading-4 text-accent">
                     {userpostLoading ? (
                       <span className="select-none text-background">
@@ -88,8 +89,9 @@ export const UserLayout: NextPage<LayoutUser> = ({
                       <span>{posts?.posts.length} posts</span>
                     )}
                   </p>
-                </div>
-              )}
+                )}
+              </div>
+
               {isLoaded && showFollow && currentUser?.id !== user.id && (
                 <FollowButton user={user} className="sticky ml-auto" />
               )}

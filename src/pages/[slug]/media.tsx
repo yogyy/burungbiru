@@ -42,16 +42,13 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
       user={user}
       title={`Media Posts by ${user?.name} (@${user?.username}) / burbir`}
       topbar={
-        <div className="flex w-max flex-shrink flex-col justify-center">
-          <h1 className="font-sans text-lg font-bold leading-6">{user.name}</h1>
-          <p className="text-[13px] font-thin leading-4 text-accent">
-            {userMediaLoading ? (
-              <span className="select-none text-background">loading</span>
-            ) : (
-              <span>{media?.length} Photos & videos</span>
-            )}
-          </p>
-        </div>
+        <p className="text-[13px] font-thin leading-4 text-accent">
+          {userMediaLoading ? (
+            <span className="select-none text-background">loading</span>
+          ) : (
+            <span>{media?.length} Photos & videos</span>
+          )}
+        </p>
       }
     >
       {userMediaLoading ? (

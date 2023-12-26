@@ -41,16 +41,13 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
       user={user}
       title={`Post Liked by ${user?.name} (@${user?.username}) / burbir`}
       topbar={
-        <div className="flex w-max flex-shrink flex-col justify-center">
-          <h1 className="font-sans text-lg font-bold leading-6">{user.name}</h1>
-          <p className="text-[13px] font-thin leading-4 text-accent">
-            {userLikesLoading ? (
-              <span className="select-none text-background">loading</span>
-            ) : (
-              <span>{likes?.length} Likes</span>
-            )}
-          </p>
-        </div>
+        <p className="text-[13px] font-thin leading-4 text-accent">
+          {userLikesLoading ? (
+            <span className="select-none text-background">loading</span>
+          ) : (
+            <span>{likes?.length} Likes</span>
+          )}
+        </p>
       }
     >
       <div className="flex w-full flex-col items-center">
