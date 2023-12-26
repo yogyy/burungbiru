@@ -2,10 +2,14 @@ import { Button } from "~/components/ui/button";
 import { cn, formatViews } from "~/lib/utils";
 import { TweetProps } from "../tweet-post";
 import { AnalyticIcon } from "~/components/icons";
+import { api } from "~/utils/api";
+import { toast } from "react-hot-toast";
 
 export const AnalyticTweet: React.FC<
   Omit<TweetProps, "author" | "repostAuthor">
 > = ({ variant, className, post, ...props }) => {
+  const id = post.type === "REPOST" ? post.parentId ?? "" : post.id;
+  const { data } = api.post.postViews.useQuery({ id });
   return (
     <div
       className={cn(
@@ -44,7 +48,11 @@ export const AnalyticTweet: React.FC<
             "font-normal transition duration-300 group-hover:text-primary group-focus:text-primary"
           )}
         >
-          {post.view !== 0 ? formatViews(post.view) : ""}
+          {data?.view && data?.view !== 0
+            ? formatViews(data?.view)
+            : "" ?? post.view !== 0
+            ? formatViews(post.view)
+            : ""}
         </span>
       </div>
     </div>

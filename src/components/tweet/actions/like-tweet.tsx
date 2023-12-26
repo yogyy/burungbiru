@@ -16,6 +16,7 @@ export const LikeTweet: React.FC<
   const { mutate: like } = api.action.likePost.useMutation({
     onMutate() {
       setLikeBtn((prev) => !prev);
+      ctx.action.likes.invalidate({ postId });
     },
     onSuccess() {
       setLikeBtn((prev) => !prev);
@@ -25,6 +26,7 @@ export const LikeTweet: React.FC<
   const { mutate: unlike } = api.action.unlikePost.useMutation({
     onMutate() {
       setLikeBtn((prev) => !prev);
+      ctx.action.likes.invalidate({ postId });
     },
     onSuccess() {
       setLikeBtn((prev) => !prev);

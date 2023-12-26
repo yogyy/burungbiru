@@ -9,11 +9,12 @@ import { toast } from "react-hot-toast";
 export const BookmarkTweet: React.FC<
   Omit<TweetProps, "author" | "repostAuthor">
 > = ({ variant, className, post, ...props }) => {
+  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const ctx = api.useUtils();
   const { mutate: addToBookmark } = api.action.bookmarkPost.useMutation({
     onSuccess() {
-      ctx.action.bookmarks.invalidate({ postId: post.id });
-      ctx.post.interactions.invalidate({ id: post.id });
+      ctx.post.bookmarks.invalidate({ postId });
+      ctx.post.bookmarks.invalidate({ postId });
       toast.success("Added to your Bookmarks", {
         id: `${post.id}-addbookmark`,
       });
@@ -21,7 +22,7 @@ export const BookmarkTweet: React.FC<
   });
   const { mutate: deleteBookmark } = api.action.unbookmarkPost.useMutation({
     onSuccess() {
-      ctx.post.interactions.invalidate({ id: post.id });
+      ctx.post.bookmarks.invalidate({ postId });
       ctx.profile.userBookmarkedPosts.invalidate().then(() =>
         toast.success("Removed from your Bookmarks", {
           id: `${post.id}-removebookmark`,
@@ -32,19 +33,16 @@ export const BookmarkTweet: React.FC<
 
   const { user: currentUser } = useUser();
 
-  const { data } = api.post.interactions.useQuery(
-    {
-      id: post.id,
-    },
+  const { data: postBookmark } = api.post.bookmarks.useQuery(
+    { postId },
     { refetchOnWindowFocus: false }
   );
-  const postBookmark = data?.bookmarks;
 
   function bookmarkAction() {
     if (!postBookmark?.some((mark) => mark.userId === currentUser?.id)) {
-      addToBookmark({ postId: post.id });
+      addToBookmark({ postId });
     } else {
-      deleteBookmark({ postId: post.id });
+      deleteBookmark({ postId });
     }
   }
   return (

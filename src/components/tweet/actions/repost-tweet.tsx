@@ -13,7 +13,6 @@ export const RepostTweet: React.FC<
   const { mutate: repost } = api.action.retweetPost.useMutation({
     onSuccess() {
       ctx.action.reposts.invalidate({ postId });
-      ctx.post.timeline.invalidate();
       ctx.profile.userPosts.invalidate();
     },
   });
