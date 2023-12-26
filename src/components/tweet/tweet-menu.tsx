@@ -81,7 +81,7 @@ export const TweetMenu: React.FC<
           onClick={(e) => {
             e.stopPropagation();
           }}
-          className="group -mr-2 inline-flex aspect-square h-[34.75px] w-[34.75px] items-center justify-center rounded-full text-accent focus-within:bg-primary/5 hover:bg-primary/5"
+          className="group -mr-2 -mt-1.5 inline-flex aspect-square h-[34.75px] w-[34.75px] items-center justify-center rounded-full text-accent focus-within:bg-primary/5 hover:bg-primary/5"
         >
           <TbDots
             size={18.75}
@@ -102,7 +102,7 @@ export const TweetMenu: React.FC<
           <Button
             type="button"
             variant="ghost"
-            className="flex h-auto w-full justify-start gap-2 rounded-none p-2.5 text-[16px]"
+            className="flex h-auto w-full justify-start gap-2 rounded-xl p-2.5 text-[16px]"
             disabled={deleting}
           >
             <BiSolidUserPlus size={20} />
@@ -118,7 +118,7 @@ export const TweetMenu: React.FC<
             >
               <Button
                 variant="ghost"
-                className="flex h-auto w-full justify-start gap-2 rounded-none p-2.5 text-[16px] font-bold text-desctructive"
+                className="flex h-auto w-full justify-start gap-2 rounded-xl p-2.5 text-[16px] font-bold text-desctructive"
               >
                 <BiTrash size={18} /> Delete
               </Button>
