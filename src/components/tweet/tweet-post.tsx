@@ -4,13 +4,21 @@ import { cn } from "~/lib/utils";
 import { renderText } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
 import { ImageModal } from "../modal";
-import { TweetTitle, TweetText, TweetAction } from "./";
+import { TweetTitle, TweetText, TweetAction, TweetMenu } from "./";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 import { RetweetIcon } from "../icons";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
+import {
+  AnalyticTweet,
+  BookmarkTweet,
+  LikeTweet,
+  ReplyTweet,
+  RepostTweet,
+  ShareTweet,
+} from "./actions";
 dayjs.extend(LocalizedFormat);
 
 type VariantTweet = "default" | "details" | "parent";
@@ -19,6 +27,7 @@ type TypeTweet = "default" | "modal";
 interface TweetTypeVariant {
   variant?: VariantTweet;
   type?: TypeTweet;
+  showParent?: boolean;
 }
 
 export type TweetProps = RouterOutputs["post"]["detailPost"] &
@@ -31,6 +40,7 @@ export const TweetPost: React.FC<TweetProps> = ({
   repostAuthor,
   variant = "default",
   type = "default",
+  showParent,
   className,
   ...props
 }) => {
@@ -73,14 +83,17 @@ export const TweetPost: React.FC<TweetProps> = ({
           <div className="mr-3 flex flex-grow-0 basis-10 justify-end">
             <RetweetIcon className="" />
           </div>
-          <Link href={`/@${repostAuthor.username}`} className="hover:underline">
-            {currentUser?.id !== post.authorRepostId
-              ? `${repostAuthor.firstName} ${
-                  repostAuthor.lastName !== null ? repostAuthor.lastName : ""
-                } `
-              : "you "}{" "}
-            reposted
-          </Link>
+          <UserCard username={repostAuthor.username!}>
+            <Link
+              href={`/@${repostAuthor.username}`}
+              className="hover:underline"
+            >
+              {currentUser?.id !== post.authorParentId
+                ? `${repostAuthor.name} `
+                : "you "}{" "}
+              reposted
+            </Link>
+          </UserCard>
         </div>
       )}
       <article className="relative flex w-full overflow-hidden">
@@ -91,19 +104,19 @@ export const TweetPost: React.FC<TweetProps> = ({
                 "mx-auto h-2 w-0.5 bg-transparent",
                 post.type === "COMMENT" &&
                   variant !== "parent" &&
-                  pathname === "/" &&
+                  showParent &&
                   "bg-[rgb(51,54,57)]"
               )}
             />
           )}
           {type === "default" ? (
-            <UserCard author={author}>
+            <UserCard username={author.username}>
               <Image
                 width="40"
                 height="40"
                 draggable={false}
-                src={author.profileImg}
-                alt={`@${author.username || author.lastName}'s profile picture`}
+                src={author.imageUrl}
+                alt={`@${author.name}'s profile picture`}
                 className="first-letter mt-1 flex h-10 basis-12 rounded-full"
               />
             </UserCard>
@@ -112,18 +125,15 @@ export const TweetPost: React.FC<TweetProps> = ({
               width="40"
               height="40"
               draggable={false}
-              src={author.profileImg}
-              alt={`@${author.username || author.lastName}'s profile picture`}
+              src={author.imageUrl}
+              alt={`@${author.name}'s profile picture`}
               className="first-letter mt-1 flex h-10 basis-12 rounded-full"
             />
-          )}
-          {variant === "parent" && (
-            <div className="mx-auto mt-1 h-full w-0.5 bg-[rgb(51,54,57)]" />
           )}
         </div>
         <div
           className={cn(
-            "relative flex w-full flex-col overflow-x-hidden pl-3 pr-4 pt-1",
+            "relative flex w-full flex-col overflow-x-hidden pl-3 pr-4 pt-2",
             type === "default" && "pb-3"
           )}
         >
@@ -133,13 +143,38 @@ export const TweetPost: React.FC<TweetProps> = ({
             post={post}
             repostAuthor={repostAuthor}
             type={type}
-          />
+          >
+            {type !== "modal" && (
+              <TweetMenu
+                post={post}
+                author={author}
+                repostAuthor={repostAuthor}
+              />
+            )}
+          </TweetTitle>
           <div
             className={cn(
-              "flex w-full justify-start",
+              "flex w-full flex-col justify-start",
               type === "modal" && "pb-2"
             )}
           >
+            {post.type === "COMMENT" &&
+              type !== "modal" &&
+              !showParent &&
+              pathname !== "/post/[id]" && (
+                <p className="-mt-1 text-accent">
+                  Replying to&nbsp;
+                  <UserCard username={repostAuthor.username!}>
+                    <Link
+                      href={`/@${repostAuthor.username}`}
+                      className="text-primary hover:underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      @{repostAuthor.username}
+                    </Link>
+                  </UserCard>
+                </p>
+              )}
             <TweetText content={renderText(post.content)} />
           </div>
           {post.image && type !== "modal" && (
@@ -164,12 +199,19 @@ export const TweetPost: React.FC<TweetProps> = ({
             </div>
           )}
           {type === "default" ? (
-            <TweetAction
-              post={post}
-              variant={variant}
-              author={author}
-              repostAuthor={repostAuthor}
-            />
+            <TweetAction>
+              <ReplyTweet
+                post={post}
+                variant={variant}
+                author={author}
+                repostAuthor={repostAuthor}
+              />
+              <RepostTweet post={post} variant={variant} />
+              <LikeTweet post={post} variant={variant} />
+              <AnalyticTweet post={post} variant={variant} />
+              <BookmarkTweet post={post} variant={variant} />
+              <ShareTweet post={post} variant={variant} author={author} />
+            </TweetAction>
           ) : (
             <p className="pb-2 text-accent">
               replying to&nbsp;

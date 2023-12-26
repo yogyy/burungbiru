@@ -1,12 +1,14 @@
 import { LoadingSpinner } from "../loading";
 import { RouterOutputs } from "~/utils/api";
 import { cn } from "~/lib/utils";
-import { TweetPost } from "../tweet";
+import { TweetParentPost, TweetPost } from "../tweet";
+import React from "react";
 
 export const Feed: React.FC<{
   post: RouterOutputs["post"]["timeline"]["posts"] | undefined;
   postLoading: boolean;
-}> = ({ post, postLoading }) => {
+  showParent?: boolean;
+}> = ({ post, postLoading, showParent = false }) => {
   return (
     <div className="h-auto w-full">
       {postLoading ? (
@@ -15,17 +17,28 @@ export const Feed: React.FC<{
         </div>
       ) : (
         post?.map((fullPost) => (
-          <TweetPost
-            variant="default"
-            {...fullPost}
-            key={fullPost.post.id}
-            className={cn(
-              "focus-wihtin:bg-white/[.03] hover:bg-white/[.03]",
-              "group/post transition-colors duration-200 ease-linear"
+          <React.Fragment key={fullPost.post.id}>
+            {fullPost.post.parentId && fullPost.post.type === "COMMENT" && (
+              <TweetParentPost
+                id={fullPost.post.parentId}
+                showParent={showParent}
+                className={cn(
+                  "focus-wihtin:bg-white/[.03] hover:bg-white/[.03]",
+                  "group/post transition-colors duration-200 ease-linear"
+                )}
+              />
             )}
-          />
+            <TweetPost
+              variant="default"
+              {...fullPost}
+              showParent={showParent}
+              className={cn(
+                "focus-wihtin:bg-white/[.03] hover:bg-white/[.03]",
+                "group/post transition-colors duration-200 ease-linear"
+              )}
+            />
+          </React.Fragment>
         ))
-        // <pre className="overflow-x-scroll">{JSON.stringify(post, null, 2)}</pre>
       )}
     </div>
   );

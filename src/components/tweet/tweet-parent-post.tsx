@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { api, RouterOutputs } from "~/utils/api";
+import { api } from "~/utils/api";
 import { cn } from "~/lib/utils";
 import { renderText } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
@@ -7,8 +7,7 @@ import { ImageModal } from "../modal";
 import { TweetTitle, TweetText, TweetAction, TweetMenu } from "./";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
-import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
+
 import { useRouter } from "next/router";
 import {
   AnalyticTweet,
@@ -41,10 +40,11 @@ export const TweetParentPost: React.FC<TweetProps> = ({
   showParent,
   ...props
 }) => {
-  const { data: parent } = api.post.detailPost.useQuery({ id });
-  const { route } = useRouter();
+  const { data: parent } = api.post.parentPost.useQuery(
+    { parentId: id },
+    { refetchOnWindowFocus: false, refetchOnMount: false }
+  );
   const { push } = useRouter();
-
   if (!parent || !showParent) return null;
 
   const toPostDetails = () => {
@@ -82,15 +82,13 @@ export const TweetParentPost: React.FC<TweetProps> = ({
             <div className={cn("mx-auto h-2 w-0.5 bg-transparent")} />
           )}
           {type === "default" ? (
-            <UserCard author={parent.author}>
+            <UserCard username={parent.author.username}>
               <Image
                 width="40"
                 height="40"
                 draggable={false}
-                src={parent.author.profileImg}
-                alt={`@${
-                  parent.author.username || parent.author.lastName
-                }'s profile picture`}
+                src={parent.author.imageUrl}
+                alt={`@${parent.author.name}'s profile picture`}
                 className="first-letter mt-1 flex h-10 basis-12 rounded-full"
               />
             </UserCard>
@@ -99,16 +97,12 @@ export const TweetParentPost: React.FC<TweetProps> = ({
               width="40"
               height="40"
               draggable={false}
-              src={parent.author.profileImg}
-              alt={`@${
-                parent.author.username || parent.author.lastName
-              }'s profile picture`}
+              src={parent.author.imageUrl}
+              alt={`@${parent.author.name}'s profile picture`}
               className="first-letter mt-1 flex h-10 basis-12 rounded-full"
             />
           )}
-          {variant === "parent" && (
-            <div className="mx-auto mt-1 h-full w-0.5 bg-[rgb(51,54,57)]" />
-          )}
+          <div className="mx-auto mt-1 h-full w-0.5 bg-[rgb(51,54,57)]" />
         </div>
         <div
           className={cn(
@@ -160,7 +154,6 @@ export const TweetParentPost: React.FC<TweetProps> = ({
               </button>
             </div>
           )}
-
           <TweetAction>
             <ReplyTweet
               post={parent.post}
@@ -171,7 +164,7 @@ export const TweetParentPost: React.FC<TweetProps> = ({
             <RepostTweet post={parent.post} variant={variant} />
             <LikeTweet post={parent.post} variant={variant} />
             <AnalyticTweet post={parent.post} variant={variant} />
-            <BookmarkTweet post={parent.post} variant={variant} />
+            <BookmarkTweet post={parent.post} variant="default" />
             <ShareTweet
               post={parent.post}
               variant={variant}
