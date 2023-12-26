@@ -25,6 +25,7 @@ import { LuX } from "react-icons/lu";
 import { useTweetModal } from "~/hooks/store";
 import { useTextarea } from "~/hooks/use-adjust-textarea";
 import { CreateTweetVariant, tweetSchema } from ".";
+import { getCurrentUser, getUserbyUsername } from "~/hooks/query";
 
 const CreateTweet: React.FC<
   React.FormHTMLAttributes<HTMLFormElement> & { variant?: CreateTweetVariant }
@@ -37,7 +38,7 @@ const CreateTweet: React.FC<
   const { image, ImagePrev, setImagePrev, handleImageChange } =
     useUploadImage();
 
-  const { user } = useUser();
+  const { data: currentUser } = getCurrentUser();
   const ctx = api.useUtils();
 
   const form = useForm<z.infer<typeof tweetSchema>>({
@@ -104,7 +105,7 @@ const CreateTweet: React.FC<
     }
   }
 
-  if (!user) return null;
+  if (!currentUser) return null;
 
   return (
     <Form {...form}>
