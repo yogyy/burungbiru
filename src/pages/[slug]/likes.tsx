@@ -6,7 +6,6 @@ import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 import { useUser } from "@clerk/nextjs";
 import { getUserbyUsername } from "~/hooks/query";
-import { SEO } from "~/components/simple-seo";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = getUserbyUsername({ username });
@@ -18,19 +17,19 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
       userId: user?.id,
     });
 
-  const UserLikes = () => {
+  const UserHasnoLikes = () => {
     return (
       <div className="mx-auto my-8 flex w-full max-w-[calc(5*80px)] flex-col items-center px-8">
         <div className="w-full">
           <h2 className="mb-2 break-words text-left text-[31px] font-extrabold leading-8">
             {user.id !== currentUser?.id
               ? `@${user.username} hasn’t liked any posts`
-              : "Lights, camera … attachments!"}
+              : "You haven't liked any Tweets yet"}
           </h2>
           <p className="mb-8 break-words text-left text-[15px] leading-5 text-accent">
             {user.id !== currentUser?.id
               ? "Once they do, those posts will show up here."
-              : "When you post photos or videos, they will show up here."}
+              : "When you like post, they will show up here."}
           </p>
         </div>
       </div>
@@ -62,7 +61,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         ) : likes && likes?.length >= 1 ? (
           <Feed post={likes} postLoading={userLikesLoading} />
         ) : (
-          <UserLikes />
+          <UserHasnoLikes />
         )}
       </div>
     </UserLayout>
