@@ -25,6 +25,7 @@ model User {
   updatedAt DateTime  @updatedAt
   followers Follow[]  @relation("Follower")
   following Follow[]  @relation("Following")
+  type      UserType  @default(user)
 
   @@index([id, username])
 }
@@ -52,7 +53,7 @@ model Post {
   likes          Like[]     @relation("postLikes")
   bookmarks      Bookmark[] @relation("postBookmarks")
   parentId       String?
-  authorRepostId String?
+  authorParentId String?
   repost         Repost[]
   type           PostType   @default(POST)
   view           Int        @default(0)
@@ -109,4 +110,10 @@ enum PostType {
   POST
   REPOST
   COMMENT
+}
+
+enum UserType {
+  user
+  developer
+  verified
 }

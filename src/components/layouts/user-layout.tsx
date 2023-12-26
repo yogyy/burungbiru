@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 import { FollowButton } from "../button-follow";
 import { UserDetails } from "./user-details";
 import { SEO } from "../simple-seo";
+import { Badge } from "../ui/badge";
 
 interface LayoutUser {
   children: React.ReactNode;
@@ -74,8 +75,9 @@ export const UserLayout: NextPage<LayoutUser> = ({
                 topbar
               ) : (
                 <div className="flex w-max flex-shrink flex-col justify-center">
-                  <h1 className="font-sans text-lg font-bold leading-6">
+                  <h1 className="inline-flex h-auto items-end font-sans text-lg font-bold leading-6">
                     {user.name}
+                    <Badge variant={user.type} />
                   </h1>
                   <p className="text-[13px] font-thin leading-4 text-accent">
                     {userpostLoading ? (

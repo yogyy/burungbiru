@@ -7,6 +7,7 @@ import { useUser } from "@clerk/nextjs";
 import { FollowButton } from "./button-follow";
 import { getUserbyUsername } from "~/hooks/query";
 import { useIsClient, useMediaQuery } from "usehooks-ts";
+import { Badge } from "./ui/badge";
 
 export const UserCard: React.FC<
   HoverCardTriggerProps & { username: string }
@@ -36,20 +37,22 @@ export const UserCard: React.FC<
               width={60}
               height={60}
               draggable="false"
-              className="rounded-full"
+              className="aspect-square rounded-full"
             />
           </Link>
           {currentUser?.id !== user?.id && <FollowButton user={user!} />}
         </div>
         <div>
           <Link href={`/@${user?.username}`}>
-            <h1 className="text-lg font-bold leading-5">{user?.name}</h1>
+            <h1 className="inline-flex text-lg font-bold leading-5">
+              {user?.name} <Badge variant={user?.type!} />
+            </h1>
           </Link>
           <Link href={`/@${user?.username}`}>
             <h2 className="leading-5 text-accent">@{user?.username}</h2>
           </Link>
         </div>
-        {user?.bio && <p>{user?.bio}</p>}
+        {user?.bio && <p className="text-[15px] leading-5">{user?.bio}</p>}
         <div className="flex gap-2 text-[14px] font-medium leading-5 text-foreground">
           <p>
             {user?.following.length}&nbsp;
