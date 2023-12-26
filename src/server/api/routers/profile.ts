@@ -7,10 +7,7 @@ import {
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import {
-  addUserDataToPosts,
-  filterUserForClient,
-} from "~/server/helper/dbHelper";
+import { addUserDataToPosts } from "~/server/helper/dbHelper";
 
 export const profileRouter = createTRPCRouter({
   getUserByUsername: publicProcedure
@@ -26,8 +23,12 @@ export const profileRouter = createTRPCRouter({
           message: "User not found",
         });
       }
-      return filterUserForClient(user);
+      return user;
     }),
+
+  getCurrentUser: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.user.findUnique({ where: { id: ctx.userId! } });
+  }),
 
   getUserByUsernameDB: publicProcedure
     .input(z.object({ username: z.string() }))
@@ -48,13 +49,10 @@ export const profileRouter = createTRPCRouter({
     }),
 
   getUserRandomUser: publicProcedure.input(z.object({})).query(async () => {
-    const users = (
-      await clerkClient.users.getUserList({
-        orderBy: "-created_at",
-        limit: 3,
-      })
-    ).map(filterUserForClient);
-
+    const users = await clerkClient.users.getUserList({
+      orderBy: "-created_at",
+      limit: 3,
+    });
     return users;
   }),
 
@@ -85,7 +83,7 @@ export const profileRouter = createTRPCRouter({
           where: {
             OR: [
               { type: "POST", authorId: userId },
-              { type: "REPOST", authorRepostId: userId },
+              { type: "REPOST", authorParentId: userId },
               { type: "COMMENT", authorId: userId },
             ],
           },

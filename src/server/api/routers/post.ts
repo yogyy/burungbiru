@@ -30,12 +30,20 @@ export const postRouter = createTRPCRouter({
       });
       const post = await ctx.prisma.post.findUnique({
         where: { id: input.id },
-        include: { replies: true },
       });
 
       if (!post) throw new TRPCError({ code: "NOT_FOUND" });
 
       return (await addUserDataToPosts([post]))[0];
+    }),
+
+  postViews: privateProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.post.findUnique({
+        where: { id: input.id },
+        select: { view: true },
+      });
     }),
 
   deletePost: privateProcedure
@@ -63,22 +71,15 @@ export const postRouter = createTRPCRouter({
       return post;
     }),
 
-  interactions: publicProcedure
-    .input(z.object({ id: z.string() }))
+  bookmarks: publicProcedure
+    .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const post = await ctx.prisma.post.findUnique({
-        where: { id: input.id },
-        select: {
-          view: true,
-          likes: true,
-          bookmarks: true,
-          repost: true,
-        },
+      const bookmarks = await ctx.prisma.bookmark.findMany({
+        where: { postId: input.postId },
       });
+      if (!bookmarks) throw new TRPCError({ code: "NOT_FOUND" });
 
-      if (!post) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return post;
+      return bookmarks;
     }),
 
   timeline: publicProcedure
@@ -88,13 +89,12 @@ export const postRouter = createTRPCRouter({
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       })
     )
-    .query(async ({ ctx, input: { limit = 10, cursor } }) => {
+    .query(async ({ ctx, input: { limit = 30, cursor } }) => {
       const posts = await ctx.prisma.post
         .findMany({
           take: limit + 1,
           cursor: cursor ? { createdAt_id: cursor } : undefined,
           orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-          include: { repost: true },
         })
         .then(addUserDataToPosts);
 
@@ -117,11 +117,13 @@ export const postRouter = createTRPCRouter({
   parentPost: privateProcedure
     .input(z.object({ parentId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.post
-        .findMany({
-          where: { id: input.parentId },
-        })
-        .then(addUserDataToPosts);
+      const parent = await ctx.prisma.post.findUnique({
+        where: { id: input.parentId },
+      });
+
+      if (!parent) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return (await addUserDataToPosts([parent]))[0];
     }),
 
   createPost: privateProcedure
@@ -153,12 +155,8 @@ export const postRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.reply
         .findMany({
-          where: {
-            parentId: input.postId,
-          },
-          include: {
-            post: true,
-          },
+          where: { parentId: input.postId },
+          include: { post: true },
           orderBy: [{ createdAt: "asc" }],
         })
         .then((replise) => replise.map((reply) => reply.post))

@@ -11,55 +11,20 @@ export const actionRouter = createTRPCRouter({
   likePost: privateProcedure
     .input(z.object({ postId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const like = await ctx.prisma.like.create({
+      return await ctx.prisma.like.create({
         data: {
           userId: ctx.userId,
           postId: input.postId,
         },
       });
-      return like;
     }),
 
   unlikePost: privateProcedure
     .input(z.object({ postId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const unlike = await ctx.prisma.like.deleteMany({
+      return await ctx.prisma.like.deleteMany({
         where: { postId: input.postId, userId: ctx.userId },
       });
-      return unlike;
-    }),
-
-  postActions: privateProcedure
-    .input(z.object({ postId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const likes = await ctx.prisma.like.findMany({
-        where: { postId: input.postId },
-      });
-      const bookmarks = await ctx.prisma.bookmark.findMany({
-        where: { postId: input.postId },
-      });
-      const repost = await ctx.prisma.repost.findMany({
-        where: { postId: input.postId },
-      });
-      const replies = await ctx.prisma.reply.findMany({
-        where: {
-          parentId: input.postId,
-        },
-      });
-      if (!likes || !bookmarks) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return { repost, likes, bookmarks, replies };
-    }),
-
-  bookmarks: publicProcedure
-    .input(z.object({ postId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const bookmarks = await ctx.prisma.bookmark.findMany({
-        where: { postId: input.postId },
-      });
-      if (!bookmarks) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return bookmarks;
     }),
 
   reposts: publicProcedure
@@ -138,7 +103,7 @@ export const actionRouter = createTRPCRouter({
             imageId: sourcePost.imageId,
             parentId: sourcePost.id,
             type: "REPOST",
-            authorRepostId: authorId,
+            authorParentId: authorId,
           },
         });
       }
@@ -150,7 +115,7 @@ export const actionRouter = createTRPCRouter({
       await ctx.prisma.post.deleteMany({
         where: {
           parentId: input.postId,
-          authorId: ctx.userId,
+          authorParentId: ctx.userId,
           AND: { type: "REPOST" },
         },
       });
@@ -160,17 +125,11 @@ export const actionRouter = createTRPCRouter({
     }),
 
   replyPost: privateProcedure
-    .input(tweetSchema.extend({ postId: z.string() }))
+    .input(
+      tweetSchema.extend({ postId: z.string(), authorParentId: z.string() })
+    )
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.userId;
-
-      // const { success } = await ratelimit.limit(authorId);
-      // if (!success)
-      //   throw new TRPCError({
-      //     code: "TOO_MANY_REQUESTS",
-      //     message: "Too Many Request",
-      //   });
-
       const post = await ctx.prisma.post.create({
         data: {
           authorId,
@@ -179,6 +138,7 @@ export const actionRouter = createTRPCRouter({
           imageId: input.image?.public_id,
           type: input.type,
           parentId: input.postId,
+          authorParentId: input.authorParentId,
         },
       });
 
@@ -206,6 +166,14 @@ export const actionRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.follow.deleteMany({
         where: { followingId: ctx.userId, followerId: input.userId },
+      });
+    }),
+
+  findAllUser: privateProcedure
+    .input(z.object({ users: z.string().array() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.user.findMany({
+        where: { id: { in: input.users } },
       });
     }),
 });
