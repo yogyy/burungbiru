@@ -46,7 +46,6 @@ export const TweetPost: React.FC<TweetProps> = ({
 }) => {
   const { user: currentUser } = useUser();
   const { pathname } = useRouter();
-  const postAuthor = post.type === "REPOST" ? repostAuthor : author;
   const { push } = useRouter();
 
   const toPostDetails = () => {
@@ -137,13 +136,7 @@ export const TweetPost: React.FC<TweetProps> = ({
             type === "default" && "pb-3"
           )}
         >
-          <TweetTitle
-            variant={variant}
-            author={author}
-            post={post}
-            repostAuthor={repostAuthor}
-            type={type}
-          >
+          <TweetTitle variant={variant} author={author} post={post} type={type}>
             {type !== "modal" && (
               <TweetMenu
                 post={post}

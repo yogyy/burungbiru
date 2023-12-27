@@ -10,26 +10,27 @@ import { TweetProps } from "./tweet-post";
 import { cn } from "~/lib/utils";
 import { tweetTime } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
-import { UserVerified } from "../icons";
 import { Badge } from "../ui/badge";
+import { api } from "~/utils/api";
 
-export const TweetTitle: React.FC<TweetProps> = ({
+export const TweetTitle: React.FC<Omit<TweetProps, "repostAuthor">> = ({
   author,
   post,
-  repostAuthor,
   variant,
   className,
   type = "default",
   children,
   ...props
 }) => {
+  const id = post.type === "REPOST" ? post.parentId ?? "" : post.id;
+  const { data } = api.post.postViews.useQuery({ id });
   const RenderDefault = () => {
     return (
       <>
         <UserCard username={author.username}>
           <Link
             onClick={(e) => e.stopPropagation()}
-            className="-mt-0.5 flex flex-shrink-0 items-end text-base font-bold outline-none focus-within:underline hover:underline "
+            className="-mt-0.5 flex w-fit flex-shrink-0 items-end text-base font-bold outline-none focus-within:underline hover:underline"
             href={`/@${author.username}`}
           >
             {author.name}
@@ -41,7 +42,7 @@ export const TweetTitle: React.FC<TweetProps> = ({
             tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
             className={cn(
-              "inline-flex text-accent outline-none",
+              "inline-flex w-fit text-accent outline-none",
               variant === "details" ? "" : "ml-1"
             )}
             href={`/@${author.username}`}
@@ -91,7 +92,7 @@ export const TweetTitle: React.FC<TweetProps> = ({
             <Link
               href={`/post/${post.id}`}
               className="group relative flex w-max flex-shrink-0 items-end text-sm font-thin text-accent outline-none hover:underline focus:underline"
-              aria-label={dayjs(post.createdAt).format("LL LT")}
+              aria-label={dayjs(data?.createdAt).format("LL LT")}
             >
               <TooltipProvider>
                 <Tooltip>
@@ -99,15 +100,15 @@ export const TweetTitle: React.FC<TweetProps> = ({
                     asChild
                     className="text-[15px] font-normal leading-5"
                   >
-                    <time dateTime={post.createdAt.toISOString()}>
-                      {tweetTime(post.createdAt)}
+                    <time dateTime={data?.createdAt.toISOString()}>
+                      {tweetTime(data?.createdAt ?? post.createdAt)}
                     </time>
                   </TooltipTrigger>
                   <TooltipContent
                     side="bottom"
                     className="rounded-none border-none bg-[#495A69] p-1 text-xs text-white"
                   >
-                    {dayjs(post.createdAt).format("LT LL")}
+                    {dayjs(data?.createdAt).format("LT LL")}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

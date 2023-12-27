@@ -101,9 +101,8 @@ const SinglePostPage = ({
                   <TweetTitle
                     author={author}
                     post={post}
-                    repostAuthor={repostAuthor}
                     variant="details"
-                    className=" pt-3"
+                    className="pt-3"
                   >
                     <TweetMenu
                       post={post}

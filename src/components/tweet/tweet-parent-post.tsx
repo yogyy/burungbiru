@@ -114,7 +114,6 @@ export const TweetParentPost: React.FC<TweetProps> = ({
             variant={variant}
             author={parent.author}
             post={parent.post}
-            repostAuthor={parent.repostAuthor}
             type={type}
           >
             {type !== "modal" && (
