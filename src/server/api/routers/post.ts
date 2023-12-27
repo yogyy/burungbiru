@@ -42,7 +42,7 @@ export const postRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return ctx.prisma.post.findUnique({
         where: { id: input.id },
-        select: { view: true },
+        select: { view: true, createdAt: true },
       });
     }),
 
@@ -157,7 +157,7 @@ export const postRouter = createTRPCRouter({
         .findMany({
           where: { parentId: input.postId },
           include: { post: true },
-          orderBy: [{ createdAt: "asc" }],
+          orderBy: [{ createdAt: "desc" }],
         })
         .then((replise) => replise.map((reply) => reply.post))
         .then(addUserDataToPosts);
