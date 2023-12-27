@@ -25,6 +25,7 @@ import { TweetProps } from "../tweet";
 import { useTextarea } from "~/hooks/use-adjust-textarea";
 import { CreateTweetVariant, tweetSchema } from ".";
 import { getCurrentUser } from "~/hooks/query";
+import Link from "next/link";
 
 type CommentForm = Pick<TweetProps, "post"> &
   React.FormHTMLAttributes<HTMLFormElement> & {
@@ -61,7 +62,7 @@ const CreateReply: React.FC<CommentForm> = ({
   });
 
   const { mutate, isLoading: isPosting } = api.action.replyPost.useMutation({
-    onSuccess: () => {
+    onSuccess: ({ id }) => {
       setImagePrev("");
       form.reset();
       ctx.action.replies
@@ -70,9 +71,20 @@ const CreateReply: React.FC<CommentForm> = ({
       ctx.post.detailPost.invalidate({ id: postId }).then(() => {
         adjustTextareaHeight();
       });
-      if (!ImagePrev) toast.success("Your Post was sent.");
-      if (variant === "modal" && setShowReplyModal)
+      toast.success(() => (
+        <>
+          Your Post was sent.&nbsp;
+          <Link
+            href={`/post/${id}#comment`}
+            className="font-bold hover:underline"
+          >
+            View
+          </Link>
+        </>
+      ));
+      if (variant === "modal" && setShowReplyModal) {
         setShowReplyModal((prev) => !prev);
+      }
     },
     onError: (err) => {
       adjustTextareaHeight();
@@ -93,9 +105,9 @@ const CreateReply: React.FC<CommentForm> = ({
         const imagePost = toast.promise(
           uploadImage(image as File),
           {
-            loading: "sending your post...",
-            success: "Your post was sent.",
-            error: "Uh oh, sending post went error!",
+            loading: "upload your image...",
+            success: "upload image success",
+            error: "Uh oh, uploading image went error!",
           },
           { position: "top-right" }
         );
@@ -118,8 +130,6 @@ const CreateReply: React.FC<CommentForm> = ({
     }
   }
 
-  if (!user) return null;
-
   return (
     <Form {...form}>
       <form
@@ -139,12 +149,12 @@ const CreateReply: React.FC<CommentForm> = ({
                 )}
               >
                 <UserAvatar
-                  username={user.username}
-                  imageUrl={user.imageUrl}
+                  username={user?.username!}
+                  imageUrl={user?.imageUrl!}
                   className="flex-shrink-0"
                   // tabIndex={variant === "modal" ? -1 : 0}
                   onClick={(e) => {
-                    variant === "modal" ? e.preventDefault() : null;
+                    variant === "modal" && e.preventDefault();
                   }}
                 />
                 <FormItem className="h-full w-full space-y-0">

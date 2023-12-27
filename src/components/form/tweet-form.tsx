@@ -26,6 +26,7 @@ import { useTweetModal } from "~/hooks/store";
 import { useTextarea } from "~/hooks/use-adjust-textarea";
 import { CreateTweetVariant, tweetSchema } from ".";
 import { getCurrentUser, getUserbyUsername } from "~/hooks/query";
+import Link from "next/link";
 
 const CreateTweet: React.FC<
   React.FormHTMLAttributes<HTMLFormElement> & { variant?: CreateTweetVariant }
@@ -53,14 +54,21 @@ const CreateTweet: React.FC<
   });
 
   const { mutate, isLoading: isPosting } = api.post.createPost.useMutation({
-    onSuccess: () => {
+    onSuccess: ({ id }) => {
       setImagePrev("");
       form.reset();
       ctx.profile.userPosts.invalidate();
       ctx.post.timeline.invalidate().then(() => {
         adjustTextareaHeight();
       });
-      if (!ImagePrev) toast.success("Your Post was sent.");
+      toast.success(() => (
+        <>
+          Your Post was sent.&nbsp;
+          <Link href={`/post/${id}`} className="font-bold hover:underline">
+            View
+          </Link>
+        </>
+      ));
       if (variant === "modal") setTweetModal((prev) => !prev);
     },
     onError: (err) => {
@@ -82,9 +90,9 @@ const CreateTweet: React.FC<
         const imagePost = toast.promise(
           uploadImage(image as File),
           {
-            loading: "sending your post...",
-            success: "Your post was sent.",
-            error: "Uh oh, sending post went error!",
+            loading: "upload your image...",
+            success: "upload image success",
+            error: "Uh oh, uploading image went error!",
           },
           { position: "top-right" }
         );
