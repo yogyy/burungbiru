@@ -11,13 +11,11 @@ import { MenuNavbarButton } from "../menu-button";
 import { getCurrentUser } from "~/hooks/query";
 
 export const Navbar = () => {
-  const { data: user, isLoading } = getCurrentUser();
+  const { data: user } = getCurrentUser();
 
   let r = useRouter();
   const arrOfRoute = r.route.split("/");
   const baseRoute = "/" + arrOfRoute[1];
-
-  if (!user) return null;
 
   return (
     <header className="relative hidden min-[570px]:flex">
@@ -69,7 +67,7 @@ export const Navbar = () => {
                 </li>
               ))}
               <li className="flex w-full justify-center py-0.5 xl:justify-start">
-                <MenuNavbarButton user={user} />
+                <MenuNavbarButton user={user!} />
               </li>
             </ul>
           </nav>
@@ -86,7 +84,7 @@ export const Navbar = () => {
             )}
           </div>
         </div>
-        <NavbarLogout user={user} />
+        <NavbarLogout user={user!} />
       </div>
     </header>
   );
