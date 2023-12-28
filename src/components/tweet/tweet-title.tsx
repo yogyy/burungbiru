@@ -23,7 +23,10 @@ export const TweetTitle: React.FC<Omit<TweetProps, "repostAuthor">> = ({
   ...props
 }) => {
   const id = post.type === "REPOST" ? post.parentId ?? "" : post.id;
-  const { data } = api.post.postViews.useQuery({ id });
+  const { data } = api.post.postViews.useQuery(
+    { id },
+    { enabled: !!post.parentId }
+  );
   const RenderDefault = () => {
     return (
       <>

@@ -9,7 +9,10 @@ export const AnalyticTweet: React.FC<
   Omit<TweetProps, "author" | "repostAuthor">
 > = ({ variant, className, post, ...props }) => {
   const id = post.type === "REPOST" ? post.parentId ?? "" : post.id;
-  const { data } = api.post.postViews.useQuery({ id });
+  const { data } = api.post.postViews.useQuery(
+    { id },
+    { enabled: !!post.parentId }
+  );
   return (
     <div
       className={cn(
@@ -48,11 +51,9 @@ export const AnalyticTweet: React.FC<
             "font-normal transition duration-300 group-hover:text-primary group-focus:text-primary"
           )}
         >
-          {data?.view && data?.view !== 0
-            ? formatViews(data?.view)
-            : "" ?? post.view !== 0
-            ? formatViews(post.view)
-            : ""}
+          {post.type === "REPOST"
+            ? data?.view && data?.view !== 0 && formatViews(data?.view)
+            : post.view !== 0 && formatViews(post.view)}
         </span>
       </div>
     </div>
