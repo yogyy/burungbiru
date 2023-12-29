@@ -84,10 +84,8 @@ export const profileRouter = createTRPCRouter({
             OR: [
               { type: "POST", authorId: userId },
               { type: "REPOST", authorParentId: userId },
-              { type: "COMMENT", authorId: userId },
             ],
           },
-          include: { repost: true },
           orderBy: [{ createdAt: "desc" }],
         })
         .then(addUserDataToPosts);

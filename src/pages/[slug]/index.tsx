@@ -39,7 +39,6 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
       <Feed
         post={posts?.pages.flatMap((page) => page.posts)}
         postLoading={userpostLoading}
-        showParent={true}
       />
       {inView && isFetchingNextPage && <LoadingItem />}
       {hasNextPage && <div ref={ref} />}
