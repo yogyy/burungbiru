@@ -40,6 +40,7 @@ export const TweetMenu: React.FC<
       ctx.post.detailPost.invalidate({ id: post.id });
       ctx.post.postReplies.invalidate({ postId: post.parentId || post.id });
       ctx.profile.userPosts.invalidate();
+      ctx.profile.userWithReplies.invalidate();
       ctx.post.timeline
         .invalidate()
         .then(() => toast.success("Your post was deleted"));
