@@ -40,28 +40,60 @@ export const TweetParentPost: React.FC<TweetProps> = ({
   showParent,
   ...props
 }) => {
+  const { push, pathname } = useRouter();
   const { data: parent } = api.post.parentPost.useQuery(
     { parentId: id },
-    { refetchOnWindowFocus: false, refetchOnMount: false }
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      enabled: !!id,
+      retry(failureCount, error) {
+        if (error.data?.code === "NOT_FOUND") {
+          return false;
+        }
+        return true;
+      },
+    }
   );
-  const { push } = useRouter();
-  if (!parent || !showParent) return null;
+  if (!showParent) return null;
+  if (!parent) {
+    if (pathname !== "/post/[id]") return null;
+    return (
+      <div className="px-4 py-3">
+        <div className="flex items-center justify-between rounded-2xl border border-[rgb(32,35,39)] bg-[rgb(22,24,28)] px-1 py-3">
+          <span className="mx-3 flex flex-wrap text-[15px] leading-5">
+            <p className="text-accent">
+              This Post was deleted by the Post author.
+            </p>
+            &nbsp;
+            <a
+              href="https://help.twitter.com/en/rules-and-policies/notices-on-x"
+              target="_blank"
+              className="text-primary"
+            >
+              Learn More
+            </a>
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   const toPostDetails = () => {
     switch (true) {
-      case type === "default" && parent.post.type === "COMMENT":
-        push(`/post/${parent.post.id}/#comment`);
+      case type === "default" && parent?.post.type === "COMMENT":
+        push(`/post/${parent?.post.id}/#comment`);
         break;
       case type === "default" &&
-        parent.post.type === "REPOST" &&
-        parent.post.parentId !== null:
-        push(`/post/${parent.post.parentId}#comment`);
+        parent?.post.type === "REPOST" &&
+        parent?.post.parentId !== null:
+        push(`/post/${parent?.post.parentId}#comment`);
         break;
-      case type === "default" && parent.post.type === "REPOST":
-        push(`/post/${parent.post.parentId}`);
+      case type === "default" && parent?.post.type === "REPOST":
+        push(`/post/${parent?.post.parentId}`);
         break;
       default:
-        push(`/post/${parent.post.id}`);
+        push(`/post/${parent?.post.id}`);
     }
   };
 
