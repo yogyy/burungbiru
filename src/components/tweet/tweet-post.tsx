@@ -47,7 +47,6 @@ export const TweetPost: React.FC<TweetProps> = ({
   const { user: currentUser } = useUser();
   const { pathname } = useRouter();
   const { push } = useRouter();
-
   const toPostDetails = () => {
     switch (true) {
       case type === "default" && post.type === "COMMENT":
@@ -80,7 +79,7 @@ export const TweetPost: React.FC<TweetProps> = ({
       {post.type === "REPOST" && type === "default" && (
         <div className="-mb-3 flex items-center break-words pt-1 text-[13px] font-bold text-accent">
           <div className="mr-3 flex flex-grow-0 basis-10 justify-end">
-            <RetweetIcon className="" />
+            <RetweetIcon />
           </div>
           <UserCard username={repostAuthor.username!}>
             <Link
@@ -155,7 +154,7 @@ export const TweetPost: React.FC<TweetProps> = ({
               type !== "modal" &&
               !showParent &&
               pathname !== "/post/[id]" && (
-                <p className="-mt-1 text-accent">
+                <div className="-mt-1 text-accent">
                   Replying to&nbsp;
                   <UserCard username={repostAuthor.username!}>
                     <Link
@@ -166,7 +165,7 @@ export const TweetPost: React.FC<TweetProps> = ({
                       @{repostAuthor.username}
                     </Link>
                   </UserCard>
-                </p>
+                </div>
               )}
             <TweetText content={renderText(post.content)} />
           </div>
