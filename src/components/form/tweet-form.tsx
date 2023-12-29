@@ -25,7 +25,7 @@ import { LuX } from "react-icons/lu";
 import { useTweetModal } from "~/hooks/store";
 import { useTextarea } from "~/hooks/use-adjust-textarea";
 import { CreateTweetVariant, tweetSchema } from ".";
-import { getCurrentUser, getUserbyUsername } from "~/hooks/query";
+import { getCurrentUser } from "~/hooks/query";
 import Link from "next/link";
 
 const CreateTweet: React.FC<
@@ -113,8 +113,6 @@ const CreateTweet: React.FC<
     }
   }
 
-  if (!currentUser) return null;
-
   return (
     <Form {...form}>
       <form
@@ -136,8 +134,8 @@ const CreateTweet: React.FC<
             >
               <div className="relative flex h-auto w-auto items-start gap-4">
                 <UserAvatar
-                  username={currentUser?.username}
-                  imageUrl={currentUser?.imageUrl}
+                  username={currentUser?.username!}
+                  imageUrl={currentUser?.imageUrl!}
                   className="mt-3 flex-shrink-0"
                   onClick={(e) => {
                     variant === "modal" ? e.preventDefault() : null;
