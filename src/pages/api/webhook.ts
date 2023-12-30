@@ -36,8 +36,6 @@ export default async function handler(
     return res.status(400).json({ error: "Error occured -- no svix headers" });
   }
 
-  console.log("headers", req.headers, svix_id, svix_signature, svix_timestamp);
-  // Get the body
   const body = (await buffer(req)).toString();
 
   // Create a new Svix instance with your secret.
@@ -64,7 +62,7 @@ export default async function handler(
 
     await prisma.user.create({
       data: {
-        id: id,
+        id,
         imageUrl: attributes.image_url,
         username: attributes.username as string,
         name: `${attributes.first_name} ${attributes.last_name ?? ""}`,
