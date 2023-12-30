@@ -9,16 +9,13 @@ import { AdsIcon, AnalyticIcon, LogOutIcon } from "../icons";
 import { LogoutModal } from "../modal";
 import { SettingsAndSupport } from "~/constant";
 import { cn } from "~/lib/utils";
-import { RouterOutputs } from "~/utils/api";
+import { getCurrentUser } from "~/hooks/query";
 
 type TYPE = "mobile" | "dekstop";
 
-interface MoreProps {
-  user: RouterOutputs["profile"]["getCurrentUser"];
-  type: TYPE;
-}
+export const MoreNavbar: React.FC<{ type: TYPE }> = ({ type }) => {
+  const { data: user } = getCurrentUser();
 
-export const MoreNavbar: React.FC<MoreProps> = ({ user, type }) => {
   return (
     <Accordion type="multiple" className="text-[18px] font-semibold leading-5">
       <AccordionItem value="item-1" className="border-none">
@@ -59,7 +56,7 @@ export const MoreNavbar: React.FC<MoreProps> = ({ user, type }) => {
               )
           )}
           {type === "mobile" && (
-            <LogoutModal user={user}>
+            <LogoutModal>
               <button className="flex w-full p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]">
                 <LogOutIcon size="18.75" className="mr-3" />
                 Log Out @{user?.username}

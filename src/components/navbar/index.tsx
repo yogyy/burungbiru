@@ -1,9 +1,7 @@
-import { SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { cn } from "~/lib/utils";
 import { BsTwitterX } from "react-icons/bs";
-import { Button } from "../ui/button";
 import { navbarLink } from "~/constant";
 import { NavbarLogout } from "../nav-logout";
 import { CreatePostModal } from "../modal";
@@ -67,24 +65,15 @@ export const Navbar = () => {
                 </li>
               ))}
               <li className="flex w-full justify-center py-0.5 xl:justify-start">
-                <MenuNavbarButton user={user!} />
+                <MenuNavbarButton />
               </li>
             </ul>
           </nav>
           <div className="my-1 flex w-full items-center justify-center xl:w-[90%] 2xl:my-4">
-            {!user ? (
-              <Button
-                asChild
-                className="h-[50px] w-[50px] rounded-full p-0 text-xs font-semibold xl:min-h-[52px] xl:w-full xl:min-w-[52px] xl:text-base"
-              >
-                <SignInButton mode="modal" />
-              </Button>
-            ) : (
-              <CreatePostModal />
-            )}
+            {user && <CreatePostModal />}
           </div>
         </div>
-        <NavbarLogout user={user!} />
+        <NavbarLogout />
       </div>
     </header>
   );

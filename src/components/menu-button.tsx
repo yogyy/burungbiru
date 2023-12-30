@@ -1,7 +1,6 @@
 import { cn } from "~/lib/utils";
 import Link from "next/link";
 import { MenuIcon, MonetIcon } from "./icons";
-import { UserResource } from "@clerk/types/dist";
 import {
   Popover,
   PopoverContent,
@@ -9,13 +8,10 @@ import {
 } from "~/components/ui/popover";
 import { MoreNavbar } from "./navbar/more";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { RouterOutputs } from "~/utils/api";
 
-export const MenuNavbarButton: React.FC<
-  PopoverPrimitive.PopoverProps & {
-    user: RouterOutputs["profile"]["getCurrentUser"];
-  }
-> = ({ user, ...props }) => {
+export const MenuNavbarButton: React.FC<PopoverPrimitive.PopoverProps> = ({
+  ...props
+}) => {
   return (
     <Popover {...props}>
       <PopoverTrigger
@@ -48,7 +44,7 @@ export const MenuNavbarButton: React.FC<
           </span>
         </Link>
         <hr className="my-0.5 w-[89%] place-items-center self-center" />
-        <MoreNavbar user={user} type="dekstop" />
+        <MoreNavbar type="dekstop" />
       </PopoverContent>
     </Popover>
   );

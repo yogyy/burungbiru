@@ -14,15 +14,11 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { GoGear } from "react-icons/go";
-
-import { UserResource } from "@clerk/types/dist";
 import { UserAvatar } from "../avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import Link from "next/link";
 import { cn } from "~/lib/utils";
-
 import { SignInButton } from "@clerk/nextjs";
-
 import { Button } from "../ui/button";
 import { useBurgerMenu } from "~/hooks/store";
 import { hamburgerNavbarLink } from "~/constant";
@@ -140,7 +136,7 @@ export const BurgerMenu: React.FC<
                       </li>
                     ))}
                   </ul>
-                  <MoreNavbar user={user} type="mobile" />
+                  <MoreNavbar type="mobile" />
                 </>
               </SheetDescription>
             </SheetHeader>

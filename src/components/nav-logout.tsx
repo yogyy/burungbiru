@@ -5,21 +5,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./ui/popover";
-import { UserResource } from "@clerk/types/dist";
 import Image from "next/image";
 import { TbDots } from "react-icons/tb";
 import { Button } from "./ui/button";
 import { cn } from "~/lib/utils";
 import { LogoutModal } from "./modal/logout-modal";
 import { useUserPopover } from "~/hooks/store";
-import { RouterOutputs } from "~/utils/api";
+import { getCurrentUser } from "~/hooks/query";
 
-export const NavbarLogout: React.FC<
-  React.HTMLAttributes<HTMLDivElement> & {
-    user: RouterOutputs["profile"]["getCurrentUser"];
-  }
-> = ({ user, className, ...props }) => {
+export const NavbarLogout: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+  className,
+  ...props
+}) => {
   const { show, setShow } = useUserPopover();
+  const { data: user } = getCurrentUser();
 
   return (
     <div
@@ -68,16 +67,18 @@ export const NavbarLogout: React.FC<
           alignOffset={-20}
           className="data-[side=bottom] sm:data-[align=center] relative z-10 px-0 py-3.5 font-sans text-[15px] leading-5 text-foreground/90 shadow-x"
         >
-          <LogoutModal user={user}>
-            <Button
-              variant="ghost"
-              className={cn(
-                "h-full w-full justify-normal rounded-none hover:bg-[rgb(22,24,28)]"
-              )}
-            >
-              Log Out @{user?.username}
-            </Button>
-          </LogoutModal>
+          {user && (
+            <LogoutModal>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "h-full w-full justify-normal rounded-none hover:bg-[rgb(22,24,28)]"
+                )}
+              >
+                Log Out @{user?.username}
+              </Button>
+            </LogoutModal>
+          )}
           <PopoverArrow className="h-2" />
         </PopoverContent>
       </Popover>

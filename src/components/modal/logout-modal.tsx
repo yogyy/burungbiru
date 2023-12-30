@@ -10,17 +10,16 @@ import {
 import { Button } from "../ui/button";
 import { BsTwitterX } from "react-icons/bs";
 import { useClerk } from "@clerk/nextjs";
-import { UserResource } from "@clerk/types/dist";
 import { useBurgerMenu, useUserPopover } from "~/hooks/store";
-import { RouterOutputs } from "~/utils/api";
+import { getCurrentUser } from "~/hooks/query";
 
 export const LogoutModal: React.FC<{
-  user: RouterOutputs["profile"]["getCurrentUser"];
   children: React.ReactNode;
-}> = ({ user, children }) => {
+}> = ({ children }) => {
   const [modalSignOut, setModalSignOut] = React.useState(false);
   const closeBurgerMenu = useBurgerMenu((state) => state.setShow);
   const closeUserPopover = useUserPopover((state) => state.setShow);
+  const { data: user } = getCurrentUser();
   const { signOut } = useClerk();
 
   function Logout() {
