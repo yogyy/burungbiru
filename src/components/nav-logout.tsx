@@ -23,7 +23,7 @@ export const NavbarLogout: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   return (
     <div
       className={cn(
-        "my-3 flex w-full items-center justify-center place-self-end",
+        "my-3 flex w-full items-center justify-center place-self-end overflow-hidden",
         className
       )}
       {...props}
@@ -33,19 +33,19 @@ export const NavbarLogout: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
           <div className="flex w-fit items-center p-2.5 transition-all duration-300 hover:cursor-pointer hover:rounded-full hover:bg-border/30 xl:w-full">
             {user && (
               <div className="flex h-full w-full justify-between">
-                <div className="flex items-center">
-                  <div className="h-10 w-10">
+                <div className="flex items-center overflow-hidden">
+                  <div className="h-10 w-10 flex-shrink-0">
                     <Image
                       src={user?.imageUrl}
                       alt={user.username!}
                       height="40"
                       width="40"
-                      className="rounded-full"
+                      className="basis-10 rounded-full"
                     />
                   </div>
-                  <div className="hidden h-[41.06px] xl:flex">
-                    <div className="mx-3 flex flex-col items-start">
-                      <span className="text-base font-semibold leading-5">
+                  <div className="hidden h-[41.06px] w-max overflow-hidden xl:flex">
+                    <div className="mx-3 flex flex-col items-start overflow-hidden">
+                      <span className="w-max break-words text-base font-semibold leading-5">
                         {user?.name}
                       </span>
                       <span className="font-thin leading-5 text-accent">

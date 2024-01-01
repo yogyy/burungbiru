@@ -33,7 +33,7 @@ export const TweetTitle: React.FC<Omit<TweetProps, "repostAuthor">> = ({
         <UserCard username={author.username}>
           <Link
             onClick={(e) => e.stopPropagation()}
-            className="-mt-0.5 flex w-fit flex-shrink-0 items-end text-base font-bold outline-none focus-within:underline hover:underline"
+            className="-mt-0.5 flex flex-shrink-0 items-end text-base font-bold outline-none focus-within:underline hover:underline"
             href={`/@${author.username}`}
           >
             {author.name}
@@ -60,7 +60,7 @@ export const TweetTitle: React.FC<Omit<TweetProps, "repostAuthor">> = ({
   const RenderOnModal = () => {
     return (
       <>
-        <p className="-mt-0.5 flex flex-shrink-0 items-end text-base font-bold outline-none">
+        <p className="-mt-0.5 flex w-full flex-shrink-0 items-end text-base font-bold outline-none">
           {author.name}
           <Badge variant={author.type} />
         </p>
