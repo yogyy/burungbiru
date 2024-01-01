@@ -15,7 +15,7 @@ function getUserbyUsername({ username }: { username: string }) {
 }
 
 function getCurrentUser() {
-  return api.profile.getCurrentUser.useQuery();
+  return api.profile.getCurrentUser.useQuery({});
 }
 
 export { getUserFollower, getUserbyUsername, getCurrentUser };

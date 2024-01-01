@@ -26,9 +26,14 @@ export const profileRouter = createTRPCRouter({
       return user;
     }),
 
-  getCurrentUser: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.user.findUnique({ where: { id: ctx.userId! } });
-  }),
+  getCurrentUser: publicProcedure
+    .input(z.object({ follow: z.boolean().optional().default(false) }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.user.findUnique({
+        where: { id: ctx.userId! },
+        include: { followers: input.follow, following: input.follow },
+      });
+    }),
 
   getUserByUsernameDB: publicProcedure
     .input(z.object({ username: z.string() }))
