@@ -7,7 +7,7 @@ import {
 } from "~/components/navbar/navlink";
 
 const navbarLink = [
-  { name: "Home", icon: HomeLink, link: "/" },
+  { name: "Home", icon: HomeLink, link: "/home" },
   { name: "Explore", icon: icon.SearchIcon, link: "#explore" },
   { name: "Notifications", icon: icon.BellIcon, link: "/#notification" },
   { name: "Messages", icon: icon.MessageIcon, link: "#messages" },

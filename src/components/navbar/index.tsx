@@ -21,7 +21,7 @@ export const Navbar = () => {
         <div className="flex w-full flex-col">
           <div className="mt-1 flex h-fit w-full justify-center self-stretch xl:w-fit">
             <Link
-              href="/"
+              href="/home"
               className="rounded-full border border-transparent p-2.5 transition-colors duration-300 hover:bg-border/30"
             >
               <BsTwitterX size={27} className="fill-current" />

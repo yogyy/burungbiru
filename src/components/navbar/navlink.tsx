@@ -23,7 +23,7 @@ const ProfileLink: React.FC<IconBaseProps> = (props) => {
 
 const HomeLink: React.FC<IconBaseProps> = (props) => {
   const { route } = useRouter();
-  return route === "/" ? (
+  return route === "/home" ? (
     <HomeIconFill size={26.25} {...props} />
   ) : (
     <HomeIcon size={26.25} {...props} />

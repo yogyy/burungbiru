@@ -10,7 +10,7 @@ import { useAuth } from "@clerk/nextjs";
 import { HomeLink } from "./navlink";
 
 const mobileNavbar = [
-  { name: "Home", icon: HomeLink, link: "/" },
+  { name: "Home", icon: HomeLink, link: "/home" },
   { name: "Search", icon: SearchIcon, link: "#srch" },
   { name: "Notification", icon: BellIcon, link: "#notif" },
   { name: "Message", icon: MessageIcon, link: "#msg" },
@@ -23,7 +23,7 @@ export const MobileNav = () => {
   const show = useScroll();
   const { isSignedIn } = useAuth();
 
-  return r.pathname !== "/" ? null : (
+  return r.pathname !== "/home" ? null : (
     <div
       className={cn(
         "fixed z-30 block w-full overflow-hidden border-t bg-background transition-all duration-300 min-[570px]:hidden",
