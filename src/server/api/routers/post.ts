@@ -10,7 +10,7 @@ import { Redis } from "@upstash/redis";
 import { addUserDataToPosts } from "~/server/helper/dbHelper";
 import { tweetSchema } from "~/utils/validation";
 
-const ratelimit = new Ratelimit({
+export const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(3, "1 m"),
   analytics: true,
@@ -131,12 +131,12 @@ export const postRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.userId;
 
-      // const { success } = await ratelimit.limit(authorId);
-      // if (!success)
-      //   throw new TRPCError({
-      //     code: "TOO_MANY_REQUESTS",
-      //     message: "Too Many Request",
-      //   });
+      const { success } = await ratelimit.limit(authorId);
+      if (!success)
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Too Many Request",
+        });
 
       const post = await ctx.prisma.post.create({
         data: {

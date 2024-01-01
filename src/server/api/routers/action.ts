@@ -6,6 +6,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { tweetSchema } from "~/utils/validation";
+import { ratelimit } from "./post";
 
 export const actionRouter = createTRPCRouter({
   likePost: privateProcedure
@@ -130,6 +131,12 @@ export const actionRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.userId;
+      const { success } = await ratelimit.limit(authorId);
+      if (!success)
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Too Many Request",
+        });
       const post = await ctx.prisma.post.create({
         data: {
           authorId,
