@@ -1,12 +1,16 @@
 import { RedirectToSignIn, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
-import { getAuth } from "@clerk/nextjs/server";
-import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 import React from "react";
 import { LogoIcon } from "~/components/icons";
 import { LoadingPage } from "~/components/loading";
 
 const IndexPage = () => {
-  const { isLoaded } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
+  const { push } = useRouter();
+  React.useEffect(() => {
+    push("/home");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn]);
 
   if (!isLoaded)
     return (
@@ -28,16 +32,3 @@ const IndexPage = () => {
 };
 
 export default IndexPage;
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { userId } = getAuth(ctx.req);
-  if (userId) {
-    return {
-      redirect: {
-        destination: "/home",
-        permanent: false,
-      },
-    };
-  }
-  return { props: {} };
-};
