@@ -25,21 +25,24 @@ import { LuX } from "react-icons/lu";
 import { useTweetModal } from "~/hooks/store";
 import { useTextarea } from "~/hooks/use-adjust-textarea";
 import { CreateTweetVariant, tweetSchema } from ".";
-import { getCurrentUser } from "~/hooks/query";
 import Link from "next/link";
 
-const CreateTweet: React.FC<
-  React.FormHTMLAttributes<HTMLFormElement> & { variant?: CreateTweetVariant }
-> = ({ variant = "default", className, ...props }) => {
-  const { textareaRef, adjustTextareaHeight } = useTextarea();
+interface CreateTweetProps extends React.FormHTMLAttributes<HTMLFormElement> {
+  variant?: CreateTweetVariant;
+}
 
+const CreateTweet: React.FC<CreateTweetProps> = ({
+  variant = "default",
+  className,
+  ...props
+}) => {
+  const { textareaRef, adjustTextareaHeight } = useTextarea();
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [submitBtn, setSubmitBtn] = useState(false);
   const setTweetModal = useTweetModal((state) => state.setShow);
   const { image, ImagePrev, setImagePrev, handleImageChange } =
     useUploadImage();
-
-  const { data: currentUser } = getCurrentUser();
+  const { user } = useUser();
   const ctx = api.useUtils();
 
   const form = useForm<z.infer<typeof tweetSchema>>({
@@ -134,8 +137,8 @@ const CreateTweet: React.FC<
             >
               <div className="relative flex h-auto w-auto items-start gap-4">
                 <UserAvatar
-                  username={currentUser?.username!}
-                  imageUrl={currentUser?.imageUrl!}
+                  username={user?.username!}
+                  imageUrl={user?.imageUrl!}
                   className="mt-3 flex-shrink-0"
                   onClick={(e) => {
                     variant === "modal" ? e.preventDefault() : null;

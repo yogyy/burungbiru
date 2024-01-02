@@ -6,10 +6,10 @@ import { navbarLink } from "~/constant";
 import { NavbarLogout } from "../nav-logout";
 import { CreatePostModal } from "../modal";
 import { MenuNavbarButton } from "../menu-button";
-import { getCurrentUser } from "~/hooks/query";
+import { useUser } from "@clerk/nextjs";
 
 export const Navbar = () => {
-  const { data: user } = getCurrentUser();
+  const { user } = useUser();
 
   let r = useRouter();
   const arrOfRoute = r.route.split("/");

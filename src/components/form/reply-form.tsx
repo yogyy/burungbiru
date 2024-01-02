@@ -24,13 +24,15 @@ import { LuX } from "react-icons/lu";
 import { TweetProps } from "../tweet";
 import { useTextarea } from "~/hooks/use-adjust-textarea";
 import { CreateTweetVariant, tweetSchema } from ".";
-import { getCurrentUser } from "~/hooks/query";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 
-type CommentForm = Pick<TweetProps, "post"> &
-  React.FormHTMLAttributes<HTMLFormElement> & {
-    variant?: CreateTweetVariant;
-  } & { setShowReplyModal?: React.Dispatch<React.SetStateAction<boolean>> };
+interface CommentForm
+  extends React.FormHTMLAttributes<HTMLFormElement>,
+    Pick<TweetProps, "post"> {
+  variant?: CreateTweetVariant;
+  setShowReplyModal?: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 const CreateReply: React.FC<CommentForm> = ({
   variant = "default",
@@ -45,9 +47,7 @@ const CreateReply: React.FC<CommentForm> = ({
   const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { image, ImagePrev, setImagePrev, handleImageChange } =
     useUploadImage();
-
-  const { data: user } = getCurrentUser();
-
+  const { user } = useUser();
   const ctx = api.useUtils();
 
   const form = useForm<z.infer<typeof tweetSchema>>({
