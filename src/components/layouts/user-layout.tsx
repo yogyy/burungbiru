@@ -1,7 +1,6 @@
 import React from "react";
 import ButtonBack from "../ButtonBack";
 import { PageLayout } from "./root-layout";
-import Head from "next/head";
 import { useUser } from "@clerk/nextjs";
 import { NextPage } from "next";
 import { cn } from "~/lib/utils";
@@ -22,12 +21,11 @@ interface LayoutUser {
   user: RouterOutputs["profile"]["getUserByUsernameDB"];
 }
 
-export const UserLayout: NextPage<LayoutUser> = ({
-  children,
-  topbar,
-  user,
-  title,
-}) => {
+const defaultBanner =
+  "https://res.cloudinary.com/dpegakmzh/image/upload/v1704193211/burbir/app/LL_V_B_2_gi3gqc.png";
+
+export const UserLayout: NextPage<LayoutUser> = (props) => {
+  const { children, topbar, user, title } = props;
   const [showFollow, setShowFollow] = React.useState(false);
   const { user: currentUser, isLoaded } = useUser();
   const pathname = usePathname();
@@ -100,10 +98,7 @@ export const UserLayout: NextPage<LayoutUser> = ({
           <div className="relative aspect-[3/1] w-full overflow-hidden">
             <ImageModal
               alt={`banner @${user?.username}`}
-              src={
-                user.bannerUrl ??
-                "https://pbs.twimg.com/media/F8H50sjbYAAUr-1?format=webp&name=small"
-              }
+              src={user.bannerUrl ?? defaultBanner}
               width="600"
               height="200"
               priority
