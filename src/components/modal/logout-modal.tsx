@@ -11,7 +11,6 @@ import { Button } from "../ui/button";
 import { BsTwitterX } from "react-icons/bs";
 import { useClerk } from "@clerk/nextjs";
 import { useBurgerMenu, useUserPopover } from "~/hooks/store";
-import { getCurrentUser } from "~/hooks/query";
 
 export const LogoutModal: React.FC<{
   children: React.ReactNode;
@@ -19,7 +18,6 @@ export const LogoutModal: React.FC<{
   const [modalSignOut, setModalSignOut] = React.useState(false);
   const closeBurgerMenu = useBurgerMenu((state) => state.setShow);
   const closeUserPopover = useUserPopover((state) => state.setShow);
-  const { data: user } = getCurrentUser();
   const { signOut } = useClerk();
 
   function Logout() {
@@ -41,21 +39,21 @@ export const LogoutModal: React.FC<{
       </DialogTrigger>
       <DialogContent
         close={false}
-        className="!rounded-2xl border-none p-8 text-start [&>button]:invisible"
+        className="w-full overflow-hidden !rounded-2xl border-none p-8 text-start [&>button]:invisible"
         overlayClassName="bg-[rgba(91,_112,_131,_0.4)]"
       >
-        <DialogHeader className="space-y-0">
+        <DialogHeader className="relative w-full space-y-0">
           <BsTwitterX className="mb-4 h-9 w-full text-3xl" />
-          <DialogTitle className="!mb-2 text-xl font-semibold tracking-normal">
-            Log out of @{user?.username}
+          <DialogTitle className="!mb-2 w-full text-xl font-semibold tracking-normal">
+            Log out of burbir?
           </DialogTitle>
           <DialogDescription asChild>
             <div className="flex flex-col gap-6">
               <p className="break-words font-twitter-chirp text-[15px] text-accent">
-                This will only apply to this account, and you’ll still be logged
-                in to your other accounts.
+                You can always log back in at any time. If you just want to
+                switch accounts, you can do that by adding an existing account.
               </p>
-              <div className="flex flex-col text-[17px] font-bold">
+              <div className="flex w-full flex-col text-[17px] font-bold">
                 <Button
                   variant="secondary"
                   onClick={Logout}
