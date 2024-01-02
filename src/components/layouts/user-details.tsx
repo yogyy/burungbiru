@@ -32,26 +32,12 @@ interface UserDetailProps {
   isLoaded: boolean;
 }
 
-export const UserDetails: React.FC<UserDetailProps> = ({
-  user,
-  currentUser,
-  isLoaded,
-}) => {
+export const UserDetails: React.FC<UserDetailProps> = (props) => {
+  const { user, currentUser, isLoaded } = props;
   const [showModal, setShowModal] = React.useState(false);
   const { data: follow, isLoading: LoadingFollow } = getUserFollower({
     userId: user.id,
   });
-  const joined = user.createdAt.toLocaleDateString("en-US", {
-    month: "long",
-    year: "numeric",
-  });
-  const birthDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
 
   return (
     <div className="px-4 pb-3 pt-3">
@@ -83,7 +69,7 @@ export const UserDetails: React.FC<UserDetailProps> = ({
                 alt={`${user?.name}'s profile pic`}
                 width="370"
                 height="370"
-                className="aspect-square w-full rounded-full bg-background/60"
+                className="aspect-square w-full rounded-full bg-background/60 object-cover"
               />
             </DialogContent>
           </Dialog>
@@ -168,17 +154,22 @@ export const UserDetails: React.FC<UserDetailProps> = ({
         )}
 
         {user.birthDate && (
-          <span
-            className="flex items-center gap-1"
-            onClick={() => console.log(user.createdAt)}
-          >
+          <span className="flex items-center gap-1">
             <BalloonIcon size="1.25em" />
-            {`Born ${birthDate(user.birthDate)}`}
+            {`Born ${user.birthDate.toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}`}
           </span>
         )}
         <span className="flex items-center gap-1">
           <CalendarIcon size="1.25em" />
-          Joined {joined}
+          {`Joined
+          ${user.createdAt.toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric",
+          })}`}
         </span>
       </div>
       <div className="flex flex-wrap text-base leading-5 text-accent">
