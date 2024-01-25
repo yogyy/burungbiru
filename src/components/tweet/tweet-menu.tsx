@@ -10,7 +10,7 @@ import {
 } from "~/components/ui/popover";
 import { RouterOutputs, api } from "~/utils/api";
 import { toast } from "react-hot-toast";
-import { Button } from "../ui/button";
+import { Button, ButtonProps } from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -20,18 +20,17 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { useRouter } from "next/router";
+import { cn } from "~/lib/utils";
 
-export const TweetMenu: React.FC<
-  {
-    post: RouterOutputs["post"]["deletePost"];
-  } & RouterOutputs["post"]["detailPost"]
-> = ({ post, author }) => {
+type TweetMenuType = ButtonProps & RouterOutputs["post"]["detailPost"];
+interface TweetMenuProps extends Omit<TweetMenuType, "repostAuthor"> {}
+export const TweetMenu = (props: TweetMenuProps) => {
+  const { post, author, className, ...rest } = props;
   const [modal, setModal] = React.useState(false);
   const [menu, setMenu] = React.useState(false);
   const { user } = useUser();
   const ctx = api.useUtils();
   const router = useRouter();
-
   const { mutate, isLoading: deleting } = api.post.deletePost.useMutation({
     onSuccess: () => {
       if (router.query.id === `${post.id}`) {
@@ -85,7 +84,11 @@ export const TweetMenu: React.FC<
           onClick={(e) => {
             e.stopPropagation();
           }}
-          className="group -mr-2 -mt-1.5 inline-flex aspect-square h-[34.75px] w-[34.75px] items-center justify-center rounded-full text-accent focus-within:bg-primary/5 hover:bg-primary/5"
+          className={cn(
+            "group -mr-2 -mt-1.5 inline-flex aspect-square h-[34.75px] w-[34.75px] items-center justify-center rounded-full text-accent focus-within:bg-primary/5 hover:bg-primary/5",
+            className
+          )}
+          {...rest}
         >
           <TbDots
             size={18.75}
@@ -107,10 +110,10 @@ export const TweetMenu: React.FC<
             type="button"
             variant="ghost"
             className="flex h-auto w-full justify-start gap-2 rounded-xl p-2.5 text-[16px]"
-            disabled={deleting}
+            disabled
           >
             <BiSolidUserPlus size={20} />
-            Follow @{author.username}
+            Follow @{author?.username}
           </Button>
         ) : (
           <Dialog open={modal} onOpenChange={setModal}>

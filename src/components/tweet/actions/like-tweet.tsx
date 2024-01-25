@@ -3,12 +3,11 @@ import React from "react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
-import { TweetProps } from "../tweet-post";
 import { LikeIcon, LikeIconFill } from "~/components/icons";
+import { TweetProps } from "../types";
 
-export const LikeTweet: React.FC<
-  Omit<TweetProps, "author" | "repostAuthor">
-> = ({ variant, className, post }) => {
+interface LikeTweetProps extends Omit<TweetProps, "author" | "repostAuthor"> {}
+export const LikeTweet = ({ variant, post }: LikeTweetProps) => {
   const [likeBtn, setLikeBtn] = React.useState(false);
   const ctx = api.useUtils();
   const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
@@ -53,7 +52,7 @@ export const LikeTweet: React.FC<
   }
 
   return (
-    <div className={cn("flex w-full flex-1 text-accent", className)}>
+    <div className="flex w-full flex-1 text-accent" aria-label="like post">
       <div
         className="group flex items-center"
         onClick={(e) => e.stopPropagation()}
@@ -88,7 +87,7 @@ export const LikeTweet: React.FC<
               )}
             />
           )}
-          <span className="sr-only">like</span>
+          <span className="sr-only">like post</span>
         </Button>
         <span
           className={cn(

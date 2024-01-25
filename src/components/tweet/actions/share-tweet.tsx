@@ -1,18 +1,13 @@
 import { useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import { TweetProps } from "../tweet-post";
+import { TweetProps } from "../types";
 import { ShareIcon } from "~/components/icons";
 import { toast } from "react-hot-toast";
 import { useCopyToClipboard } from "usehooks-ts";
 
-export const ShareTweet: React.FC<Omit<TweetProps, "repostAuthor">> = ({
-  variant,
-  className,
-  post,
-  author,
-  ...props
-}) => {
+interface ShareTweetProps extends Omit<TweetProps, "repostAuthor"> {}
+export const ShareTweet = ({ variant, post, author }: ShareTweetProps) => {
   const [value, copy] = useCopyToClipboard();
   const { user: currentUser } = useUser();
 
@@ -24,8 +19,8 @@ export const ShareTweet: React.FC<Omit<TweetProps, "repostAuthor">> = ({
 
   return (
     <div
-      className={cn("hidden w-fit flex-none justify-end text-accent xs:flex")}
-      {...props}
+      className="hidden w-fit flex-none justify-end text-accent xs:flex"
+      aria-label="share post"
     >
       <div
         className="group flex items-center"
@@ -53,7 +48,7 @@ export const ShareTweet: React.FC<Omit<TweetProps, "repostAuthor">> = ({
                 "group-hover:fill-primary group-focus-visible/button:fill-primary"
             )}
           />
-          <span className="sr-only">share</span>
+          <span className="sr-only">share post</span>
         </Button>
       </div>
     </div>

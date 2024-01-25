@@ -2,13 +2,12 @@ import { useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
-import { TweetProps } from "../tweet-post";
 import { BookmarkIcon, BookmarkIconFill } from "~/components/icons";
 import { toast } from "react-hot-toast";
+import { TweetProps } from "../types";
 
-export const BookmarkTweet: React.FC<
-  Omit<TweetProps, "author" | "repostAuthor">
-> = ({ variant, className, post, ...props }) => {
+interface BookmarkProps extends Omit<TweetProps, "author" | "repostAuthor"> {}
+export const BookmarkTweet = ({ variant, post }: BookmarkProps) => {
   const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const ctx = api.useUtils();
   const { mutate: addToBookmark } = api.action.bookmarkPost.useMutation({
@@ -51,11 +50,11 @@ export const BookmarkTweet: React.FC<
         "flex w-full flex-1 text-accent",
         variant !== "details" && "w-fit flex-none justify-end"
       )}
+      aria-label="bookmark post"
     >
       <div
         className="group flex items-center"
         onClick={(e) => e.stopPropagation()}
-        {...props}
       >
         <Button
           variant="ghost"
@@ -87,7 +86,7 @@ export const BookmarkTweet: React.FC<
               )}
             />
           )}
-          <span className="sr-only">bookmark</span>
+          <span className="sr-only">bookmark post</span>
         </Button>
         <span
           className={cn(

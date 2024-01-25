@@ -6,14 +6,17 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import dayjs from "dayjs";
-import { TweetProps } from "./tweet-post";
+import { TweetProps } from "./types";
 import { cn } from "~/lib/utils";
 import { tweetTime } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
 import { Badge } from "../ui/badge";
 import { api } from "~/utils/api";
 
-export const TweetTitle: React.FC<Omit<TweetProps, "repostAuthor">> = ({
+interface TweetTitleProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    Omit<TweetProps, "repostAuthor"> {}
+export const TweetTitle = ({
   author,
   post,
   variant,
@@ -21,7 +24,7 @@ export const TweetTitle: React.FC<Omit<TweetProps, "repostAuthor">> = ({
   type = "default",
   children,
   ...props
-}) => {
+}: TweetTitleProps) => {
   const id = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { data } = api.post.postViews.useQuery(
     { id },

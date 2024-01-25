@@ -1,13 +1,12 @@
 import { Button } from "~/components/ui/button";
 import { cn, formatViews } from "~/lib/utils";
-import { TweetProps } from "../tweet-post";
 import { AnalyticIcon } from "~/components/icons";
 import { api } from "~/utils/api";
-import { toast } from "react-hot-toast";
+import { TweetProps } from "../types";
 
-export const AnalyticTweet: React.FC<
-  Omit<TweetProps, "author" | "repostAuthor">
-> = ({ variant, className, post, ...props }) => {
+interface AnalyticTweetProps
+  extends Omit<TweetProps, "author" | "repostAuthor"> {}
+export const AnalyticTweet = ({ variant, post }: AnalyticTweetProps) => {
   const id = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { data } = api.post.postViews.useQuery(
     { id },
@@ -19,13 +18,13 @@ export const AnalyticTweet: React.FC<
         "flex w-full flex-1 text-accent",
         variant === "details" ? "hidden" : ""
       )}
+      aria-label="analytic post"
     >
       <div
         className="group flex items-center"
         onClick={(e) => {
           e.stopPropagation();
         }}
-        {...props}
       >
         <Button
           variant="ghost"
@@ -43,7 +42,7 @@ export const AnalyticTweet: React.FC<
               "fill-accent transition duration-300 group-hover:fill-primary group-focus-visible/button:fill-primary"
             )}
           />
-          <span className="sr-only">bookmark</span>
+          <span className="sr-only">analytic post</span>
         </Button>
         <span
           className={cn(

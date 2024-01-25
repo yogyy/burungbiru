@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { RouterOutputs } from "~/utils/api";
 import { cn } from "~/lib/utils";
 import { renderText } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
@@ -19,22 +18,13 @@ import {
   RepostTweet,
   ShareTweet,
 } from "./actions";
+import { TweetProps } from "./types";
 dayjs.extend(LocalizedFormat);
 
-type VariantTweet = "default" | "details" | "parent";
-type TypeTweet = "default" | "modal";
-
-interface TweetTypeVariant {
-  variant?: VariantTweet;
-  type?: TypeTweet;
-  showParent?: boolean;
-}
-
-export type TweetProps = RouterOutputs["post"]["detailPost"] &
-  React.HTMLAttributes<HTMLDivElement> &
-  TweetTypeVariant;
-
-export const TweetPost: React.FC<TweetProps> = ({
+interface TweetPostProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    TweetProps {}
+export const TweetPost = ({
   post,
   author,
   repostAuthor,
@@ -43,7 +33,7 @@ export const TweetPost: React.FC<TweetProps> = ({
   showParent,
   className,
   ...props
-}) => {
+}: TweetPostProps) => {
   const { user: currentUser } = useUser();
   const { pathname } = useRouter();
   const { push } = useRouter();
@@ -66,7 +56,7 @@ export const TweetPost: React.FC<TweetProps> = ({
   };
 
   return (
-    <div
+    <article
       key={post.id}
       className={cn(
         "relative w-full max-w-full overflow-hidden border-b border-border pl-4 outline-none",
@@ -74,6 +64,7 @@ export const TweetPost: React.FC<TweetProps> = ({
         className
       )}
       onClick={toPostDetails}
+      aria-label="post"
       {...props}
     >
       {post.type === "REPOST" && type === "default" && (
@@ -94,7 +85,7 @@ export const TweetPost: React.FC<TweetProps> = ({
           </UserCard>
         </div>
       )}
-      <article className="relative flex w-full overflow-hidden">
+      <div className="relative flex w-full overflow-hidden">
         <div className="h-auto w-10 flex-shrink-0 basis-10">
           {type !== "modal" && (
             <div
@@ -136,13 +127,7 @@ export const TweetPost: React.FC<TweetProps> = ({
           )}
         >
           <TweetTitle variant={variant} author={author} post={post} type={type}>
-            {type !== "modal" && (
-              <TweetMenu
-                post={post}
-                author={author}
-                repostAuthor={repostAuthor}
-              />
-            )}
+            {type !== "modal" && <TweetMenu post={post} author={author} />}
           </TweetTitle>
           <div
             className={cn(
@@ -211,7 +196,7 @@ export const TweetPost: React.FC<TweetProps> = ({
             </p>
           )}
         </div>
-      </article>
-    </div>
+      </div>
+    </article>
   );
 };

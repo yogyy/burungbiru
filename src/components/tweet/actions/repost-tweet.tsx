@@ -2,12 +2,12 @@ import { useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
-import { TweetProps } from "../tweet-post";
+import { TweetProps } from "../types";
 import { RetweetIcon } from "~/components/icons";
 
-export const RepostTweet: React.FC<
-  Omit<TweetProps, "author" | "repostAuthor">
-> = ({ variant, className, post, ...props }) => {
+interface RepostTweetProps
+  extends Omit<TweetProps, "author" | "repostAuthor"> {}
+export const RepostTweet = ({ variant, post }: RepostTweetProps) => {
   const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const ctx = api.useUtils();
   const { mutate: repost } = api.action.retweetPost.useMutation({
@@ -37,7 +37,7 @@ export const RepostTweet: React.FC<
   }
 
   return (
-    <div className="flex w-full flex-1 text-accent" {...props}>
+    <div className="flex w-full flex-1 text-accent" aria-label="repost post">
       <div
         className="group flex items-center"
         onClick={(e) => e.stopPropagation()}
@@ -61,7 +61,7 @@ export const RepostTweet: React.FC<
                 "fill-[#00BA7C]"
             )}
           />
-          <span className="sr-only">repost</span>
+          <span className="sr-only">repost post</span>
         </Button>
         <span
           className={cn(
