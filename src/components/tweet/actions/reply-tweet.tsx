@@ -1,17 +1,11 @@
 import { cn } from "~/lib/utils";
-import { TweetProps } from "../tweet-post";
+import { TweetProps } from "../types";
 import { CommentIcon } from "~/components/icons";
 import { ReplyPostModal } from "~/components/modal";
 import { api } from "~/utils/api";
 
-export const ReplyTweet: React.FC<TweetProps> = ({
-  variant,
-  className,
-  post,
-  author,
-  repostAuthor,
-  ...props
-}) => {
+export const ReplyTweet = (props: TweetProps) => {
+  const { variant, post, author, repostAuthor } = props;
   const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { data: replies } = api.action.replies.useQuery(
     { postId },
@@ -19,11 +13,10 @@ export const ReplyTweet: React.FC<TweetProps> = ({
   );
 
   return (
-    <div className="flex w-full flex-1 text-accent">
+    <div className="flex w-full flex-1 text-accent" aria-label="reply post">
       <div
         className="group flex items-center"
         onClick={(e) => e.stopPropagation()}
-        {...props}
       >
         <ReplyPostModal
           author={author}
@@ -38,7 +31,7 @@ export const ReplyTweet: React.FC<TweetProps> = ({
               "fill-accent transition duration-300 group-hover:fill-primary group-focus-visible/button:fill-primary"
             )}
           />
-          <span className="sr-only">like</span>
+          <span className="sr-only">reply post</span>
         </ReplyPostModal>
         <span
           className={cn(

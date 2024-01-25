@@ -9,11 +9,8 @@ import { getUserFollower } from "~/hooks/query";
 interface FollowButtonProps extends ButtonProps {
   user: RouterOutputs["profile"]["getUserByUsernameDB"];
 }
-
-export const FollowButton: React.FC<FollowButtonProps> = ({
-  user,
-  className,
-}) => {
+export const FollowButton = (props: FollowButtonProps) => {
+  const { user, className, ...rest } = props;
   const { user: currentUser } = useUser();
   const hoverRef = React.useRef(null);
   const isHover = useHover(hoverRef);
@@ -59,6 +56,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
       )}
       disabled={unfollow.isLoading || follower.isLoading}
       onClick={FollowAction}
+      {...rest}
     >
       Follow
     </Button>
@@ -73,6 +71,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
       )}
       disabled={following.isLoading || follower.isLoading}
       onClick={FollowAction}
+      {...rest}
     >
       {isHover ? "Unfollow" : "Following"}
     </Button>

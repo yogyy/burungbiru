@@ -1,13 +1,12 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { api } from "~/utils/api";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
-import ButtonBack from "~/components/ButtonBack";
+import { ButtonBack } from "~/components/button-back";
 import {
   TweetText,
   TweetTitle,
   TweetAction,
   PostNotFound,
-  TweetPost,
   TweetMenu,
   TweetParentPost,
 } from "~/components/tweet";
@@ -66,18 +65,14 @@ const SinglePostPage = ({
             </div>
             <p>Post</p>
           </div>
-          <div
-            className={cn(
-              "relative w-full max-w-full border-b border-border outline-none"
-            )}
-          >
+          <div className="relative w-full max-w-full border-b border-border outline-none">
             {post.type === "COMMENT" && post.parentId && (
               <TweetParentPost id={post.parentId} showParent={true} />
             )}
             {detailPost.isLoading ? (
               <LoadingItem />
             ) : (
-              <div
+              <article
                 className="relative flex w-full scroll-mt-[52px] flex-col"
                 id={post.type.toLowerCase()}
               >
@@ -104,11 +99,7 @@ const SinglePostPage = ({
                     variant="details"
                     className="pt-3"
                   >
-                    <TweetMenu
-                      post={post}
-                      author={author}
-                      repostAuthor={repostAuthor}
-                    />
+                    <TweetMenu post={post} author={author} />
                   </TweetTitle>
                 </div>
                 <div className="relative mt-3 w-full flex-col px-4">
@@ -192,7 +183,7 @@ const SinglePostPage = ({
                   </p>
                 </div>
                 <CreateReply post={post} />
-              </div>
+              </article>
             )}
           </div>
           <Comments post={replies} postLoading={repliesloading} />

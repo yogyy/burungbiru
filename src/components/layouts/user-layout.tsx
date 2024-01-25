@@ -1,8 +1,7 @@
 import React from "react";
-import ButtonBack from "../ButtonBack";
+import { ButtonBack } from "../button-back";
 import { PageLayout } from "./root-layout";
 import { useUser } from "@clerk/nextjs";
-import { NextPage } from "next";
 import { cn } from "~/lib/utils";
 import { userMenu } from "~/constant";
 import { RouterOutputs, api } from "~/utils/api";
@@ -14,7 +13,7 @@ import { UserDetails } from "./user-details";
 import { SEO } from "../simple-seo";
 import { Badge } from "../ui/badge";
 
-interface LayoutUser {
+interface UserLayoutProps {
   children: React.ReactNode;
   topbar?: React.ReactNode;
   title: string;
@@ -24,7 +23,7 @@ interface LayoutUser {
 const defaultBanner =
   "https://res.cloudinary.com/dpegakmzh/image/upload/v1704193211/burbir/app/LL_V_B_2_gi3gqc.png";
 
-export const UserLayout: NextPage<LayoutUser> = (props) => {
+export const UserLayout = (props: UserLayoutProps) => {
   const { children, topbar, user, title } = props;
   const [showFollow, setShowFollow] = React.useState(false);
   const { user: currentUser, isLoaded } = useUser();

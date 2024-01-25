@@ -4,18 +4,15 @@ import { RouterOutputs } from "~/utils/api";
 import Link from "next/link";
 import { cn } from "~/lib/utils";
 
-type AvatarType = Pick<
-  RouterOutputs["profile"]["getUserByUsernameDB"],
-  "username" | "imageUrl"
-> &
-  React.AnchorHTMLAttributes<HTMLAnchorElement>;
+interface AvatarType
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    Pick<
+      RouterOutputs["profile"]["getUserByUsernameDB"],
+      "username" | "imageUrl"
+    > {}
 
-export const UserAvatar: React.FC<AvatarType> = ({
-  className,
-  username,
-  imageUrl,
-  ...props
-}) => {
+export const UserAvatar = (props: AvatarType) => {
+  const { className, username, imageUrl, ...rest } = props;
   return (
     <Link
       href={`/@${username}`}
@@ -23,11 +20,11 @@ export const UserAvatar: React.FC<AvatarType> = ({
         "rounded-full outline-none outline-offset-0 focus-visible:outline-2 focus-visible:outline-primary",
         className
       )}
-      {...props}
+      {...rest}
     >
       <Avatar>
         <AvatarImage src={imageUrl} alt={`@${username}`} />
-        <AvatarFallback className="bg-background text-primary">
+        <AvatarFallback className="bg-background font-semibold text-primary">
           {username?.slice(0, 2)}
         </AvatarFallback>
       </Avatar>

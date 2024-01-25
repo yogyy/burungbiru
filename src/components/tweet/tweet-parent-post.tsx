@@ -7,7 +7,6 @@ import { ImageModal } from "../modal";
 import { TweetTitle, TweetText, TweetAction, TweetMenu } from "./";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
-
 import { useRouter } from "next/router";
 import {
   AnalyticTweet,
@@ -17,29 +16,23 @@ import {
   RepostTweet,
   ShareTweet,
 } from "./actions";
+import { TweetTypeVariant } from "./types";
 dayjs.extend(LocalizedFormat);
 
-type VariantTweet = "default" | "details" | "parent";
-type TypeTweet = "default" | "modal";
-
-interface TweetTypeVariant {
-  variant?: VariantTweet;
-  type?: TypeTweet;
-}
-
-type TweetProps = React.HTMLAttributes<HTMLDivElement> & {
+interface TweetParentProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    TweetTypeVariant {
   id: string;
   showParent?: boolean;
-} & TweetTypeVariant;
-
-export const TweetParentPost: React.FC<TweetProps> = ({
+}
+export const TweetParentPost = ({
   id,
   className,
   type = "default",
   variant = "parent",
   showParent,
   ...props
-}) => {
+}: TweetParentProps) => {
   const { push, pathname } = useRouter();
   const { data: parent } = api.post.parentPost.useQuery(
     { parentId: id },
@@ -59,7 +52,7 @@ export const TweetParentPost: React.FC<TweetProps> = ({
   if (!parent) {
     if (pathname !== "/post/[id]") return null;
     return (
-      <div className="px-4 py-3">
+      <article className="px-4 py-3" aria-label="post parent">
         <div className="flex items-center justify-between rounded-2xl border border-[rgb(32,35,39)] bg-[rgb(22,24,28)] px-1 py-3">
           <span className="mx-3 flex flex-wrap text-[15px] leading-5">
             <p className="text-accent">
@@ -75,7 +68,7 @@ export const TweetParentPost: React.FC<TweetProps> = ({
             </a>
           </span>
         </div>
-      </div>
+      </article>
     );
   }
 
@@ -98,7 +91,7 @@ export const TweetParentPost: React.FC<TweetProps> = ({
   };
 
   return (
-    <div
+    <article
       key={parent.post.id}
       className={cn(
         "relative w-full max-w-full overflow-hidden pl-4 outline-none",
@@ -106,9 +99,10 @@ export const TweetParentPost: React.FC<TweetProps> = ({
         className
       )}
       onClick={toPostDetails}
+      aria-label="post parent"
       {...props}
     >
-      <article className="relative flex w-full overflow-hidden">
+      <div className="relative flex w-full overflow-hidden">
         <div className="h-auto w-10 flex-shrink-0 basis-10">
           {type !== "modal" && (
             <div className={cn("mx-auto h-2 w-0.5 bg-transparent")} />
@@ -149,11 +143,7 @@ export const TweetParentPost: React.FC<TweetProps> = ({
             type={type}
           >
             {type !== "modal" && (
-              <TweetMenu
-                post={parent.post}
-                author={parent.author}
-                repostAuthor={parent.repostAuthor}
-              />
+              <TweetMenu post={parent.post} author={parent.author} />
             )}
           </TweetTitle>
           <div
@@ -175,7 +165,7 @@ export const TweetParentPost: React.FC<TweetProps> = ({
               >
                 <div className="relative h-full w-full max-w-full transition-colors duration-200 hover:bg-secondary">
                   <ImageModal
-                    src={parent.post.image || ""}
+                    src={parent.post.image}
                     width="600"
                     height="400"
                     alt={`${parent.author.username}'s image`}
@@ -203,7 +193,7 @@ export const TweetParentPost: React.FC<TweetProps> = ({
             />
           </TweetAction>
         </div>
-      </article>
-    </div>
+      </div>
+    </article>
   );
 };

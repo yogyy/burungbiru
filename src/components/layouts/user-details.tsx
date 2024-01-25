@@ -32,7 +32,7 @@ interface UserDetailProps {
   isLoaded: boolean;
 }
 
-export const UserDetails: React.FC<UserDetailProps> = (props) => {
+export const UserDetails = (props: UserDetailProps) => {
   const { user, currentUser, isLoaded } = props;
   const [showModal, setShowModal] = React.useState(false);
   const { data: follow, isLoading: LoadingFollow } = getUserFollower({

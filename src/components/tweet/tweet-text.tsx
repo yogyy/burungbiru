@@ -3,11 +3,11 @@ import React, { ComponentProps } from "react";
 import { URL_REGEX } from "~/lib/tweet";
 import { cn, convertToHttps } from "~/lib/utils";
 
-export const TweetText: React.FC<
-  ComponentProps<"p"> & {
-    content: string;
-  }
-> = ({ content, className, ...props }) => {
+interface Props extends ComponentProps<"p"> {
+  content: string;
+}
+
+export const TweetText = ({ content, className, ...props }: Props) => {
   const words = content.split(" ");
 
   return (

@@ -23,10 +23,8 @@ import { hamburgerNavbarLink } from "~/constant";
 import { MoreNavbar } from "../navbar/more";
 import { api } from "~/utils/api";
 
-export const BurgerMenu: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
-  className,
-  ...props
-}) => {
+interface BurgerMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
+export const BurgerMenu = ({ className, ...props }: BurgerMenuProps) => {
   const { show, setShow } = useBurgerMenu();
   const { data: user, isSuccess } = api.profile.getCurrentUser.useQuery(
     { follow: true },

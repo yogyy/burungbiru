@@ -1,8 +1,7 @@
 {
   "git": {
     "deploymentEnabled": {
-      "main": true,
-      "before-using-drizzle": false
+      "remove-react.fc": false
     }
   }
 }

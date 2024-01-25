@@ -1,5 +1,5 @@
 import React from "react";
-import ButtonBack from "~/components/ButtonBack";
+import { ButtonBack } from "~/components/button-back";
 import { PageLayout } from "~/components/layouts";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";

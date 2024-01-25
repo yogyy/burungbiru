@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,23 +10,23 @@ import {
 import { Button, ButtonProps } from "../ui/button";
 import { IoArrowBack, IoClose } from "react-icons/io5";
 import { cn } from "~/lib/utils";
-import { TweetPost, TweetProps } from "../tweet";
-import CreateReply from "../form/reply-form";
+import { TweetPost } from "../tweet";
 import dynamic from "next/dynamic";
+import { TweetProps } from "../tweet/types";
 
 const LazyReplyForm = dynamic(() => import("~/components/form/reply-form"));
 
-type ReplyProps = ButtonProps & TweetProps;
-
-export const ReplyPostModal: React.FC<ReplyProps> = ({
-  className,
+interface ReplyModalProps
+  extends Pick<TweetProps, "author" | "post" | "repostAuthor"> {
+  children: React.ReactNode;
+}
+export const ReplyPostModal = ({
   children,
   author,
   post,
   repostAuthor,
-  ...props
-}) => {
-  const [show, setShow] = useState(false);
+}: ReplyModalProps) => {
+  const [show, setShow] = React.useState(false);
 
   return (
     <Dialog open={show} onOpenChange={setShow} key={post.id}>

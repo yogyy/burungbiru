@@ -9,16 +9,17 @@ import {
 import { MoreNavbar } from "./navbar/more";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 
-export const MenuNavbarButton: React.FC<PopoverPrimitive.PopoverProps> = ({
-  ...props
-}) => {
+interface MenuProps extends PopoverPrimitive.PopoverTriggerProps {}
+export const MenuNavbarButton = ({ className, ...props }: MenuProps) => {
   return (
-    <Popover {...props}>
+    <Popover>
       <PopoverTrigger
         className={cn(
           "-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
-          "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
+          "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background",
+          className
         )}
+        {...props}
       >
         <MenuIcon size={26.25} />
         <span className="ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block">
