@@ -21,26 +21,19 @@ import { ImageModal } from "../modal/image-modal";
 import { useUploadImage } from "~/hooks/use-upload-img";
 import { uploadImage } from "~/lib/cloudinary";
 import { LuX } from "react-icons/lu";
-import { TweetProps } from "../tweet";
 import { useTextarea } from "~/hooks/use-adjust-textarea";
-import { CreateTweetVariant, tweetSchema } from ".";
+import { CreateTweetVariant, tweetSchema } from "./form";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
+import { TweetProps } from "../tweet/types";
 
-interface CommentForm
-  extends React.FormHTMLAttributes<HTMLFormElement>,
-    Pick<TweetProps, "post"> {
+interface CommentFormProps extends Pick<TweetProps, "post"> {
   variant?: CreateTweetVariant;
   setShowReplyModal?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CreateReply: React.FC<CommentForm> = ({
-  variant = "default",
-  className,
-  setShowReplyModal,
-  post,
-  ...props
-}) => {
+const CreateReply = (props: CommentFormProps) => {
+  const { variant = "default", setShowReplyModal, post } = props;
   const { textareaRef, adjustTextareaHeight } = useTextarea();
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [submitBtn, setSubmitBtn] = useState(false);
@@ -134,8 +127,7 @@ const CreateReply: React.FC<CommentForm> = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("relative flex w-full flex-col pb-2", className)}
-        {...props}
+        className="relative flex w-full flex-col pb-2"
       >
         <FormField
           control={form.control}

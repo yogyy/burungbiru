@@ -24,18 +24,14 @@ import { uploadImage } from "~/lib/cloudinary";
 import { LuX } from "react-icons/lu";
 import { useTweetModal } from "~/hooks/store";
 import { useTextarea } from "~/hooks/use-adjust-textarea";
-import { CreateTweetVariant, tweetSchema } from ".";
+import { CreateTweetVariant, tweetSchema } from "./form";
 import Link from "next/link";
 
-interface CreateTweetProps extends React.FormHTMLAttributes<HTMLFormElement> {
+interface CreateTweetProps {
   variant?: CreateTweetVariant;
 }
 
-const CreateTweet: React.FC<CreateTweetProps> = ({
-  variant = "default",
-  className,
-  ...props
-}) => {
+const CreateTweet = ({ variant = "default" }: CreateTweetProps) => {
   const { textareaRef, adjustTextareaHeight } = useTextarea();
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const [submitBtn, setSubmitBtn] = useState(false);
@@ -120,8 +116,7 @@ const CreateTweet: React.FC<CreateTweetProps> = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("relative flex w-full flex-col pb-2", className)}
-        {...props}
+        className={cn("relative flex w-full flex-col pb-2")}
       >
         <FormField
           control={form.control}
