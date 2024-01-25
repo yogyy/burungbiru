@@ -6,10 +6,8 @@ import { LoadingSpinner } from "../loading";
 import { useRouter } from "next/router";
 import { FollowButton } from "../button-follow";
 
-export const RightAside: React.FC<React.ComponentProps<"aside">> = ({
-  className,
-  ...props
-}) => {
+export const RightAside = (props: React.ComponentProps<"aside">) => {
+  const { className, ...rest } = props;
   const { data: peoples, isLoading } = api.profile.getUserRandomUserDB.useQuery(
     {},
     { refetchOnWindowFocus: false, refetchOnMount: false }
@@ -22,7 +20,7 @@ export const RightAside: React.FC<React.ComponentProps<"aside">> = ({
         "sticky top-1 mr-2.5 hidden h-[100.5vh] bg-background lg:block lg:w-[290px] xl:w-[350px]",
         className
       )}
-      {...props}
+      {...rest}
     >
       <div className="sticky top-1 z-20 mb-3 bg-background pb-1">
         <div className="group flex w-full rounded-full border bg-card text-accent focus-within:border-primary">

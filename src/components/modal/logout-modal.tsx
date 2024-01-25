@@ -12,9 +12,7 @@ import { BsTwitterX } from "react-icons/bs";
 import { useClerk } from "@clerk/nextjs";
 import { useBurgerMenu, useUserPopover } from "~/hooks/store";
 
-export const LogoutModal: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
+export const LogoutModal = ({ children }: { children: React.ReactNode }) => {
   const [modalSignOut, setModalSignOut] = React.useState(false);
   const closeBurgerMenu = useBurgerMenu((state) => state.setShow);
   const closeUserPopover = useUserPopover((state) => state.setShow);

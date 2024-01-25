@@ -1,11 +1,8 @@
 import React from "react";
 import { IconBaseProps } from "./type";
 
-export const DevIcon: React.FC<IconBaseProps> = ({
-  size = "1rem",
-  className,
-  ...props
-}) => {
+export const DevIcon = (props: IconBaseProps) => {
+  const { size = "1rem", className, ...rest } = props;
   return (
     <svg
       viewBox="0 0 24 24"
@@ -13,7 +10,7 @@ export const DevIcon: React.FC<IconBaseProps> = ({
       height={size}
       fill="currentcolor"
       className={className}
-      {...props}
+      {...rest}
     >
       <g>
         <linearGradient

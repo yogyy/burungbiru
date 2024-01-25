@@ -1,5 +1,3 @@
-import React from "react";
-import { HoverCardTriggerProps } from "@radix-ui/react-hover-card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,10 +6,11 @@ import { FollowButton } from "./button-follow";
 import { getUserbyUsername } from "~/hooks/query";
 import { useIsClient, useMediaQuery } from "usehooks-ts";
 import { Badge } from "./ui/badge";
-
-export const UserCard: React.FC<
-  HoverCardTriggerProps & { username: string }
-> = ({ children, username, className, ...props }) => {
+interface UserCardProps {
+  username: string;
+  children: React.ReactNode;
+}
+export const UserCard = ({ children, username }: UserCardProps) => {
   const { user: currentUser } = useUser();
   const { data: user } = getUserbyUsername({
     username,
@@ -22,9 +21,7 @@ export const UserCard: React.FC<
 
   return isClient && onDekstop ? (
     <HoverCard>
-      <HoverCardTrigger asChild {...props}>
-        {children}
-      </HoverCardTrigger>
+      <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       <HoverCardContent
         onClick={(e) => e.stopPropagation()}
         className="flex cursor-default flex-col gap-2 rounded-2xl border-none shadow-x"

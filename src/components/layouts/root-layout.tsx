@@ -4,13 +4,8 @@ import { RightAside } from ".";
 import { Navbar } from "../navbar";
 import { MobileNav } from "../navbar/mobile-navbar";
 
-export const PageLayout = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
+interface PageLayoutProps extends React.HTMLAttributes<HTMLElement> {}
+export const PageLayout = ({ children, className }: PageLayoutProps) => {
   const showNavbar = useMediaQuery("(max-width: 570px)");
 
   return (

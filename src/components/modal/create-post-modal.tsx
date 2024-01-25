@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,12 +13,9 @@ import { TweetIcon } from "../icons";
 import { cn } from "~/lib/utils";
 import dynamic from "next/dynamic";
 
-const LazyForm = dynamic(() => import("~/components/form"));
+const LazyForm = dynamic(() => import("~/components/form/tweet-form"));
 
-export const CreatePostModal: React.FC<ButtonProps> = ({
-  className,
-  ...props
-}) => {
+export const CreatePostModal = ({ className, ...props }: ButtonProps) => {
   const { show, setShow } = useTweetModal();
 
   return (

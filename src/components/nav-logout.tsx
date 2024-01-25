@@ -15,7 +15,7 @@ import { useUser } from "@clerk/nextjs";
 
 interface NavProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export const NavbarLogout: React.FC<NavProps> = ({ className, ...props }) => {
+export const NavbarLogout = ({ className, ...props }: NavProps) => {
   const { show, setShow } = useUserPopover();
   const { user } = useUser();
   if (!user) return null;

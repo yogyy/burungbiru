@@ -2,7 +2,7 @@ import React from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
-export const SEO: React.FC<{ title?: string }> = ({ title = "burbir" }) => {
+export const SEO = ({ title = "burbir" }: { title?: string }) => {
   const { asPath } = useRouter();
   return (
     <Head>

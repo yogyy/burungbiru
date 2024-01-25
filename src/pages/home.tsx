@@ -9,7 +9,7 @@ import React from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { SEO } from "~/components/simple-seo";
 
-const LazyForm = dynamic(() => import("~/components/form"));
+const LazyForm = dynamic(() => import("~/components/form/tweet-form"));
 
 const Home: NextPage = () => {
   const { isLoaded } = useUser();
@@ -29,9 +29,7 @@ const Home: NextPage = () => {
     isFetchingNextPage,
   } = api.post.timeline.useInfiniteQuery(
     {},
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
+    { getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
 
   if (hasNextPage && inView && !postLoading) {

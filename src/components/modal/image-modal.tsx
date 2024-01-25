@@ -8,12 +8,7 @@ import {
 } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
 
-export const ImageModal: React.FC<ImageProps> = ({
-  src,
-  alt,
-  className,
-  ...props
-}) => {
+export const ImageModal = ({ src, alt, className, ...props }: ImageProps) => {
   const [showModal, setShowModal] = React.useState(false);
   return (
     <Dialog open={showModal} onOpenChange={setShowModal}>

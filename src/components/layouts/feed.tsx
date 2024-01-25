@@ -4,11 +4,12 @@ import { cn } from "~/lib/utils";
 import { TweetParentPost, TweetPost } from "../tweet";
 import React from "react";
 
-export const Feed: React.FC<{
+interface FeedProps {
   post: RouterOutputs["post"]["timeline"]["posts"] | undefined;
   postLoading: boolean;
   showParent?: boolean;
-}> = ({ post, postLoading, showParent = false }) => {
+}
+export const Feed = ({ post, postLoading, showParent = false }: FeedProps) => {
   return (
     <div className="h-auto w-full">
       {postLoading ? (
