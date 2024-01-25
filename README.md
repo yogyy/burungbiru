@@ -1,4 +1,4 @@
-# T3 Stack Web Application
+# burbir
 
 ## Overview
 This web application is built using the T3 Stack, incorporating Next.js, Tailwind CSS, tRPC, TypeScript, Prisma, and Tanstack Query. It aims to provide a responsive and modern user experience.
