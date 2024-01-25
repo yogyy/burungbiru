@@ -13,7 +13,7 @@ import { useUser } from "@clerk/nextjs";
 
 type TYPE = "mobile" | "dekstop";
 
-export const MoreNavbar: React.FC<{ type: TYPE }> = ({ type }) => {
+export const MoreNavbar = ({ type }: { type: TYPE }) => {
   const { user } = useUser();
 
   return (

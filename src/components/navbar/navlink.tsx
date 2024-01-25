@@ -10,7 +10,7 @@ import {
 } from "~/components/icons";
 import { IconBaseProps } from "../icons/type";
 
-const ProfileLink: React.FC<IconBaseProps> = (props) => {
+const ProfileLink = (props: IconBaseProps) => {
   const { asPath } = useRouter();
   const { user } = useUser();
   const arrOfRoute = asPath.split("/");
@@ -21,7 +21,7 @@ const ProfileLink: React.FC<IconBaseProps> = (props) => {
   );
 };
 
-const HomeLink: React.FC<IconBaseProps> = (props) => {
+const HomeLink = (props: IconBaseProps) => {
   const { route } = useRouter();
   return route === "/home" ? (
     <HomeIconFill size={26.25} {...props} />
@@ -30,7 +30,7 @@ const HomeLink: React.FC<IconBaseProps> = (props) => {
   );
 };
 
-const BookmarkLink: React.FC<IconBaseProps> = (props) => {
+const BookmarkLink = (props: IconBaseProps) => {
   const { pathname } = useRouter();
   return pathname === "/i/bookmarks" ? (
     <BookmarkIconFill size={26.25} {...props} />
