@@ -156,16 +156,10 @@ export const profileRouter = createTRPCRouter({
   userWithReplies: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.reply
-        .findMany({
-          where: {
-            userId: input.userId,
-          },
-          include: { post: true },
-          orderBy: [{ createdAt: "desc" }],
-        })
-        .then((replies) => replies.map((reply) => reply.post))
-        .then(addUserDataToPosts);
+      const replies = await ctx.prisma.post.findMany({
+        where: { authorId: input.userId, AND: { type: "COMMENT" } },
+      });
+      return addUserDataToPosts(replies);
     }),
 
   userFollower: privateProcedure
