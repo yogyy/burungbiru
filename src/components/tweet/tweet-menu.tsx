@@ -39,6 +39,7 @@ export const TweetMenu = (props: TweetMenuProps) => {
       if (post.parentId) {
         ctx.action.reposts.invalidate({ postId: post.parentId });
       }
+      ctx.post.parentPost.reset({ parentId: post.id });
       ctx.post.detailPost.invalidate({ id: post.id });
       ctx.post.postReplies.invalidate({ postId: post.parentId || post.id });
       ctx.profile.userPosts.invalidate();

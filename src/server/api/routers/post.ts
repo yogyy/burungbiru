@@ -57,6 +57,12 @@ export const postRouter = createTRPCRouter({
         where: { id: input.id },
       });
 
+      if (post.type === "COMMENT") {
+        await ctx.prisma.reply.deleteMany({
+          where: { postId: input.id, userId: ctx.userId },
+        });
+      }
+
       if (post) {
         await ctx.prisma.post.deleteMany({
           where: {

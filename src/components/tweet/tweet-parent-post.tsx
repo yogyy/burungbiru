@@ -37,9 +37,9 @@ export const TweetParentPost = ({
   const { data: parent } = api.post.parentPost.useQuery(
     { parentId: id },
     {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
       enabled: !!id,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
       retry(failureCount, error) {
         if (error.data?.code === "NOT_FOUND") {
           return false;
