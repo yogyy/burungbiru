@@ -4,7 +4,7 @@ import React from "react";
 import { UserLayout } from "~/components/layouts";
 import { buttonVariants } from "~/components/ui/button";
 import UserNotFound from "~/components/user-not-found";
-import { getUserbyUsername } from "~/hooks/query";
+import { getUserbyUsername } from "~/hooks/queries";
 import { cn } from "~/lib/utils";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 

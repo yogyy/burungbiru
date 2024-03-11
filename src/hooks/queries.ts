@@ -18,4 +18,24 @@ function getCurrentUser() {
   return api.profile.getCurrentUser.useQuery({});
 }
 
-export { getUserFollower, getUserbyUsername, getCurrentUser };
+function updateViews({ id }: { id: string }) {
+  return api.post.updateViewPost.useQuery(
+    { id },
+    { refetchOnWindowFocus: false, refetchOnMount: false }
+  );
+}
+
+function getDetailPost({ id }: { id: string }) {
+  return api.post.detailPost.useQuery(
+    { id },
+    { refetchOnWindowFocus: false, refetchOnMount: false }
+  );
+}
+
+export {
+  getUserbyUsername,
+  getUserFollower,
+  getCurrentUser,
+  getDetailPost,
+  updateViews,
+};

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { FollowButton } from "./button-follow";
-import { getUserbyUsername } from "~/hooks/query";
+import { getUserbyUsername } from "~/hooks/queries";
 import { useIsClient, useMediaQuery } from "usehooks-ts";
 import { Badge } from "./ui/badge";
 interface UserCardProps {
