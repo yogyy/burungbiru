@@ -1,7 +1,7 @@
 {
   "git": {
     "deploymentEnabled": {
-      "remove-react.fc": false
+      "migrate-db": false
     }
   }
 }
