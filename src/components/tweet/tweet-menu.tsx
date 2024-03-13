@@ -21,6 +21,7 @@ import {
 } from "~/components/ui/dialog";
 import { useRouter } from "next/router";
 import { cn } from "~/lib/utils";
+import { cloudinaryDestroy } from "~/lib/cloudinary";
 
 type TweetMenuType = ButtonProps & RouterOutputs["post"]["detailPost"];
 interface TweetMenuProps extends Omit<TweetMenuType, "repostAuthor"> {}
@@ -64,10 +65,7 @@ export const TweetMenu = (props: TweetMenuProps) => {
     e.stopPropagation();
     e.currentTarget.disabled = true;
     try {
-      if (post.image)
-        axios.post("/api/delete", {
-          publicId: post.imageId,
-        });
+      if (post.imageId) cloudinaryDestroy(post.imageId);
       mutate({ id: post.id });
     } catch (error) {
       console.log(error);
