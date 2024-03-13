@@ -5,10 +5,22 @@ import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 import { SEO } from "~/components/simple-seo";
+import { dark } from "@clerk/themes";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+        variables: {
+          colorPrimary: "#1E9CF0",
+          colorBackground: "#010100",
+        },
+        elements: {
+          card: "border border-primary",
+        },
+      }}
+    >
       <SEO />
       <Component {...pageProps} />
       <Toaster

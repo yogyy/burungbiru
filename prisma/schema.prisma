@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -13,13 +13,13 @@ generator client {
 
 model User {
   id        String    @id @unique
-  name      String    @db.Char(50)
+  name      String    @db.VarChar(50)
   username  String    @unique
   imageUrl  String
   bannerUrl String?
-  bio       String?   @db.Char(160)
-  location  String?   @db.Char(30)
-  website   String?   @db.Char(100)
+  bio       String?   @db.VarChar(160)
+  location  String?   @db.VarChar(30)
+  website   String?   @db.VarChar(100)
   birthDate DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -28,6 +28,7 @@ model User {
   type      UserType  @default(user)
 
   @@index([id, username])
+  @@map("burbir_user")
 }
 
 model Follow {
@@ -40,6 +41,7 @@ model Follow {
 
   @@index([followerId])
   @@index([followingId])
+  @@map("burbir_follow")
 }
 
 model Post {
@@ -60,6 +62,7 @@ model Post {
 
   @@unique([createdAt, id])
   @@index([authorId, id])
+  @@map("burbir_post")
 }
 
 model Repost {
@@ -70,6 +73,7 @@ model Repost {
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([postId])
+  @@map("burbir_repost")
 }
 
 model Reply {
@@ -78,10 +82,11 @@ model Reply {
   userId    String
   parentId  String
   postId    String
-  post      Post     @relation("postReplies", fields: [postId], references: [id], onDelete: Cascade)
+  post      Post     @relation("postReplies", fields: [parentId], references: [id], onDelete: Cascade)
 
-  @@index([postId])
+  @@index([userId])
   @@index([parentId])
+  @@map("burbir_reply")
 }
 
 model Like {
@@ -93,6 +98,7 @@ model Like {
 
   @@index([userId])
   @@index([postId])
+  @@map("burbir_like")
 }
 
 model Bookmark {
@@ -104,6 +110,7 @@ model Bookmark {
 
   @@index([postId])
   @@index([userId])
+  @@map("burbir_bookmark")
 }
 
 enum PostType {

@@ -12,6 +12,7 @@ export const AnalyticTweet = ({ variant, post }: AnalyticTweetProps) => {
     { id },
     { enabled: !!post.parentId }
   );
+
   return (
     <div
       className={cn(

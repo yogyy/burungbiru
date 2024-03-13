@@ -1,7 +1,8 @@
 {
   "git": {
     "deploymentEnabled": {
-      "remove-react.fc": false
+      "migrate-db": false,
+      "fix-upload-delete-image-api": false
     }
   }
 }

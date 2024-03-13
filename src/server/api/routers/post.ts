@@ -1,26 +1,37 @@
+import { z } from "zod";
 import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
-import { addUserDataToPosts } from "~/server/helper/dbHelper";
 import { tweetSchema } from "~/utils/validation";
-
-export const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(3, "1 m"),
-  analytics: true,
-});
+import { ratelimit } from "~/server/helper/ratelimit";
+import { addUserDataToPosts } from "~/server/helper/dbHelper";
 
 export const postRouter = createTRPCRouter({
   detailPost: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      await ctx.prisma.post.update({
+      const post = await ctx.prisma.post.findUnique({
+        where: { id: input.id },
+        include: {
+          bookmarks: true,
+          likes: true,
+          repost: true,
+          replies: true,
+        },
+      });
+
+      if (!post) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return (await addUserDataToPosts([post]))[0];
+    }),
+
+  updateViewPost: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.post.update({
         where: { id: input.id },
         data: {
           view: {
@@ -28,13 +39,6 @@ export const postRouter = createTRPCRouter({
           },
         },
       });
-      const post = await ctx.prisma.post.findUnique({
-        where: { id: input.id },
-      });
-
-      if (!post) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return (await addUserDataToPosts([post]))[0];
     }),
 
   postViews: privateProcedure
@@ -53,10 +57,13 @@ export const postRouter = createTRPCRouter({
         where: { id: input.id },
       });
 
-      if (post) {
-        await ctx.prisma.repost.deleteMany({
-          where: { postId: post.parentId ?? input.id, userId: ctx.userId },
+      if (post.type === "COMMENT") {
+        await ctx.prisma.reply.deleteMany({
+          where: { postId: input.id, userId: ctx.userId },
         });
+      }
+
+      if (post) {
         await ctx.prisma.post.deleteMany({
           where: {
             parentId: input.id,
@@ -66,6 +73,12 @@ export const postRouter = createTRPCRouter({
         });
       } else {
         throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      if (post.type !== "COMMENT") {
+        await ctx.prisma.repost.deleteMany({
+          where: { postId: post.parentId ?? input.id, userId: ctx.userId },
+        });
       }
 
       return post;
@@ -153,13 +166,11 @@ export const postRouter = createTRPCRouter({
   postReplies: publicProcedure
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.reply
+      return await ctx.prisma.post
         .findMany({
-          where: { parentId: input.postId },
-          include: { post: true },
+          where: { parentId: input.postId, type: "COMMENT" },
           orderBy: [{ createdAt: "desc" }],
         })
-        .then((replise) => replise.map((reply) => reply.post))
         .then(addUserDataToPosts);
     }),
 });

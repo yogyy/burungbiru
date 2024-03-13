@@ -10,7 +10,10 @@ on:
 
 env:
   DATABASE_URL: "https://fake.com"
-
+  CLOUDINARY_CLOUD_NAME: "fake_env",
+  CLOUDINARY_API_KEY: "fake_env",
+  CLOUDINARY_API_SECRET: "fake_env",
+  CLOUDINARY_CLOUD_PRESET: "fake_env",
 jobs:
   build:
     runs-on: ubuntu-latest

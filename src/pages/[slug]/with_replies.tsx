@@ -4,7 +4,7 @@ import { Feed, UserLayout } from "~/components/layouts";
 import { LoadingSpinner } from "~/components/loading";
 import { SEO } from "~/components/simple-seo";
 import UserNotFound from "~/components/user-not-found";
-import { getUserbyUsername } from "~/hooks/query";
+import { getUserbyUsername } from "~/hooks/queries";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { api } from "~/utils/api";
 

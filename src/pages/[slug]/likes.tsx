@@ -5,7 +5,7 @@ import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 import { useUser } from "@clerk/nextjs";
-import { getUserbyUsername } from "~/hooks/query";
+import { getUserbyUsername } from "~/hooks/queries";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = getUserbyUsername({ username });

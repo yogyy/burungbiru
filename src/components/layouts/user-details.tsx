@@ -2,7 +2,7 @@ import React from "react";
 import { RouterOutputs } from "~/utils/api";
 import { BalloonIcon, CalendarIcon, LocationIcon } from "../icons";
 import { RiLinkM } from "react-icons/ri";
-import { getUserFollower } from "~/hooks/query";
+import { getUserFollower } from "~/hooks/queries";
 import {
   Dialog,
   DialogContent,

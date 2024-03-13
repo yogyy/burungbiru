@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageModal } from "../modal/image-modal";
 import { useUploadImage } from "~/hooks/use-upload-img";
-import { uploadImage } from "~/lib/cloudinary";
+import { cloudinarUpload } from "~/lib/cloudinary";
 import { LuX } from "react-icons/lu";
 import { useTextarea } from "~/hooks/use-adjust-textarea";
 import { CreateTweetVariant, tweetSchema } from "./form";
@@ -96,7 +96,7 @@ const CreateReply = (props: CommentFormProps) => {
       setSubmitBtn((prev) => !prev);
       if (ImagePrev) {
         const imagePost = toast.promise(
-          uploadImage(image as File),
+          cloudinarUpload(image as File),
           {
             loading: "upload your image...",
             success: "upload image success",

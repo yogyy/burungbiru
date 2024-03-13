@@ -30,55 +30,10 @@ export const TweetTitle = ({
     { id },
     { enabled: !!post.parentId }
   );
-  const RenderDefault = () => {
-    return (
-      <>
-        <UserCard username={author.username}>
-          <Link
-            onClick={(e) => e.stopPropagation()}
-            className="-mt-0.5 flex flex-shrink-0 items-end text-base font-bold outline-none focus-within:underline hover:underline"
-            href={`/@${author.username}`}
-          >
-            {author.name}
-            <Badge variant={author.type} className="-mr-1" />
-          </Link>
-        </UserCard>
-        <UserCard username={author.username}>
-          <Link
-            tabIndex={-1}
-            onClick={(e) => e.stopPropagation()}
-            className={cn(
-              "inline-flex w-fit text-accent outline-none",
-              variant === "details" ? "" : "ml-1"
-            )}
-            href={`/@${author.username}`}
-          >
-            {`@${author.username}`}
-          </Link>
-        </UserCard>
-      </>
-    );
-  };
-
-  const RenderOnModal = () => {
-    return (
-      <>
-        <p className="-mt-0.5 flex w-full flex-shrink-0 items-end text-base font-bold outline-none">
-          {author.name}
-          <Badge variant={author.type} />
-        </p>
-        <p
-          className={cn(
-            "inline-flex text-accent outline-none",
-            variant === "details" ? "" : "ml-2"
-          )}
-        >{`@${author.username}`}</p>
-      </>
-    );
-  };
 
   return (
     <div
+      onClick={() => console.log(post)}
       className={cn(
         "relative flex w-full flex-nowrap items-center justify-between pt-0.5",
         className
@@ -91,7 +46,46 @@ export const TweetTitle = ({
           variant === "details" && "flex-col"
         )}
       >
-        {type !== "modal" ? <RenderDefault /> : <RenderOnModal />}
+        {type !== "modal" ? (
+          <>
+            <UserCard username={author.username}>
+              <Link
+                onClick={(e) => e.stopPropagation()}
+                className="-mt-0.5 flex w-fit flex-shrink-0 items-end text-base font-bold outline-none focus-within:underline hover:underline"
+                href={`/@${author.username}`}
+              >
+                {author.name}
+                <Badge variant={author.type} className="-mr-1" />
+              </Link>
+            </UserCard>
+            <UserCard username={author.username}>
+              <Link
+                tabIndex={-1}
+                onClick={(e) => e.stopPropagation()}
+                className={cn(
+                  "inline-flex w-fit text-accent outline-none",
+                  variant === "details" ? "" : "ml-1"
+                )}
+                href={`/@${author.username}`}
+              >
+                {`@${author.username}`}
+              </Link>
+            </UserCard>
+          </>
+        ) : (
+          <>
+            <p className="-mt-0.5 flex w-full flex-shrink-0 items-end text-base font-bold outline-none">
+              {author.name}
+              <Badge variant={author.type} />
+            </p>
+            <p
+              className={cn(
+                "inline-flex text-accent outline-none",
+                variant === "details" ? "" : "ml-2"
+              )}
+            >{`@${author.username}`}</p>
+          </>
+        )}
         {variant !== "details" && (
           <>
             <span className="px-1 text-[15px] leading-5 text-accent">·</span>

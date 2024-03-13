@@ -1,12 +1,12 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
   createTRPCRouter,
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 import { tweetSchema } from "~/utils/validation";
-import { ratelimit } from "./post";
+import { ratelimit } from "~/server/helper/ratelimit";
 
 export const actionRouter = createTRPCRouter({
   likePost: privateProcedure

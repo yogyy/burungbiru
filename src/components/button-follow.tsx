@@ -4,7 +4,7 @@ import { useHover } from "usehooks-ts";
 import { api, RouterOutputs } from "~/utils/api";
 import { Button, ButtonProps } from "./ui/button";
 import { cn } from "~/lib/utils";
-import { getUserFollower } from "~/hooks/query";
+import { getUserFollower } from "~/hooks/queries";
 
 interface FollowButtonProps extends ButtonProps {
   user: RouterOutputs["profile"]["getUserByUsernameDB"];

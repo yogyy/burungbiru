@@ -1,7 +1,4 @@
-import { GetStaticProps, InferGetStaticPropsType } from "next";
-import { api } from "~/utils/api";
-import { generateSSGHelper } from "~/server/helper/ssgHelper";
-import { ButtonBack } from "~/components/button-back";
+import dayjs from "dayjs";
 import {
   TweetText,
   TweetTitle,
@@ -10,22 +7,22 @@ import {
   TweetMenu,
   TweetParentPost,
 } from "~/components/tweet";
-import { cn, formatViews } from "~/lib/utils";
-import Image from "next/image";
-import { renderText } from "~/lib/tweet";
-import { useUser } from "@clerk/nextjs";
-import dayjs from "dayjs";
-import { ImageModal } from "~/components/modal";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { api } from "~/utils/api";
+import { useUser } from "@clerk/nextjs";
+import { renderText } from "~/lib/tweet";
+import { cn, formatViews } from "~/lib/utils";
+import { ImageModal } from "~/components/modal";
 import { AnalyticIcon } from "~/components/icons";
-import { Feed as Comments, PageLayout } from "~/components/layouts";
 import { LoadingItem } from "~/components/loading";
+import { ButtonBack } from "~/components/button-back";
 import CreateReply from "~/components/form/reply-form";
 import {
   AnalyticTweet,
@@ -36,23 +33,25 @@ import {
   ShareTweet,
 } from "~/components/tweet/actions";
 import { SEO } from "~/components/simple-seo";
+import { getDetailPost, updateViews } from "~/hooks/queries";
+import { generateSSGHelper } from "~/server/helper/ssgHelper";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { Feed as Comments, PageLayout } from "~/components/layouts";
 
 const SinglePostPage = ({
   id,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { data, error, isLoading } = getDetailPost({ id });
   const { user: currentUser } = useUser();
-
-  const detailPost = api.post.detailPost.useQuery(
-    { id },
-    { refetchOnWindowFocus: false, refetchOnMount: false }
-  );
-  if (!detailPost.data || detailPost.error?.message === "NOT_FOUND") {
+  const {} = updateViews({ id });
+  if (!data || error?.message === "NOT_FOUND") {
     return <PostNotFound />;
   }
-  const { author, post, repostAuthor } = detailPost.data;
+
+  const { author, post, repostAuthor } = data;
 
   const { data: replies, isLoading: repliesloading } =
-    api.post.postReplies.useQuery({ postId: id });
+    api.post.postReplies.useQuery({ postId: id }, { enabled: !!data });
 
   return (
     <>
@@ -69,7 +68,7 @@ const SinglePostPage = ({
             {post.type === "COMMENT" && post.parentId && (
               <TweetParentPost id={post.parentId} showParent={true} />
             )}
-            {detailPost.isLoading ? (
+            {isLoading ? (
               <LoadingItem />
             ) : (
               <article

@@ -1,5 +1,5 @@
 {
-  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnPaste": false, // required
   "editor.formatOnType": false, // required
   "editor.formatOnSave": true, // optional
@@ -12,7 +12,10 @@
   "editor.quickSuggestions": {
     "strings": true
   },
-  "[xml]": {
-    "editor.defaultFormatter": "DotJoshJohnson.xml"
+
+  "githubPullRequests.ignoredPullRequestBranches": ["main"],
+  "conventionalCommits.scopes": ["menu"],
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
