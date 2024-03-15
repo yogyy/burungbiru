@@ -1,8 +1,7 @@
 {
   "git": {
     "deploymentEnabled": {
-      "migrate-db": false,
-      "fix-upload-delete-image-api": false
+      "main": false
     }
   }
 }
