@@ -33,7 +33,6 @@ export const TweetTitle = ({
 
   return (
     <div
-      onClick={() => console.log(post)}
       className={cn(
         "relative flex w-full flex-nowrap items-center justify-between pt-0.5",
         className
