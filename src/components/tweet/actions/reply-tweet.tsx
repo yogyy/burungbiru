@@ -1,8 +1,14 @@
 import { cn } from "~/lib/utils";
 import { TweetProps } from "../types";
 import { CommentIcon } from "~/components/icons";
-import { ReplyPostModal } from "~/components/modal";
 import { api } from "~/utils/api";
+import dynamic from "next/dynamic";
+
+const ReplyModal = dynamic(() =>
+  import("~/components/modal/reply-post-modal").then(
+    (mod) => mod.ReplyPostModal
+  )
+);
 
 export const ReplyTweet = (props: TweetProps) => {
   const { variant, post, author, repostAuthor } = props;
@@ -18,7 +24,7 @@ export const ReplyTweet = (props: TweetProps) => {
         className="group flex items-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <ReplyPostModal
+        <ReplyModal
           author={author}
           post={post}
           repostAuthor={repostAuthor}
@@ -32,7 +38,7 @@ export const ReplyTweet = (props: TweetProps) => {
             )}
           />
           <span className="sr-only">reply post</span>
-        </ReplyPostModal>
+        </ReplyModal>
         <span
           className={cn(
             "h-fit pl-0.5 font-sans text-[13px] leading-4 xs:px-2 md:cursor-pointer",
