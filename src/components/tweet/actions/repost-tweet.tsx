@@ -8,26 +8,28 @@ import { RetweetIcon } from "~/components/icons";
 interface RepostTweetProps
   extends Omit<TweetProps, "author" | "repostAuthor"> {}
 export const RepostTweet = ({ variant, post }: RepostTweetProps) => {
-  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const ctx = api.useUtils();
-  const { mutate: repost } = api.action.retweetPost.useMutation({
-    onSuccess() {
-      ctx.action.reposts.invalidate({ postId });
-      ctx.profile.userPosts.invalidate();
-    },
-  });
-  const { mutate: deleteRepost } = api.action.unretweetPost.useMutation({
-    onSuccess() {
-      ctx.action.reposts.invalidate({ postId });
-      ctx.post.timeline.invalidate();
-    },
-  });
+  const { user: currentUser } = useUser();
+  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
+  const { mutate: repost, isLoading: loadingRepost } =
+    api.action.retweetPost.useMutation({
+      onSuccess() {
+        ctx.action.reposts.invalidate({ postId });
+        ctx.profile.userPosts.invalidate();
+      },
+    });
+  const { mutate: deleteRepost, isLoading: loadingUnrepost } =
+    api.action.unretweetPost.useMutation({
+      onSuccess() {
+        ctx.action.reposts.invalidate({ postId });
+        ctx.post.timeline.invalidate();
+      },
+    });
 
   const { data: postRepost } = api.action.reposts.useQuery(
     { postId },
     { refetchOnWindowFocus: false }
   );
-  const { user: currentUser } = useUser();
   function retweetPost() {
     if (!postRepost?.some((repost) => repost.userId === currentUser?.id)) {
       repost({ postId });
@@ -47,6 +49,7 @@ export const RepostTweet = ({ variant, post }: RepostTweetProps) => {
           type="button"
           size="icon"
           onClick={retweetPost}
+          disabled={loadingRepost || loadingUnrepost}
           className={cn(
             "group/button z-10 -mr-2 flex border-2 transition-all ease-in last:mr-0",
             "hover:bg-[#00BA7C]/10 focus-visible:border-[#00BA7C]/50 focus-visible:bg-[#00BA7C]/10 group-hover:bg-[#00BA7C]/10"

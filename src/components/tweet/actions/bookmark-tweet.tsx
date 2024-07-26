@@ -8,29 +8,30 @@ import { TweetProps } from "../types";
 
 interface BookmarkProps extends Omit<TweetProps, "author" | "repostAuthor"> {}
 export const BookmarkTweet = ({ variant, post }: BookmarkProps) => {
-  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const ctx = api.useUtils();
-  const { mutate: addToBookmark } = api.action.bookmarkPost.useMutation({
-    onSuccess() {
-      ctx.post.bookmarks.invalidate({ postId });
-      ctx.post.bookmarks.invalidate({ postId });
-      toast.success("Added to your Bookmarks", {
-        id: `${post.id}-addbookmark`,
-      });
-    },
-  });
-  const { mutate: deleteBookmark } = api.action.unbookmarkPost.useMutation({
-    onSuccess() {
-      ctx.post.bookmarks.invalidate({ postId });
-      ctx.profile.userBookmarkedPosts.invalidate().then(() =>
-        toast.success("Removed from your Bookmarks", {
-          id: `${post.id}-removebookmark`,
-        })
-      );
-    },
-  });
-
   const { user: currentUser } = useUser();
+  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
+  const { mutate: addToBookmark, isLoading: loadingMutate } =
+    api.action.bookmarkPost.useMutation({
+      onSuccess() {
+        ctx.post.bookmarks.invalidate({ postId });
+        ctx.post.bookmarks.invalidate({ postId });
+        toast.success("Added to your Bookmarks", {
+          id: `${post.id}-addbookmark`,
+        });
+      },
+    });
+  const { mutate: deleteBookmark, isLoading: loadingUnmutate } =
+    api.action.unbookmarkPost.useMutation({
+      onSuccess() {
+        ctx.post.bookmarks.invalidate({ postId });
+        ctx.profile.userBookmarkedPosts.invalidate().then(() =>
+          toast.success("Removed from your Bookmarks", {
+            id: `${post.id}-removebookmark`,
+          })
+        );
+      },
+    });
 
   const { data: postBookmark } = api.post.bookmarks.useQuery(
     { postId },
@@ -61,6 +62,7 @@ export const BookmarkTweet = ({ variant, post }: BookmarkProps) => {
           onClick={bookmarkAction}
           type="button"
           size="icon"
+          disabled={loadingMutate || loadingUnmutate}
           className={cn(
             "group/button z-10 flex border-2 transition-all ease-in xs:-mr-2",
             "hover:bg-primary/10 focus-visible:border-primary/50 focus-visible:bg-primary/10 group-hover:bg-primary/10"

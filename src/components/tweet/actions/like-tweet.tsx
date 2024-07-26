@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/nextjs";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
@@ -8,38 +8,33 @@ import { TweetProps } from "../types";
 
 interface LikeTweetProps extends Omit<TweetProps, "author" | "repostAuthor"> {}
 export const LikeTweet = ({ variant, post }: LikeTweetProps) => {
-  const [likeBtn, setLikeBtn] = React.useState(false);
   const ctx = api.useUtils();
+  const { user: currentUser } = useUser();
   const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
 
-  const { mutate: like } = api.action.likePost.useMutation({
-    onMutate() {
-      setLikeBtn((prev) => !prev);
-      ctx.action.likes.invalidate({ postId });
-    },
-    onSuccess() {
-      setLikeBtn((prev) => !prev);
-      ctx.action.likes.invalidate({ postId });
-    },
-  });
-  const { mutate: unlike } = api.action.unlikePost.useMutation({
-    onMutate() {
-      setLikeBtn((prev) => !prev);
-      ctx.action.likes.invalidate({ postId });
-    },
-    onSuccess() {
-      setLikeBtn((prev) => !prev);
-      ctx.action.likes
-        .invalidate({ postId })
-        .then(() => ctx.profile.userLikedPosts.invalidate());
-    },
-  });
-  const { user: currentUser } = useUser();
+  const { mutate: like, isLoading: loadingLike } =
+    api.action.likePost.useMutation({
+      onMutate() {
+        ctx.action.likes.invalidate({ postId });
+      },
+      onSuccess() {
+        ctx.action.likes.invalidate({ postId });
+      },
+    });
+  const { mutate: unlike, isLoading: loadingUnlike } =
+    api.action.unlikePost.useMutation({
+      onMutate() {
+        ctx.action.likes.invalidate({ postId });
+      },
+      onSuccess() {
+        ctx.action.likes
+          .invalidate({ postId })
+          .then(() => ctx.profile.userLikedPosts.invalidate());
+      },
+    });
 
   const { data: postLike } = api.action.likes.useQuery(
-    {
-      postId,
-    },
+    { postId },
     { refetchOnWindowFocus: false }
   );
 
@@ -59,7 +54,7 @@ export const LikeTweet = ({ variant, post }: LikeTweetProps) => {
       >
         <Button
           variant="ghost"
-          disabled={likeBtn}
+          disabled={loadingLike || loadingUnlike}
           onClick={LikePost}
           type="button"
           size="icon"
