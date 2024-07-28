@@ -97,7 +97,7 @@ export const UserLayout = (props: UserLayoutProps) => {
           <div className="relative aspect-[3/1] w-full overflow-hidden">
             <ImageModal
               alt={`banner @${user?.username}`}
-              src={user.bannerUrl ?? defaultBanner}
+              src={user.bannerUrl ? user.bannerUrl : defaultBanner}
               width="600"
               height="200"
               priority
@@ -131,7 +131,7 @@ export const UserLayout = (props: UserLayoutProps) => {
                 )
             )}
           </div>
-          <div className="flex min-h-[88dvh] w-full flex-col items-center">
+          <div className="flex min-h-[40dvh] w-full flex-col items-center">
             {children}
           </div>
         </div>
