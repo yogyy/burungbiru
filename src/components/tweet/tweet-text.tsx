@@ -11,7 +11,7 @@ export const TweetText = ({ content, className, ...props }: Props) => {
   const words = content.split(" ");
 
   return (
-    <p className={cn("content-post whitespace-pre-wrap", className)} {...props}>
+    <p className={cn("content-post whitespace-pre-line", className)} {...props}>
       {words.map((word: string) => {
         return word.match(URL_REGEX) ? (
           <React.Fragment key={word + new Date()}>
