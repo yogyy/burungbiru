@@ -55,6 +55,12 @@ export const TweetPost = ({
     }
   };
 
+  const shouldShowReplyingTo =
+    post.type === "COMMENT" &&
+    type !== "modal" &&
+    !showParent &&
+    pathname !== "/post/[id]";
+
   return (
     <article
       key={post.id}
@@ -135,23 +141,18 @@ export const TweetPost = ({
               type === "modal" && "pb-2"
             )}
           >
-            {post.type === "COMMENT" &&
-              type !== "modal" &&
-              !showParent &&
-              pathname !== "/post/[id]" && (
-                <div className="-mt-1 text-accent">
-                  Replying to&nbsp;
-                  <UserCard username={repostAuthor.username!}>
-                    <Link
-                      href={`/@${repostAuthor.username}`}
-                      className="text-primary hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      @{repostAuthor.username}
-                    </Link>
-                  </UserCard>
-                </div>
-              )}
+            {shouldShowReplyingTo && repostAuthor.username !== undefined ? (
+              <div className="-mt-1 text-accent">
+                Replying to&nbsp;
+                <Link
+                  href={`/@${repostAuthor.username}`}
+                  className="text-primary hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  @{repostAuthor.username}
+                </Link>
+              </div>
+            ) : null}
             <TweetText content={renderText(post.content)} />
           </div>
           {post.image && type !== "modal" && (
