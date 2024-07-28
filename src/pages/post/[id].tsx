@@ -33,7 +33,7 @@ import {
   ShareTweet,
 } from "~/components/tweet/actions";
 import { SEO } from "~/components/simple-seo";
-import { getDetailPost, updateViews } from "~/hooks/queries";
+import { getDetailPost } from "~/hooks/queries";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { Feed as Comments, PageLayout } from "~/components/layouts";
@@ -43,7 +43,6 @@ const SinglePostPage = ({
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { data, error, isLoading } = getDetailPost({ id });
   const { user: currentUser } = useUser();
-  const {} = updateViews({ id });
   if (!data || error?.message === "NOT_FOUND") {
     return <PostNotFound />;
   }

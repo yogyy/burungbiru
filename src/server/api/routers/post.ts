@@ -25,20 +25,12 @@ export const postRouter = createTRPCRouter({
 
       if (!post) throw new TRPCError({ code: "NOT_FOUND" });
 
-      return (await addUserDataToPosts([post]))[0];
-    }),
-
-  updateViewPost: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return await ctx.prisma.post.update({
+      await ctx.prisma.post.update({
         where: { id: input.id },
-        data: {
-          view: {
-            increment: 1,
-          },
-        },
+        data: { view: { increment: 1 } },
       });
+
+      return (await addUserDataToPosts([post]))[0];
     }),
 
   postViews: privateProcedure
