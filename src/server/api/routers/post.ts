@@ -94,12 +94,12 @@ export const postRouter = createTRPCRouter({
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       })
     )
-    .query(async ({ ctx, input: { limit = 30, cursor } }) => {
+    .query(async ({ ctx, input: { limit = 10, cursor } }) => {
       const posts = await ctx.prisma.post
         .findMany({
           take: limit + 1,
           cursor: cursor ? { createdAt_id: cursor } : undefined,
-          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+          orderBy: [{ createdAt: "desc" }],
         })
         .then(addUserDataToPosts);
 

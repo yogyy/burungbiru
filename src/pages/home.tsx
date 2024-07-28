@@ -24,10 +24,10 @@ const Home: NextPage = () => {
 
   const {
     data,
-    isLoading: postLoading,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
+    isLoading: postLoading,
   } = api.post.timeline.useInfiniteQuery(
     {},
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
@@ -73,7 +73,7 @@ const Home: NextPage = () => {
             postLoading={postLoading}
           />
           {inView && isFetchingNextPage && <LoadingItem />}
-          {hasNextPage && !isFetchingNextPage && <div ref={ref} />}
+          {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
         </div>
       </PageLayout>
     </>

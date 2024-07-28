@@ -80,7 +80,7 @@ export const profileRouter = createTRPCRouter({
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       })
     )
-    .query(async ({ ctx, input: { limit = 30, cursor, userId } }) => {
+    .query(async ({ ctx, input: { limit = 10, cursor, userId } }) => {
       const posts = await ctx.prisma.post
         .findMany({
           take: limit + 1,
