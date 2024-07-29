@@ -13,7 +13,7 @@ generator client {
 }
 
 model User {
-  id        String    @id @unique
+  id        String    @id
   name      String    @db.VarChar(50)
   username  String    @unique
   imageUrl  String
@@ -28,7 +28,6 @@ model User {
   following Follow[]  @relation("Following")
   type      UserType  @default(user)
 
-  @@index([id, username])
   @@map("burbir_user")
 }
 
@@ -52,9 +51,9 @@ model Post {
   image          String?
   imageId        String?
   authorId       String
-  replies        Reply[]    @relation("postReplies")
-  likes          Like[]     @relation("postLikes")
-  bookmarks      Bookmark[] @relation("postBookmarks")
+  replies        Reply[]
+  likes          Like[]
+  bookmarks      Bookmark[]
   parentId       String?
   authorParentId String?
   repost         Repost[]
@@ -83,7 +82,7 @@ model Reply {
   userId    String
   parentId  String
   postId    String
-  post      Post     @relation("postReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [parentId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([parentId])
@@ -95,7 +94,7 @@ model Like {
   createdAt DateTime @default(now())
   userId    String
   postId    String
-  post      Post     @relation("postLikes", fields: [postId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([postId])
@@ -107,7 +106,7 @@ model Bookmark {
   createdAt DateTime @default(now())
   userId    String
   postId    String
-  post      Post     @relation("postBookmarks", fields: [postId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([postId])
   @@index([userId])
