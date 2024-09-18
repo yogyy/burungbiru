@@ -9,12 +9,12 @@ import {
 const navbarLink = [
   { name: "Home", icon: HomeLink, link: "/home" },
   { name: "Explore", icon: icon.SearchIcon, link: "#explore" },
-  { name: "Notifications", icon: icon.BellIcon, link: "/#notification" },
+  { name: "Notifications", icon: icon.BellIcon, link: "#notification" },
   { name: "Messages", icon: icon.MessageIcon, link: "#messages" },
-  { name: "Lists", icon: icon.ListIcon, link: "/#list" },
+  { name: "Lists", icon: icon.ListIcon, link: "#list" },
   { name: "Bookmarks", icon: BookmarkLink, link: "/i/bookmarks" },
-  { name: "Communities", icon: icon.GroupIcon, link: "/#group" },
-  { name: "Premium", icon: icon.LogoIcon, link: "/#premium" },
+  { name: "Communities", icon: icon.GroupIcon, link: "#group" },
+  { name: "Premium", icon: icon.LogoIcon, link: "#premium" },
   { name: "Profile", icon: ProfileLink, link: "/profile" },
   // { name: "More", icon: icon.MenuIcon, link: "/#more" },
 ];
