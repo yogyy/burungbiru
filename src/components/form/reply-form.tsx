@@ -64,17 +64,7 @@ const CreateReply = (props: CommentFormProps) => {
       ctx.post.detailPost.invalidate({ id: postId }).then(() => {
         adjustTextareaHeight();
       });
-      toast.success(() => (
-        <>
-          Your Post was sent.&nbsp;
-          <Link
-            href={`/post/${id}#comment`}
-            className="font-bold hover:underline"
-          >
-            View
-          </Link>
-        </>
-      ));
+      toast.success(() => <ToastReplySuccess id={id} />);
       if (variant === "modal" && setShowReplyModal) {
         setShowReplyModal((prev) => !prev);
       }

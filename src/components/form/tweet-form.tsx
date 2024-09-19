@@ -60,14 +60,7 @@ const CreateTweet = ({ variant = "default" }: CreateTweetProps) => {
       ctx.post.timeline.invalidate().then(() => {
         adjustTextareaHeight();
       });
-      toast.success(() => (
-        <>
-          Your Post was sent.&nbsp;
-          <Link href={`/post/${id}`} className="font-bold hover:underline">
-            View
-          </Link>
-        </>
-      ));
+      toast.success(() => <ToastPostSuccess id={id} />);
       if (variant === "modal") setTweetModal((prev) => !prev);
     },
     onError: (err) => {
