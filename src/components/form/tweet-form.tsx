@@ -62,6 +62,7 @@ const CreateTweet = ({ variant = "default" }: CreateTweetProps) => {
       });
       toast.success(() => <ToastPostSuccess id={id} />);
       if (variant === "modal") setTweetModal((prev) => !prev);
+      if (ImagePrev) URL.revokeObjectURL(ImagePrev);
     },
     onError: (err) => {
       adjustTextareaHeight();
@@ -156,27 +157,13 @@ const CreateTweet = ({ variant = "default" }: CreateTweetProps) => {
                         disabled={isPosting}
                       />
                       {ImagePrev && (
-                        <div className="relative pb-2">
-                          <Button
-                            type="button"
-                            size="icon"
-                            variant="ghost"
-                            className={cn(
-                              "absolute right-1 top-1 rounded-full bg-background p-1",
-                              "opacity-70 transition-opacity hover:bg-background hover:opacity-100"
-                            )}
-                            onClick={() => setImagePrev("")}
-                          >
-                            <LuX size={20} />
-                            <span className="sr-only">close preview image</span>
-                          </Button>
-                          <ImageModal
-                            width="600"
-                            height="400"
-                            src={ImagePrev}
-                            className="max-h-[42.5rem] w-full rounded-2xl"
-                            alt="image preview"
-                          />
+                        <ImagePreview
+                          image={ImagePrev}
+                          onClick={() => {
+                            URL.revokeObjectURL(ImagePrev);
+                            setImagePrev("");
+                          }}
+                        />
                         </div>
                       )}
                     </div>
