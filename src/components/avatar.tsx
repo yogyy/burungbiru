@@ -1,19 +1,21 @@
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { RouterOutputs } from "~/utils/api";
 import Link from "next/link";
 import { cn } from "~/lib/utils";
+import { RouterOutputs } from "~/utils/api";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface AvatarType
   extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
     Pick<
       RouterOutputs["profile"]["getUserByUsernameDB"],
       "username" | "imageUrl"
-    > {}
+    > {
+  onModal?: boolean;
+}
 
 export const UserAvatar = (props: AvatarType) => {
-  const { className, username, imageUrl, ...rest } = props;
-  return (
+  const { className, username, imageUrl, onModal = false, ...rest } = props;
+  return !onModal ? (
     <Link
       href={`/@${username}`}
       className={cn(
@@ -29,5 +31,12 @@ export const UserAvatar = (props: AvatarType) => {
         </AvatarFallback>
       </Avatar>
     </Link>
+  ) : (
+    <Avatar className={className}>
+      <AvatarImage src={imageUrl} alt={`@${username}`} />
+      <AvatarFallback className="bg-background font-semibold text-primary">
+        {username?.slice(0, 2)}
+      </AvatarFallback>
+    </Avatar>
   );
 };

@@ -135,10 +135,7 @@ const CreateReply = (props: CommentFormProps) => {
                   username={user?.username!}
                   imageUrl={user?.imageUrl!}
                   className="flex-shrink-0"
-                  // tabIndex={variant === "modal" ? -1 : 0}
-                  onClick={(e) => {
-                    variant === "modal" && e.preventDefault();
-                  }}
+                  onModal={variant === "modal"}
                 />
                 <FormItem className="h-full w-full space-y-0">
                   <FormControl>

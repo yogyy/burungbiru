@@ -129,9 +129,7 @@ const CreateTweet = ({ variant = "default" }: CreateTweetProps) => {
                   username={user?.username!}
                   imageUrl={user?.imageUrl!}
                   className="mt-3 flex-shrink-0"
-                  onClick={(e) => {
-                    variant === "modal" ? e.preventDefault() : null;
-                  }}
+                  onModal={variant === "modal"}
                 />
                 <FormItem className="h-full w-full space-y-0">
                   <FormControl>
