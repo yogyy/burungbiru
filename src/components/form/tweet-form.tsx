@@ -78,19 +78,7 @@ const CreateTweet = ({ variant = "default" }: CreateTweetProps) => {
 
   async function onSubmit(values: z.infer<typeof tweetSchema>) {
     try {
-      setSubmitBtn((prev) => !prev);
-      if (ImagePrev) {
-        const imagePost = toast.promise(
-          cloudinarUpload(image as File),
-          {
-            loading: "upload your image...",
-            success: "upload image success",
-            error: "Uh oh, uploading image went error!",
-          },
-          { position: "top-right" }
-        );
-        values.image = await imagePost;
-      }
+      if (ImagePrev) values.image = await imagePost(image);
     } catch (error) {
       console.log(error);
     } finally {
