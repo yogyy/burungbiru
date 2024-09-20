@@ -178,14 +178,18 @@ const CreateTweet = ({ variant = "default" }: CreateTweetProps) => {
             </span>
           </div>
           <hr className={cn(variant === "default" ? "ml-12" : "ml-0")} />
-          <div className="mt-2 flex justify-between">
-            <div
-              className={cn(
-                variant === "default" ? "ml-12" : "ml-0",
-                "flex gap-1.5"
-              )}
-            >
-              <FormField
+          <FormButtons
+            variant={variant}
+            actions={createTweetActions}
+            submitButtonDisabled={
+              !isLoaded ||
+              isPosting ||
+              form.formState.isSubmitting ||
+              textareaRef.current?.value.length! >= 255 ||
+              textareaRef.current?.value.trim().length === 0
+            }
+            field={
+              <Comp.FormField
                 control={form.control}
                 name="image.secure_url"
                 render={({ field }) => (

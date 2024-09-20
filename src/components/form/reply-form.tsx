@@ -166,14 +166,18 @@ const CreateReply = (props: CommentFormProps) => {
             </div>
           )}
         />
-        <div className="flex justify-between px-4">
-          <div
-            className={cn(
-              variant === "default" ? "ml-12" : "ml-0",
-              "flex gap-1.5"
-            )}
-          >
-            <FormField
+        <FormButtons
+          type="reply"
+          variant={variant}
+          actions={replyTweetActions}
+          submitButtonDisabled={
+            isPosting ||
+            form.formState.isSubmitting ||
+            textareaRef.current?.value.length! >= 255 ||
+            textareaRef.current?.value.trim().length === 0
+          }
+          field={
+            <Comp.FormField
               control={form.control}
               name="image.secure_url"
               render={({ field }) => (
