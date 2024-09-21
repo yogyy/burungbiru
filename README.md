@@ -6,7 +6,7 @@ This web application is built using the T3 Stack, incorporating Next.js, Tailwin
 
 ## Table of Contents
 
-- [T3 Stack Web Application](#t3-stack-web-application)
+- [T3 Stack Web Application](https://create.t3.gg/)
 - [Overview](#overview)
 - [Table of Contents](#table-of-contents)
 - [Features](#features)
@@ -19,8 +19,9 @@ This web application is built using the T3 Stack, incorporating Next.js, Tailwin
 ## Features
 
 - Authentication
-- Create POST
-- Add Image on POST
+- Create Post
+- Add Image on Post
+- Rate Limiting on Post and Reply
 
 ## Installation
 
