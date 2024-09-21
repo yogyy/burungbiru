@@ -1,16 +1,19 @@
-import { Button } from "~/components/ui/button";
-import { cn, formatViews } from "~/lib/utils";
-import { AnalyticIcon } from "~/components/icons";
 import { api } from "~/utils/api";
+import { cn, formatViews } from "~/lib/utils";
+import { Button } from "~/components/ui/button";
+import { AnalyticIcon } from "~/components/icons";
 import { TweetProps } from "../types";
 
 interface AnalyticTweetProps
   extends Omit<TweetProps, "author" | "repostAuthor"> {}
-export const AnalyticTweet = ({ variant, post }: AnalyticTweetProps) => {
+export const AnalyticTweet = ({ variant, post, type }: AnalyticTweetProps) => {
   const id = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { data } = api.post.postViews.useQuery(
     { id },
-    { enabled: !!post.parentId }
+    {
+      enabled: !!post.parentId || type === "modal",
+      refetchOnWindowFocus: false,
+    }
   );
 
   return (
@@ -23,9 +26,7 @@ export const AnalyticTweet = ({ variant, post }: AnalyticTweetProps) => {
     >
       <div
         className="group flex items-center"
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
+        onClick={(e) => e.stopPropagation()}
       >
         <Button
           variant="ghost"

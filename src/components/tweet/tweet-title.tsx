@@ -7,7 +7,6 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
-import { api } from "~/utils/api";
 import { tweetTime } from "~/lib/tweet";
 import { TweetProps } from "./types";
 import { Badge } from "../ui/badge";
@@ -25,12 +24,6 @@ export const TweetTitle = ({
   children,
   ...props
 }: TweetTitleProps) => {
-  const id = post.type === "REPOST" ? post.parentId ?? "" : post.id;
-  const { data } = api.post.postViews.useQuery(
-    { id },
-    { enabled: !!post.parentId }
-  );
-
   return (
     <div
       className={cn(
@@ -92,7 +85,7 @@ export const TweetTitle = ({
               <Link
                 href={`/post/${post.id}`}
                 className="group relative flex w-max flex-shrink-0 items-end text-sm font-thin text-accent outline-none hover:underline focus:underline"
-                aria-label={dayjs(data?.createdAt).format("LL LT")}
+                aria-label={dayjs(post?.createdAt).format("LL LT")}
               >
                 <TooltipProvider>
                   <Tooltip>
@@ -100,23 +93,23 @@ export const TweetTitle = ({
                       asChild
                       className="text-[15px] font-normal leading-5"
                     >
-                      <time dateTime={data?.createdAt.toISOString()}>
-                        {tweetTime(data?.createdAt ?? post.createdAt)}
+                      <time dateTime={post?.createdAt.toISOString()}>
+                        {tweetTime(post?.createdAt ?? post.createdAt)}
                       </time>
                     </TooltipTrigger>
                     <TooltipContent
                       side="bottom"
                       className="rounded-none border-none bg-[#495A69] p-1 text-xs text-white"
                     >
-                      {dayjs(data?.createdAt).format("LT LL")}
+                      {dayjs(post?.createdAt).format("LT LL")}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </Link>
             ) : (
               <p className="text-[15px] font-normal leading-5 text-accent">
-                <time dateTime={data?.createdAt.toISOString()}>
-                  {tweetTime(data?.createdAt ?? post.createdAt)}
+                <time dateTime={post?.createdAt.toISOString()}>
+                  {tweetTime(post?.createdAt ?? post.createdAt)}
                 </time>
               </p>
             )}
