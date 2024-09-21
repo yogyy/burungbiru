@@ -102,6 +102,12 @@ const CreateReply = (props: CommentFormProps) => {
     }
   }
 
+  useEffect(() => {
+    if (variant == "modal") {
+      textareaRef.current?.focus();
+    }
+  }, [textareaRef, variant]);
+
   return (
     <Form {...form}>
       <form
