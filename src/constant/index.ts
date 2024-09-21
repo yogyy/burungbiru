@@ -61,10 +61,15 @@ const createTweetActions = [
   { name: "Location", icon: icon.LocationIcon },
 ];
 
+const replyTweetActions = [...createTweetActions].filter(
+  (item) => item.name != "Schedule" && item.name != "Poll"
+);
+
 export {
   navbarLink,
   TweetButton,
   createTweetActions,
+  replyTweetActions,
   userMenu,
   hamburgerNavbarLink,
   SettingsAndSupport,
