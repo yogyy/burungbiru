@@ -1,30 +1,23 @@
-import { useRef, useState } from "react";
-import { toast } from "react-hot-toast";
-import { api } from "~/utils/api";
 import { z } from "zod";
-import { cn } from "~/lib/utils";
-import { Button } from "../ui/button";
-import { createTweetActions } from "~/constant";
-import { ImageIcon } from "../icons";
-import { UserAvatar } from "../avatar";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
+import { toast } from "react-hot-toast";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ImageModal } from "../modal/image-modal";
-import { useUploadImage } from "~/hooks/use-upload-img";
-import { cloudinarUpload } from "~/lib/cloudinary";
-import { LuX } from "react-icons/lu";
-import { useTextarea } from "~/hooks/use-adjust-textarea";
-import { CreateTweetVariant, tweetSchema } from "./form";
-import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { api } from "~/utils/api";
+import { cn } from "~/lib/utils";
+import { imagePost } from "~/lib/cloudinary";
+import { replyTweetActions } from "~/constant";
+import { useUploadImage } from "~/hooks/use-upload-img";
+import { useTextarea } from "~/hooks/use-adjust-textarea";
+import { FormButtons } from "./form-buttons";
+import { ImagePreview } from "./image-preview";
+import { ToastReplySuccess } from "./toast-form";
+import { CreateTweetVariant, replySchema } from "./form";
+import * as Comp from "../ui/form";
+import { ImageIcon } from "../icons";
+import { Button } from "../ui/button";
+import { UserAvatar } from "../avatar";
 import { TweetProps } from "../tweet/types";
 
 interface CommentFormProps extends Pick<TweetProps, "post"> {
@@ -32,19 +25,22 @@ interface CommentFormProps extends Pick<TweetProps, "post"> {
   setShowReplyModal?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CreateReply = (props: CommentFormProps) => {
-  const { variant = "default", setShowReplyModal, post } = props;
-  const { textareaRef, adjustTextareaHeight } = useTextarea();
-  const inputRef = useRef<HTMLTextAreaElement | null>(null);
-  const [submitBtn, setSubmitBtn] = useState(false);
+const CreateReply = ({
+  variant = "default",
+  setShowReplyModal,
+  post,
+}: CommentFormProps) => {
   const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { image, ImagePrev, setImagePrev, handleImageChange } =
     useUploadImage();
+  const { textareaRef, adjustTextareaHeight } = useTextarea();
+  const inputImageRef = useRef<HTMLTextAreaElement | null>(null);
+
   const { user } = useUser();
   const ctx = api.useUtils();
 
-  const form = useForm<z.infer<typeof tweetSchema>>({
-    resolver: zodResolver(tweetSchema),
+  const form = useForm<z.infer<typeof replySchema>>({
+    resolver: zodResolver(replySchema),
     defaultValues: {
       text: "",
       image: {
@@ -82,7 +78,7 @@ const CreateReply = (props: CommentFormProps) => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof tweetSchema>) {
+  async function onSubmit(values: z.infer<typeof replySchema>) {
     try {
       if (ImagePrev) values.image = await imagePost(image);
     } catch (error) {
@@ -98,7 +94,6 @@ const CreateReply = (props: CommentFormProps) => {
         postId,
         authorParentId: post.authorId,
       });
-      setSubmitBtn((prev) => !prev);
     }
   }
 
@@ -109,30 +104,25 @@ const CreateReply = (props: CommentFormProps) => {
   }, [textareaRef, variant]);
 
   return (
-    <Form {...form}>
+    <Comp.Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="relative flex w-full flex-col pb-2"
+        className="group relative flex w-full flex-col pb-2"
       >
-        <FormField
+        <Comp.FormField
           control={form.control}
           name="text"
           render={({ field }) => (
-            <div className={cn("hide-scrollbar w-full overflow-y-scroll")}>
-              <div
-                className={cn(
-                  "relative flex h-auto w-auto items-start gap-4",
-                  "px-4 pt-1"
-                )}
-              >
+            <div className="hide-scrollbar w-full overflow-y-scroll">
+              <div className="relative flex h-auto w-auto items-start gap-4 px-4 pt-1">
                 <UserAvatar
                   username={user?.username!}
                   imageUrl={user?.imageUrl!}
                   className="flex-shrink-0"
                   onModal={variant === "modal"}
                 />
-                <FormItem className="h-full w-full space-y-0">
-                  <FormControl>
+                <Comp.FormItem className="h-full w-full space-y-0">
+                  <Comp.FormControl>
                     <div
                       className={cn(
                         "h-full w-full pt-1",
@@ -145,8 +135,7 @@ const CreateReply = (props: CommentFormProps) => {
                         maxLength={500}
                         placeholder="Post your reply"
                         className={cn(
-                          "flex max-h-[35rem] min-h-[53px] w-full flex-1 resize-none bg-transparent",
-                          "text-xl leading-6 outline-none placeholder:font-thin",
+                          "flex max-h-[35rem] min-h-[53px] w-full flex-1 resize-none bg-transparent text-xl leading-6 outline-none placeholder:font-thin",
                           isPosting && "text-accent",
                           textareaRef.current?.value.length! >= 255 &&
                             "text-desctructive",
@@ -162,12 +151,11 @@ const CreateReply = (props: CommentFormProps) => {
                             setImagePrev("");
                           }}
                         />
-                        </div>
                       )}
                     </div>
-                  </FormControl>
-                  <FormMessage className="absolute bottom-2 cursor-default select-none text-accent" />
-                </FormItem>
+                  </Comp.FormControl>
+                  <Comp.FormMessage className="absolute bottom-2 cursor-default select-none text-accent" />
+                </Comp.FormItem>
               </div>
             </div>
           )}
@@ -187,77 +175,40 @@ const CreateReply = (props: CommentFormProps) => {
               control={form.control}
               name="image.secure_url"
               render={({ field }) => (
-                <FormItem className="space-y-0">
-                  <FormLabel className="relative cursor-pointer">
+                <Comp.FormItem className="space-y-0">
+                  <Comp.FormLabel className="relative cursor-pointer">
                     <Button
                       size={"icon"}
                       variant={"ghost"}
                       type="button"
-                      onClick={() => inputRef.current?.click()}
-                      className={cn(
-                        "h-8 w-8 rounded-full fill-primary p-1 text-primary hover:bg-primary/10"
-                      )}
+                      onClick={() => inputImageRef.current?.click()}
+                      disabled={isPosting || form.formState.isSubmitting}
+                      className="h-8 w-8 rounded-full fill-primary p-1 text-primary hover:bg-primary/10"
                     >
                       <span className="sr-only">add image</span>
                       <ImageIcon className="h-5 w-5 fill-current" />
                     </Button>
-                  </FormLabel>
-                  <FormControl ref={inputRef}>
+                  </Comp.FormLabel>
+                  <Comp.FormControl ref={inputImageRef}>
                     <input
                       accept="image/*"
                       {...field}
                       placeholder="add image"
                       type="file"
                       onChange={handleImageChange}
-                      disabled={isPosting}
+                      disabled={isPosting || form.formState.isSubmitting}
                       className="hidden"
                     />
-                  </FormControl>
-                </FormItem>
+                  </Comp.FormControl>
+                </Comp.FormItem>
               )}
             />
-            {createTweetActions.map(
-              (btn) =>
-                btn.name !== "Schedule" &&
-                btn.name !== "Poll" && (
-                  <Button
-                    size={"icon"}
-                    variant={"ghost"}
-                    key={btn.name}
-                    disabled={btn.name !== "Media"}
-                    type="button"
-                    className={cn(
-                      "h-8 w-8 rounded-full fill-primary text-primary hover:bg-primary/25",
-                      "relative last:hover:bg-transparent",
-                      btn.name !== "Media" && "cursor-not-allowed"
-                    )}
-                  >
-                    <btn.icon size={20} className="fill-primary" />
-                    <span className="sr-only">Add {btn.name}</span>
-                  </Button>
-                )
-            )}
-          </div>
-          <Button
-            type="submit"
-            disabled={
-              isPosting ||
-              submitBtn ||
-              textareaRef.current?.value.length! >= 255 ||
-              textareaRef.current?.value.length === 0
-            }
-            className={cn(
-              "h-8 self-end rounded-full font-sans text-[15px] font-[600] leading-5 focus-visible:border-white disabled:opacity-60",
-              variant === "modal"
-                ? "fixed right-4 top-[11px] z-20 min-[570px]:static"
-                : ""
-            )}
-          >
-            Reply
-          </Button>
-        </div>
+          }
+        >
+          Reply
+        </FormButtons>
       </form>
-    </Form>
+    </Comp.Form>
   );
 };
 
