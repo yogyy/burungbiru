@@ -20,12 +20,7 @@ export const CreatePostModal = ({ className, ...props }: ButtonProps) => {
 
   return (
     <Dialog open={show} onOpenChange={setShow}>
-      <DialogTrigger
-        asChild
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
+      <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
         <Button
           type="button"
           variant="default"
@@ -39,13 +34,7 @@ export const CreatePostModal = ({ className, ...props }: ButtonProps) => {
           <span className="hidden text-[17px] xl:block">Post</span>
         </Button>
       </DialogTrigger>
-      <DialogContent
-        className={cn(
-          "hide-scrollbar top-0 h-screen translate-y-0 items-start overflow-hidden overflow-y-scroll rounded-none border-none p-0 text-start [&>button]:block",
-          "max-w-[600px] min-[570px]:top-[5%] min-[570px]:h-auto min-[570px]:max-h-[90vh] min-[570px]:!rounded-2xl",
-          "max-[570px]:data-[state=open]:!slide-in-from-bottom-[48%]"
-        )}
-      >
+      <DialogContent className="hide-scrollbar top-0 h-screen max-w-[600px] translate-y-0 items-start overflow-hidden overflow-y-scroll rounded-none border-none p-0 text-start max-[570px]:data-[state=open]:!slide-in-from-bottom-[48%] min-[570px]:top-[5%] min-[570px]:h-auto min-[570px]:max-h-[90vh] min-[570px]:!rounded-2xl [&>button]:block">
         <DialogHeader className="relative flex flex-col-reverse space-y-0">
           <LazyForm variant="modal" />
           <DialogDescription asChild>
