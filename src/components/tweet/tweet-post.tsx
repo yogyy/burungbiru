@@ -39,6 +39,8 @@ export const TweetPost = ({
   const { push } = useRouter();
   const toPostDetails = () => {
     switch (true) {
+      case type === "modal":
+        break;
       case type === "default" && post.type === "COMMENT":
         push(`/post/${post.id}/#comment`);
         break;
@@ -66,7 +68,7 @@ export const TweetPost = ({
       key={post.id}
       className={cn(
         "relative w-full max-w-full overflow-hidden border-b border-border pl-4 outline-none",
-        type === "modal" ? "cursor-text" : "md:cursor-pointer",
+        type === "modal" ? "cursor-default" : "md:cursor-pointer",
         className
       )}
       onClick={toPostDetails}
