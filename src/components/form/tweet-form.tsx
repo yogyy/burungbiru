@@ -23,7 +23,7 @@ import { GlobeIcon, ImageIcon } from "../icons";
 const CreateTweet = ({
   variant = "default",
 }: {
-  variant: CreateTweetVariant;
+  variant?: CreateTweetVariant;
 }) => {
   const { image, ImagePrev, setImagePrev, handleImageChange } =
     useUploadImage();
