@@ -23,4 +23,11 @@ const replySchema = z.object({
   image: Image,
 });
 
-export { tweetSchema, replySchema, type CreateTweetVariant };
+const updateUserSchema = z.object({
+  name: z.string().min(3).max(50),
+  bio: z.string().max(160).optional(),
+  location: z.string().max(30).optional(),
+  website: z.string().max(100).optional(),
+});
+
+export { tweetSchema, replySchema, updateUserSchema, type CreateTweetVariant };
