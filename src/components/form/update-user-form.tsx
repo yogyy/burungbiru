@@ -1,12 +1,16 @@
+import { z } from "zod";
+import axios from "axios";
+import Image from "next/image";
 import { useRef } from "react";
-import * as Comp from "~/components/ui/form";
+import { IoClose } from "react-icons/io5";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { TbCameraPlus } from "react-icons/tb";
+import { RouterOutputs } from "~/utils/api";
+import * as Comp from "~/components/ui/form";
+import { featureNotReady } from "~/lib/utils";
 import { updateUserSchema } from "./form";
 import { Input } from "../ui/input";
-import axios from "axios";
-import { RouterOutputs } from "~/utils/api";
 
 interface FormProps {
   user: RouterOutputs["profile"]["getCurrentUser"] | undefined;
@@ -41,6 +45,53 @@ export const UpdateUserForm = ({ user }: FormProps) => {
 
   return (
     <Comp.Form {...form}>
+      <div className="relative">
+        <div className="relative flex aspect-[3/1] w-full items-center justify-center">
+          <Image
+            alt={`banner @${user?.username}`}
+            src={user?.bannerUrl || ""}
+            width="585"
+            height="195"
+            priority
+            className="h-full max-h-[12.3rem] w-full border-2 border-transparent bg-no-repeat object-cover opacity-70"
+          />
+          <div className="absolute flex h-11 w-full justify-center">
+            <div className="flex items-center justify-center">
+              <button
+                className="button-edit-picture rounded-full border backdrop-blur-sm transition-colors duration-200"
+                title="Add photo"
+                onClick={() => featureNotReady("change-user-banner")}
+              >
+                <TbCameraPlus className="text-white" size={22} />
+              </button>
+              <button
+                className="button-edit-picture ml-5 rounded-full backdrop-blur-sm transition-colors duration-200"
+                title="Remove photo"
+                onClick={() => featureNotReady("delete-user-banner")}
+              >
+                <IoClose className="text-white" size={24} />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="relative -mt-12 ml-4 flex h-auto w-fit items-center justify-center overflow-hidden rounded-full bg-background">
+          <Image
+            src={user?.imageUrl || ""}
+            alt={`${user?.username ?? user?.name}'s profile pic`}
+            width="120"
+            height="120"
+            className="aspect-square rounded-full object-cover p-1 opacity-75"
+            draggable={false}
+          />
+          <button
+            className="button-edit-picture absolute rounded-full backdrop-blur-sm transition-colors duration-200"
+            title="Add photo"
+            onClick={() => featureNotReady("change-user-picture")}
+          >
+            <TbCameraPlus className="text-white" size={22} />
+          </button>
+        </div>
+      </div>
       <form onSubmit={form.handleSubmit(onSubmit)} id="edit_user_form">
         {editUserField.map((item) => (
           <div className="group/item p-4" key={item.name}>
