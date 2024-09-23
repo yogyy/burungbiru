@@ -1,3 +1,6 @@
+import dayjs from "dayjs";
+import dynamic from "next/dynamic";
+import { IoArrowBack, IoChevronForwardSharp, IoClose } from "react-icons/io5";
 import {
   Dialog,
   DialogContent,
@@ -6,12 +9,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { Button } from "../ui/button";
-import { IoChevronForwardSharp, IoClose } from "react-icons/io5";
-import dynamic from "next/dynamic";
+import { featureNotReady } from "~/lib/utils";
 import { getCurrentUser } from "~/hooks/queries";
-import dayjs from "dayjs";
-import { toast } from "react-hot-toast";
+import { Button } from "../ui/button";
 
 const LazyForm = dynamic(() =>
   import("~/components/form/update-user-form").then((mod) => mod.UpdateUserForm)
@@ -31,15 +31,14 @@ export const EditUserModal = () => {
           Edit profile
         </Button>
       </DialogTrigger>
-      <DialogContent className="hide-scrollbar h-auto max-h-[650px] max-w-[600px] items-start overflow-hidden overflow-y-scroll rounded-none border-none p-0 pb-16 text-start [&>button]:block">
-        <input className="sr-only" />
-
+      <DialogContent className="hide-scrollbar h-screen max-w-[600px] items-start overflow-hidden overflow-y-scroll rounded-none border-none p-0 text-start max-[570px]:data-[state=open]:!slide-in-from-bottom-[48%] min-[570px]:h-auto min-[570px]:max-h-[650px] min-[570px]:!rounded-2xl">
         <DialogHeader className="relative flex flex-col space-y-0">
           <DialogDescription asChild>
-            <div className="sticky top-0 flex h-[53px] w-full items-center bg-background/10 px-4 backdrop-blur-sm">
+            <div className="sticky top-0 z-10 flex h-[53px] w-full items-center bg-black/60 px-4 backdrop-blur-md">
               <div className="min-w-[3.5rem]">
-                <button className="-ml-2 flex h-9 w-9 items-center justify-center rounded-full focus-within:bg-[rgba(239,243,244,0.1)] hover:bg-[rgba(239,243,244,0.1)]">
-                  <IoClose size={26} />
+                <button className="-ml-2 flex h-9 w-9 items-center justify-center rounded-full hover:bg-[rgba(239,243,244,0.1)] focus:bg-[rgba(239,243,244,0.1)]">
+                  <IoArrowBack size={26} className="block sm:hidden" />
+                  <IoClose size={26} className="hidden sm:block" />
                   <span className="sr-only">cancel</span>
                 </button>
               </div>
@@ -63,14 +62,7 @@ export const EditUserModal = () => {
               <span className="px-1">·</span>
               <button
                 className="text-primary"
-                onClick={() =>
-                  toast("Sorry, This feature is currently under development", {
-                    icon: "🚧",
-                    position: "top-center",
-                    id: "edit-birth-date",
-                    style: { background: "#008000 " },
-                  })
-                }
+                onClick={() => featureNotReady("edit-birth-date")}
               >
                 Edit
               </button>
