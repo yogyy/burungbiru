@@ -1,40 +1,33 @@
-import React from "react";
+import { ReactNode } from "react";
+import { BsTwitterX } from "react-icons/bs";
+import { useClerk } from "@clerk/nextjs";
+import { cn } from "~/lib/utils";
+import { useBurgerMenu, useUserPopover } from "~/hooks/store";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { Button } from "../ui/button";
-import { BsTwitterX } from "react-icons/bs";
-import { useClerk } from "@clerk/nextjs";
-import { useBurgerMenu, useUserPopover } from "~/hooks/store";
+import { buttonVariants } from "../ui/button";
 
-export const LogoutModal = ({ children }: { children: React.ReactNode }) => {
-  const [modalSignOut, setModalSignOut] = React.useState(false);
+export const LogoutModal = ({ children }: { children: ReactNode }) => {
   const closeBurgerMenu = useBurgerMenu((state) => state.setShow);
   const closeUserPopover = useUserPopover((state) => state.setShow);
   const { signOut } = useClerk();
 
   function Logout() {
     signOut();
-    setModalSignOut((prev) => !prev);
     closeBurgerMenu((prev) => !prev);
     closeUserPopover((prev) => !prev);
   }
 
   return (
-    <Dialog open={modalSignOut} onOpenChange={setModalSignOut}>
-      <DialogTrigger
-        asChild
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        {children}
-      </DialogTrigger>
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         close={false}
         className="w-full overflow-hidden !rounded-2xl border-none p-8 text-start [&>button]:invisible"
@@ -52,20 +45,23 @@ export const LogoutModal = ({ children }: { children: React.ReactNode }) => {
                 switch accounts, you can do that by adding an existing account.
               </p>
               <div className="flex w-full flex-col text-[17px] font-bold">
-                <Button
-                  variant="secondary"
+                <DialogClose
                   onClick={Logout}
-                  className="mb-3 min-h-[44px] min-w-[44px] text-[15px]"
+                  className={cn(
+                    buttonVariants({ variant: "secondary" }),
+                    "mb-3 min-h-[44px] min-w-[44px] text-[15px]"
+                  )}
                 >
                   Log out
-                </Button>
-                <Button
-                  variant="outline"
-                  className="min-h-[44px] min-w-[44px] border-border text-[15px]"
-                  onClick={() => setModalSignOut((prev) => !prev)}
+                </DialogClose>
+                <DialogClose
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "min-h-[44px] min-w-[44px] border-border text-[15px]"
+                  )}
                 >
                   Cancel
-                </Button>
+                </DialogClose>
               </div>
             </div>
           </DialogDescription>

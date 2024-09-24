@@ -25,8 +25,7 @@ const defaultBanner =
 
 export const UserLayout = (props: UserLayoutProps) => {
   const { children, topbar, user, title } = props;
-  const [showFollow, setShowFollow] = React.useState(false);
-  const { user: currentUser, isLoaded } = useUser();
+  const { user: currentUser } = useUser();
   const pathname = usePathname();
   const { data: posts, isLoading: userpostLoading } =
     api.profile.userPosts.useQuery({
@@ -88,10 +87,7 @@ export const UserLayout = (props: UserLayoutProps) => {
                   </p>
                 )}
               </div>
-
-              {isLoaded && showFollow && currentUser?.id !== user.id && (
-                <FollowButton user={user} className="sticky ml-auto" />
-              )}
+              <FollowUser user={user} />
             </div>
           </div>
           <div className="relative aspect-[3/1] w-full overflow-hidden">

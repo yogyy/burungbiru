@@ -32,9 +32,8 @@ interface UserDetailProps {
   isLoaded: boolean;
 }
 
-export const UserDetails = (props: UserDetailProps) => {
-  const { user, currentUser, isLoaded } = props;
-  const [showModal, setShowModal] = React.useState(false);
+export const UserDetails = ({ user }: UserDetail) => {
+  const { user: currentUser, isLoaded, isSignedIn } = useUser();
   const { data: follow, isLoading: LoadingFollow } = getUserFollower({
     userId: user.id,
   });

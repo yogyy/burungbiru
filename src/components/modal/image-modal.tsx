@@ -9,9 +9,8 @@ import {
 import { cn } from "~/lib/utils";
 
 export const ImageModal = ({ src, alt, className, ...props }: ImageProps) => {
-  const [showModal, setShowModal] = React.useState(false);
   return (
-    <Dialog open={showModal} onOpenChange={setShowModal}>
+    <Dialog>
       <DialogTrigger asChild>
         <Image
           src={src || ""}
@@ -20,10 +19,7 @@ export const ImageModal = ({ src, alt, className, ...props }: ImageProps) => {
           {...props}
         />
       </DialogTrigger>
-      <DialogOverlay
-        className="bg-background/80 duration-75"
-        onClick={() => setShowModal((prev) => !prev)}
-      />
+      <DialogOverlay className="bg-background/80 duration-75" />
       <DialogContent
         close
         className="h-full w-screen min-w-fit max-w-max items-center overflow-hidden rounded-md border-none border-transparent bg-transparent shadow-none outline-none md:h-auto [&>button]:bg-background"
