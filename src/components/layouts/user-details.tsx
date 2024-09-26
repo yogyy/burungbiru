@@ -25,12 +25,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { EditUserModal } from "../modal/edit-profile-modal";
+import { useUser } from "@clerk/nextjs";
+import { UserDetail } from "~/types";
 
-interface UserDetailProps {
-  user: RouterOutputs["profile"]["getUserByUsernameDB"];
-  currentUser: UserResource | null | undefined;
-  isLoaded: boolean;
-}
+// TODO: change badge from Tooltip to Popover
 
 export const UserDetails = ({ user }: UserDetail) => {
   const { user: currentUser, isLoaded, isSignedIn } = useUser();
@@ -42,23 +41,18 @@ export const UserDetails = ({ user }: UserDetail) => {
     <div className="px-4 pb-3 pt-3">
       <div className="relative flex w-full flex-wrap justify-between">
         <div className="-mt-[15%] mb-3 h-auto w-1/4 min-w-[48px]">
-          <Dialog open={showModal} onOpenChange={setShowModal}>
+          <Dialog>
             <DialogTrigger className="rounded-full">
               <Image
                 src={user?.imageUrl}
                 alt={`${user?.username ?? user?.name}'s profile pic`}
                 width="140"
                 height="140"
-                className={cn(
-                  "aspect-square cursor-pointer rounded-full border-background bg-background object-cover p-1"
-                )}
+                className="aspect-square cursor-pointer rounded-full border-background bg-background object-cover p-1"
                 draggable={false}
               />
             </DialogTrigger>
-            <DialogOverlay
-              className="bg-background/90 duration-75"
-              onClick={() => setShowModal((prev) => !prev)}
-            />
+            <DialogOverlay className="bg-background/90 duration-75" />
             <DialogContent
               className="h-full max-w-md items-center overflow-hidden rounded-md border-none border-transparent bg-transparent shadow-none outline-none md:h-auto"
               overlayClassName="bg-background/40"
@@ -73,22 +67,9 @@ export const UserDetails = ({ user }: UserDetail) => {
             </DialogContent>
           </Dialog>
         </div>
-        {isLoaded && currentUser?.id === user.id && (
-          <Button
-            variant="outline"
-            className="focus-visible:border-1 rounded-full border-border py-4 hover:bg-[rgba(239,243,244,0.1)] focus-visible:bg-[rgba(239,243,244,0.1)]"
-            type="button"
-            onClick={() =>
-              toast.error(
-                "Sorry, this feature is currently under development and will be available soon.",
-                { id: "router", position: "top-center" }
-              )
-            }
-          >
-            Edit Profile
-          </Button>
-        )}
-        {isLoaded && currentUser?.id !== user.id && (
+        {!isLoaded || !isSignedIn ? null : currentUser?.id === user.id ? (
+          <EditUserModal />
+        ) : (
           <FollowButton user={user} />
         )}
       </div>
@@ -102,7 +83,7 @@ export const UserDetails = ({ user }: UserDetail) => {
               </TooltipTrigger>
               <TooltipContent
                 side="bottom"
-                className="flex max-w-[360px] flex-col gap-3 border-none bg-background p-5 font-normal text-white shadow-x"
+                className="flex max-w-[360px] flex-col gap-3 border-none bg-background p-5 font-normal text-white shadow-x duration-100"
               >
                 <h1 className="text-[21px] font-bold leading-7 text-[rgb(231,233,234)]">
                   Verified account

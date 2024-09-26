@@ -4,20 +4,21 @@ import { PageLayout } from "./root-layout";
 import { useUser } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { userMenu } from "~/constant";
-import { RouterOutputs, api } from "~/utils/api";
+import { api } from "~/utils/api";
 import { ImageModal } from "../modal";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FollowButton } from "../button-follow";
-import { UserDetails } from "./user-details";
 import { SEO } from "../simple-seo";
 import { Badge } from "../ui/badge";
+import { UserDetail } from "~/types";
+import { FollowUser } from "../follow-user-sticky";
+import { env } from "~/env.mjs";
+import { UserDetails } from "./user-details";
 
-interface UserLayoutProps {
+interface UserLayoutProps extends UserDetail {
   children: React.ReactNode;
   topbar?: React.ReactNode;
   title: string;
-  user: RouterOutputs["profile"]["getUserByUsernameDB"];
 }
 
 export const UserLayout = (props: UserLayoutProps) => {
@@ -28,20 +29,6 @@ export const UserLayout = (props: UserLayoutProps) => {
     api.profile.userPosts.useQuery({
       userId: user?.id,
     });
-
-  React.useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY >= 250) {
-        setShowFollow(true);
-      } else {
-        setShowFollow(false);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   const ScrollToTop = () => {
     if (window !== undefined) {
@@ -99,7 +86,7 @@ export const UserLayout = (props: UserLayoutProps) => {
               className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover"
             />
           </div>
-          <UserDetails user={user} currentUser={currentUser} isLoaded />
+          <UserDetails user={user} />
           <div className="hide-scrollbar flex h-fit w-full items-center overflow-x-scroll border-b border-border">
             {userMenu.map(
               (menu) =>
