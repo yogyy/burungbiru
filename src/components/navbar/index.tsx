@@ -7,16 +7,12 @@ import { NavbarLogout } from "../nav-logout";
 import { CreatePostModal } from "../modal";
 import { MenuNavbarButton } from "../menu-button";
 import { useUser } from "@clerk/nextjs";
-import { useMediaQuery } from "usehooks-ts";
 
 export const Navbar = () => {
   const { user } = useUser();
-  const showNavbar = useMediaQuery("(min-width: 570px)");
   let r = useRouter();
   const arrOfRoute = r.route.split("/");
   const baseRoute = "/" + arrOfRoute[1];
-
-  if (!showNavbar) return null;
 
   return (
     <header className="relative hidden min-[570px]:flex">
