@@ -12,6 +12,7 @@ import {
 } from "~/components/ui/dialog";
 import { featureNotReady } from "~/lib/utils";
 import { getCurrentUser } from "~/hooks/queries";
+import { useUpdateUserModal } from "~/hooks/store";
 import { Button } from "../ui/button";
 
 const LazyForm = dynamic(() =>
@@ -20,9 +21,9 @@ const LazyForm = dynamic(() =>
 
 export const EditUserModal = () => {
   const { data: currentUser } = getCurrentUser();
-
+  const { show, setShow } = useUpdateUserModal();
   return (
-    <Dialog>
+    <Dialog open={show} onOpenChange={setShow}>
       <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
         <Button
           type="button"

@@ -58,7 +58,7 @@
     background-color: rgba(39, 44, 48, 0.75);
   }
 
-  .button-edit-picture:focus-within {
+  .button-edit-picture:focus-visible {
     outline: 0;
     border-width: 2px;
     border-color: transparent;

@@ -8,6 +8,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { addUserDataToPosts } from "~/server/helper/dbHelper";
+import { updateUserSchema } from "~/components/form/form";
 
 export const profileRouter = createTRPCRouter({
   getUserByUsername: publicProcedure
@@ -24,6 +25,25 @@ export const profileRouter = createTRPCRouter({
         });
       }
       return user;
+    }),
+
+  updateUserInfo: privateProcedure
+    .input(updateUserSchema)
+    .mutation(async ({ ctx, input }) => {
+      await clerkClient.users.updateUser(ctx.userId, {
+        firstName: input.name,
+        lastName: "",
+      });
+      // await clerkClient.users.updateUserProfileImage(ctx.userId, { file: "" });
+      return ctx.prisma.user.update({
+        where: { id: ctx.userId },
+        data: {
+          name: input.name,
+          bio: input.bio,
+          location: input.location,
+          website: input.website,
+        },
+      });
     }),
 
   getCurrentUser: publicProcedure

@@ -6,11 +6,12 @@ import { IoClose } from "react-icons/io5";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TbCameraPlus } from "react-icons/tb";
-import { RouterOutputs } from "~/utils/api";
+import { api, RouterOutputs } from "~/utils/api";
 import * as Comp from "~/components/ui/form";
 import { featureNotReady } from "~/lib/utils";
 import { updateUserSchema } from "./form";
 import { Input } from "../ui/input";
+import { useUpdateUserModal } from "~/hooks/store";
 
 interface FormProps {
   user: RouterOutputs["profile"]["getCurrentUser"] | undefined;
@@ -21,6 +22,8 @@ export const UpdateUserForm = ({ user }: FormProps) => {
   const bioFieldRef = useRef<HTMLTextAreaElement | null>(null);
   const locationFieldRef = useRef<HTMLInputElement | null>(null);
   const websiteFieldRef = useRef<HTMLInputElement | null>(null);
+  const closeUpdateuserModal = useUpdateUserModal((state) => state.setShow);
+  const ctx = api.useUtils();
 
   const form = useForm<z.infer<typeof updateUserSchema>>({
     resolver: zodResolver(updateUserSchema),
@@ -32,8 +35,21 @@ export const UpdateUserForm = ({ user }: FormProps) => {
     },
   });
 
+  const { mutate } = api.profile.updateUserInfo.useMutation({
+    onSuccess: () => {
+      console.log(`update user ${user?.username} success`);
+      ctx.profile.getUserByUsernameDB
+        .invalidate({ username: user?.username })
+        .then(() => closeUpdateuserModal(false));
+    },
+  });
+
   function onSubmit(values: z.infer<typeof updateUserSchema>) {
-    axios.post("/api/updateuser", values).then((res) => console.log(res.data));
+    try {
+      mutate(values);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const editUserField = [
@@ -114,7 +130,7 @@ export const UpdateUserForm = ({ user }: FormProps) => {
                       />
                     ) : (
                       <textarea
-                        className="w-full flex-1 resize-none bg-transparent leading-6 outline-none"
+                        className="hide-scrollbar w-full flex-1 resize-none bg-transparent leading-6 outline-none"
                         {...field}
                         maxLength={160}
                       />
