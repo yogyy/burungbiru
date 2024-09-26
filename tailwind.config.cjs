@@ -18,6 +18,7 @@ module.exports = {
     extend: {
       screens: {
         xs: "500px",
+        modal: "720px",
       },
       boxShadow: {
         x: [

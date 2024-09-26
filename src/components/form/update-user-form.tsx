@@ -94,7 +94,7 @@ export const UpdateUserForm = ({ user }: FormProps) => {
       </div>
       <form onSubmit={form.handleSubmit(onSubmit)} id="edit_user_form">
         {editUserField.map((item) => (
-          <div className="group/item p-4" key={item.name}>
+          <div className="group/item px-4 py-3" key={item.name}>
             <Comp.FormField
               control={form.control}
               name={item.name as any}
@@ -124,6 +124,7 @@ export const UpdateUserForm = ({ user }: FormProps) => {
                 </Comp.FormItem>
               )}
             />
+            <div className="pt-1"></div>
           </div>
         ))}
       </form>
