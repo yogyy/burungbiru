@@ -19,6 +19,7 @@ const server = z.object({
  */
 const client = z.object({
   // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+  NEXT_PUBLIC_DEFAULT_BANNER: z.string(),
 });
 
 /**
@@ -35,6 +36,7 @@ const processEnv = {
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
   CLOUDINARY_CLOUD_PRESET: process.env.CLOUDINARY_CLOUD_PRESET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+  NEXT_PUBLIC_DEFAULT_BANNER: process.env.NEXT_PUBLIC_DEFAULT_BANNER,
 };
 
 // Don't touch the part below

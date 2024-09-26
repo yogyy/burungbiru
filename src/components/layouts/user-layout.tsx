@@ -20,9 +20,6 @@ interface UserLayoutProps {
   user: RouterOutputs["profile"]["getUserByUsernameDB"];
 }
 
-const defaultBanner =
-  "https://res.cloudinary.com/dpegakmzh/image/upload/v1704193211/burbir/app/LL_V_B_2_gi3gqc.png";
-
 export const UserLayout = (props: UserLayoutProps) => {
   const { children, topbar, user, title } = props;
   const { user: currentUser } = useUser();
@@ -92,8 +89,10 @@ export const UserLayout = (props: UserLayoutProps) => {
           </div>
           <div className="relative aspect-[3/1] w-full overflow-hidden">
             <ImageModal
-              alt={`banner @${user?.username}`}
-              src={user.bannerUrl ? user.bannerUrl : defaultBanner}
+              alt={`${user?.username}'s banner`}
+              src={
+                user.bannerUrl ? user.bannerUrl : env.NEXT_PUBLIC_DEFAULT_BANNER
+              }
               width="600"
               height="200"
               priority
