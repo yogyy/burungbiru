@@ -1,34 +1,35 @@
 import React from "react";
-import axios from "axios";
-import { useUser } from "@clerk/nextjs";
-import { BiSolidUserPlus, BiTrash } from "react-icons/bi";
+import { useRouter } from "next/router";
 import { TbDots } from "react-icons/tb";
+import { toast } from "react-hot-toast";
+import { BiSolidUserPlus, BiTrash } from "react-icons/bi";
+import { useUser } from "@clerk/nextjs";
+import { Post, User } from "@prisma/client";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import { RouterOutputs, api } from "~/utils/api";
-import { toast } from "react-hot-toast";
-import { Button, ButtonProps } from "../ui/button";
+import { api } from "~/utils/api";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { useRouter } from "next/router";
 import { cn } from "~/lib/utils";
 import { cloudinaryDestroy } from "~/lib/cloudinary";
+import { Button, buttonVariants } from "../ui/button";
 
-type TweetMenuType = ButtonProps & RouterOutputs["post"]["detailPost"];
-interface TweetMenuProps extends Omit<TweetMenuType, "repostAuthor"> {}
-export const TweetMenu = (props: TweetMenuProps) => {
-  const { post, author, className, ...rest } = props;
-  const [modal, setModal] = React.useState(false);
-  const [menu, setMenu] = React.useState(false);
+interface TweetMenuProps {
+  post: Post;
+  author: User;
+}
+
+export const TweetMenu = ({ post, author }: TweetMenuProps) => {
   const { user } = useUser();
   const ctx = api.useUtils();
   const router = useRouter();
@@ -64,33 +65,20 @@ export const TweetMenu = (props: TweetMenuProps) => {
   ) {
     e.stopPropagation();
     e.currentTarget.disabled = true;
-    try {
-      if (post.imageId) cloudinaryDestroy(post.imageId);
-      mutate({ id: post.id });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setModal((prev) => !prev);
-      setMenu((prev) => !prev);
-    }
+
+    if (post.imageId) cloudinaryDestroy(post.imageId);
+    mutate({ id: post.id });
   }
 
   return (
-    <Popover open={menu} onOpenChange={setMenu}>
+    <Popover key={post.id}>
       <PopoverTrigger asChild>
         <Button
-          type="button"
           size="icon"
           variant="ghost"
           disabled={deleting}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-          className={cn(
-            "group -mr-2 -mt-1.5 inline-flex aspect-square h-[34.75px] w-[34.75px] items-center justify-center rounded-full text-accent focus-within:bg-primary/5 hover:bg-primary/5",
-            className
-          )}
-          {...rest}
+          onClick={(e) => e.stopPropagation()}
+          className="group -mr-2 -mt-1.5 inline-flex aspect-square h-[34.75px] w-[34.75px] items-center justify-center rounded-full text-accent focus-within:bg-primary/5 hover:bg-primary/5"
         >
           <TbDots
             size={18.75}
@@ -100,31 +88,26 @@ export const TweetMenu = (props: TweetMenuProps) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        onClick={(e) => e.stopPropagation()}
         side="left"
+        align="start"
         sideOffset={-30}
         alignOffset={8}
-        align="start"
+        onClick={(e) => e.stopPropagation()}
         className="z-20 overflow-hidden rounded-xl p-0 shadow-x"
       >
         {user?.id !== post.authorId ? (
           <Button
-            type="button"
+            disabled
             variant="ghost"
             className="flex h-auto w-full justify-start gap-2 rounded-xl p-2.5 text-[16px]"
-            disabled
+            onClick={(e) => e.stopPropagation()}
           >
             <BiSolidUserPlus size={20} />
             Follow @{author?.username}
           </Button>
         ) : (
-          <Dialog open={modal} onOpenChange={setModal}>
-            <DialogTrigger
-              asChild
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
+          <Dialog key={post.id}>
+            <DialogTrigger asChild>
               <Button
                 variant="ghost"
                 className="flex h-auto w-full justify-start gap-2 rounded-xl p-2.5 text-[16px] font-bold text-desctructive"
@@ -132,10 +115,7 @@ export const TweetMenu = (props: TweetMenuProps) => {
                 <BiTrash size={18} /> Delete
               </Button>
             </DialogTrigger>
-            <DialogContent
-              close={false}
-              className="!rounded-2xl border-none p-8 text-start [&>button]:invisible"
-            >
+            <DialogContent className="!rounded-2xl border-none p-8 text-start [&>button]:invisible">
               <DialogHeader>
                 <DialogTitle className="text-xl font-semibold leading-6">
                   Delete post?
@@ -148,21 +128,24 @@ export const TweetMenu = (props: TweetMenuProps) => {
                       from search results.
                     </p>
                     <div className="flex flex-col text-[17px] font-bold">
-                      <Button
-                        variant="destructive"
+                      <DialogClose
+                        className={cn(
+                          buttonVariants({ variant: "destructive" }),
+                          "mb-3 min-h-[44px] min-w-[44px] text-[15px]"
+                        )}
                         onClick={deletePost}
                         disabled={deleting}
-                        className="mb-3 min-h-[44px] min-w-[44px] text-[15px]"
                       >
                         Delete
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="min-h-[44px] min-w-[44px] border-border text-[15px]"
-                        onClick={() => setModal((prev) => !prev)}
+                      </DialogClose>
+                      <DialogClose
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "min-h-[44px] min-w-[44px] border-border text-[15px]"
+                        )}
                       >
                         Cancel
-                      </Button>
+                      </DialogClose>
                     </div>
                   </div>
                 </DialogDescription>

@@ -14,8 +14,11 @@ function getUserbyUsername({ username }: { username: string }) {
   );
 }
 
-function getCurrentUser() {
-  return api.profile.getCurrentUser.useQuery({});
+function getCurrentUser(withFollow = false) {
+  return api.profile.getCurrentUser.useQuery(
+    { follow: withFollow },
+    { refetchOnWindowFocus: false }
+  );
 }
 
 function getDetailPost({ id }: { id: string }) {

@@ -1,4 +1,3 @@
-import { useMediaQuery } from "usehooks-ts";
 import { cn } from "~/lib/utils";
 import { RightAside } from ".";
 import { Navbar } from "../navbar";
@@ -6,8 +5,6 @@ import { MobileNav } from "../navbar/mobile-navbar";
 
 interface PageLayoutProps extends React.HTMLAttributes<HTMLElement> {}
 export const PageLayout = ({ children, className }: PageLayoutProps) => {
-  const showNavbar = useMediaQuery("(max-width: 570px)");
-
   return (
     <div className="flex w-full gap-0 max-[570px]:pb-12 xs:justify-center">
       <Navbar />
@@ -17,7 +14,7 @@ export const PageLayout = ({ children, className }: PageLayoutProps) => {
           <RightAside />
         </div>
       </main>
-      {showNavbar && <MobileNav />}
+      <MobileNav />
     </div>
   );
 };

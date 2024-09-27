@@ -20,4 +20,9 @@ const useUserPopover = create<TYPE>((set) => ({
   setShow: () => set((state) => ({ show: !state.show })),
 }));
 
-export { useTweetModal, useBurgerMenu, useUserPopover };
+const useUpdateUserModal = create<TYPE>((set) => ({
+  show: false,
+  setShow: () => set((state) => ({ show: !state.show })),
+}));
+
+export { useTweetModal, useBurgerMenu, useUserPopover, useUpdateUserModal };

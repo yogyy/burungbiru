@@ -1,34 +1,27 @@
-import React from "react";
+import Image from "next/image";
+import { TbDots } from "react-icons/tb";
+import { useMediaQuery } from "usehooks-ts";
+import { useUser } from "@clerk/nextjs";
+import { useUserPopover } from "~/hooks/store";
 import {
   PopoverArrow,
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "./ui/popover";
-import Image from "next/image";
-import { TbDots } from "react-icons/tb";
 import { Button } from "./ui/button";
-import { cn } from "~/lib/utils";
 import { LogoutModal } from "./modal/logout-modal";
-import { useUserPopover } from "~/hooks/store";
-import { useUser } from "@clerk/nextjs";
 
-interface NavProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export const NavbarLogout = ({ className, ...props }: NavProps) => {
-  const { show, setShow } = useUserPopover();
+export const NavbarLogout = () => {
   const { user } = useUser();
-  if (!user) return null;
+  const { show, setShow } = useUserPopover();
+  const showUserPopover = useMediaQuery("(min-width: 570px)");
+
+  if (!user || !showUserPopover) return null;
 
   return (
-    <div
-      className={cn(
-        "my-3 flex w-full items-center justify-center place-self-end overflow-hidden",
-        className
-      )}
-      {...props}
-    >
-      <Popover open={show} onOpenChange={setShow}>
+    <div className="my-3 flex w-full items-center justify-center place-self-end overflow-hidden">
+      <Popover open={show && showUserPopover} onOpenChange={setShow}>
         <PopoverTrigger className="flex w-full justify-center">
           <div className="flex w-fit items-center p-2.5 transition-all duration-300 hover:cursor-pointer hover:rounded-full hover:bg-border/30 xl:w-full">
             <div className="flex h-full w-full justify-between">
@@ -68,9 +61,7 @@ export const NavbarLogout = ({ className, ...props }: NavProps) => {
           <LogoutModal>
             <Button
               variant="ghost"
-              className={cn(
-                "h-full w-full justify-normal rounded-none hover:bg-[rgb(22,24,28)]"
-              )}
+              className="h-full w-full justify-normal rounded-none hover:bg-[rgb(22,24,28)]"
             >
               {`Log Out @${user?.username}`}
             </Button>

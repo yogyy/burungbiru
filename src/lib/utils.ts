@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { toast } from "react-hot-toast";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -55,4 +56,16 @@ export function formatViews(num: number, precision = 1) {
   }
 
   return num;
+}
+
+export function featureNotReady(featureName: string, message?: string) {
+  const toastMessage = message
+    ? message
+    : "Sorry, This feature is currently under development";
+  return toast(toastMessage, {
+    icon: "🚧",
+    position: "top-center",
+    id: `feature-${featureName}`,
+    style: { background: "#008000" },
+  });
 }

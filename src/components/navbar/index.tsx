@@ -10,7 +10,6 @@ import { useUser } from "@clerk/nextjs";
 
 export const Navbar = () => {
   const { user } = useUser();
-
   let r = useRouter();
   const arrOfRoute = r.route.split("/");
   const baseRoute = "/" + arrOfRoute[1];

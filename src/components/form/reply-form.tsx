@@ -61,8 +61,8 @@ const CreateReply = ({
         adjustTextareaHeight();
       });
       toast.success(() => <ToastReplySuccess id={id} />);
-      if (variant === "modal" && setShowReplyModal) {
-        setShowReplyModal((prev) => !prev);
+      if (variant === "modal") {
+        setShowReplyModal?.((prev) => !prev);
       }
       if (ImagePrev) URL.revokeObjectURL(ImagePrev);
     },

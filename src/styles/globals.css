@@ -43,4 +43,25 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  .button-edit-picture {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    background-color: rgba(15, 20, 25, 0.75);
+    opacity: 0.75;
+  }
+
+  .button-edit-picture:hover {
+    background-color: rgba(39, 44, 48, 0.75);
+  }
+
+  .button-edit-picture:focus-visible {
+    outline: 0;
+    border-width: 2px;
+    border-color: transparent;
+    box-shadow: rgba(135, 138, 140, 0.75) 0px 0px 0px 2px;
+  }
 }

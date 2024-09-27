@@ -1,3 +1,5 @@
+import { RouterOutputs } from "~/utils/api";
+
 interface FileUploadInfo {
   event: string;
   info: {
@@ -28,4 +30,8 @@ interface FileUploadInfo {
   };
 }
 
-export type { FileUploadInfo };
+interface UserDetail {
+  user: RouterOutputs["profile"]["getUserByUsernameDB"];
+}
+
+export type { FileUploadInfo, UserDetail };

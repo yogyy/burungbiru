@@ -4,48 +4,31 @@ import { PageLayout } from "./root-layout";
 import { useUser } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { userMenu } from "~/constant";
-import { RouterOutputs, api } from "~/utils/api";
+import { api } from "~/utils/api";
 import { ImageModal } from "../modal";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FollowButton } from "../button-follow";
-import { UserDetails } from "./user-details";
 import { SEO } from "../simple-seo";
 import { Badge } from "../ui/badge";
+import { UserDetail } from "~/types";
+import { FollowUser } from "../follow-user-sticky";
+import { env } from "~/env.mjs";
+import { UserDetails } from "./user-details";
 
-interface UserLayoutProps {
+interface UserLayoutProps extends UserDetail {
   children: React.ReactNode;
   topbar?: React.ReactNode;
   title: string;
-  user: RouterOutputs["profile"]["getUserByUsernameDB"];
 }
-
-const defaultBanner =
-  "https://res.cloudinary.com/dpegakmzh/image/upload/v1704193211/burbir/app/LL_V_B_2_gi3gqc.png";
 
 export const UserLayout = (props: UserLayoutProps) => {
   const { children, topbar, user, title } = props;
-  const [showFollow, setShowFollow] = React.useState(false);
-  const { user: currentUser, isLoaded } = useUser();
+  const { user: currentUser } = useUser();
   const pathname = usePathname();
   const { data: posts, isLoading: userpostLoading } =
     api.profile.userPosts.useQuery({
       userId: user?.id,
     });
-
-  React.useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY >= 250) {
-        setShowFollow(true);
-      } else {
-        setShowFollow(false);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   const ScrollToTop = () => {
     if (window !== undefined) {
@@ -88,23 +71,22 @@ export const UserLayout = (props: UserLayoutProps) => {
                   </p>
                 )}
               </div>
-
-              {isLoaded && showFollow && currentUser?.id !== user.id && (
-                <FollowButton user={user} className="sticky ml-auto" />
-              )}
+              <FollowUser user={user} />
             </div>
           </div>
           <div className="relative aspect-[3/1] w-full overflow-hidden">
             <ImageModal
-              alt={`banner @${user?.username}`}
-              src={user.bannerUrl ? user.bannerUrl : defaultBanner}
+              alt={`${user?.username}'s banner`}
+              src={
+                user.bannerUrl ? user.bannerUrl : env.NEXT_PUBLIC_DEFAULT_BANNER
+              }
               width="600"
               height="200"
               priority
               className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover"
             />
           </div>
-          <UserDetails user={user} currentUser={currentUser} isLoaded />
+          <UserDetails user={user} />
           <div className="hide-scrollbar flex h-fit w-full items-center overflow-x-scroll border-b border-border">
             {userMenu.map(
               (menu) =>
