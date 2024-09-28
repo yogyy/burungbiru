@@ -1,8 +1,7 @@
 {
   "git": {
     "deploymentEnabled": {
-      "main": false,
-      "add-edit-user": false
+      "main": true
     }
   }
 }
