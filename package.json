@@ -1,6 +1,6 @@
 {
   "name": "burbir",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "build": "next build",
@@ -11,10 +11,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.29.3",
+    "@clerk/nextjs": "^4.31.6",
     "@clerk/themes": "^1.7.9",
     "@hookform/resolvers": "^3.3.2",
-    "@planetscale/database": "^1.11.0",
     "@prisma/client": "^4.9.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -40,7 +39,7 @@
     "dotenv-cli": "^7.3.0",
     "formidable": "^3.5.1",
     "micro": "^10.0.1",
-    "next": "^13.5.6",
+    "next": "^14.2.24",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.47.0",
@@ -64,7 +63,7 @@
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
-    "autoprefixer": "^10.4.19",
+    "autoprefixer": "^10.4.20",
     "eslint": "^8.34.0",
     "eslint-config-next": "^13.2.1",
     "postcss": "^8.4.14",

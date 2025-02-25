@@ -6,6 +6,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 import { SEO } from "~/components/simple-seo";
 import { dark } from "@clerk/themes";
+import Script from "next/script";
+import { env } from "~/env.mjs";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
@@ -21,6 +23,13 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         },
       }}
     >
+      {process.env.NODE_ENV === "production" && (
+        <Script
+          defer
+          src="/script.analytics.js"
+          data-website-id={env.NEXT_PUBLIC_UMAMI_ID}
+        />
+      )}
       <SEO />
       <Component {...pageProps} />
       <Toaster

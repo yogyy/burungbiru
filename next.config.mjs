@@ -40,5 +40,14 @@ const config = {
     ignoreDuringBuilds: true,
   },
   swcMinify: true,
+
+  async rewrites() {
+    return [
+      {
+        source: "/script.analytics.js",
+        destination: "https://cloud.umami.is/script.js",
+      },
+    ];
+  },
 };
 export default config;

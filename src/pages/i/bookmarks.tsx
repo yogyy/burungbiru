@@ -1,5 +1,4 @@
 import { useUser } from "@clerk/nextjs";
-import Head from "next/head";
 import React from "react";
 import { ButtonBack } from "~/components/button-back";
 import { Feed, PageLayout } from "~/components/layouts";
