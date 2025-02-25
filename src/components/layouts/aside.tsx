@@ -23,7 +23,8 @@ export const RightAside = (props: React.ComponentProps<"aside">) => {
       {...rest}
     >
       <div className="sticky top-1 z-20 mb-3 bg-background pb-1">
-        <div className="group flex w-full rounded-full border bg-card text-accent focus-within:border-primary">
+        {" "}
+        <div className="group flex w-full overflow-hidden rounded-full border bg-background text-accent focus-within:border-primary">
           <div className="flex w-10 flex-shrink items-center">
             <LuSearch
               className="h-[1.25em] min-w-[32px] pl-3 group-focus-within:text-primary"
@@ -33,11 +34,11 @@ export const RightAside = (props: React.ComponentProps<"aside">) => {
           <input
             placeholder="Search"
             type="text"
-            className="w-full bg-transparent p-3 text-[15px] leading-5 text-foreground outline-none"
+            className="w-full bg-background p-3 text-[15px] leading-5 text-foreground outline-none"
           />
         </div>
       </div>
-      <div className="mb-4 min-h-[15rem] overflow-hidden rounded-2xl bg-card">
+      <div className="mb-4 min-h-[15rem] w-full overflow-hidden rounded-2xl border bg-background">
         {isLoading ? (
           <div className="flex min-h-[15rem] w-full items-center justify-center">
             <LoadingSpinner size={24} />
@@ -49,12 +50,14 @@ export const RightAside = (props: React.ComponentProps<"aside">) => {
             </h1>
             {peoples?.map((ppl) => (
               <div
-                className="group relative flex cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[.03]"
+                className="group relative flex w-full cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[.03] focus-visible:outline focus-visible:-outline-offset-1 focus-visible:outline-primary"
                 key={ppl.username}
+                tabIndex={0}
                 onClick={() => push(`/@${ppl.username}`)}
               >
                 <div className="flex w-full overflow-hidden">
                   <UserAvatar
+                    tabIndex={-1}
                     imageUrl={ppl.imageUrl}
                     username={ppl.username}
                     className="mr-3 aspect-square h-10 rounded-full"
@@ -71,7 +74,7 @@ export const RightAside = (props: React.ComponentProps<"aside">) => {
             ))}
             <button
               type="button"
-              className="w-full p-4 text-left text-primary hover:bg-white/[.03]"
+              className="w-full rounded-bl-2xl rounded-br-2xl p-4 text-left text-primary hover:bg-white/[.03]"
             >
               Show More
             </button>

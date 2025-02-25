@@ -48,10 +48,9 @@ export const FollowButton = (props: FollowButtonProps) => {
   return userInFollowing ? (
     <Button
       ref={hoverRef}
-      variant="outline"
       type="button"
       className={cn(
-        "border border-transparent bg-white text-card hover:bg-white/80 focus-visible:border-primary",
+        "border-none bg-white text-card hover:bg-white/80 focus-visible:outline-offset-1 focus-visible:outline-primary",
         className
       )}
       disabled={unfollow.isLoading || follower.isLoading}
@@ -66,7 +65,9 @@ export const FollowButton = (props: FollowButtonProps) => {
       variant="ghost"
       type="button"
       className={cn(
-        "min-w-[101.05px] border border-border text-white hover:border-[rgb(244,33,46)] hover:bg-[rgb(244,33,46)]/[.15] hover:text-[rgb(244,33,46)] focus-visible:border-white",
+        "min-w-[101.05px] border border-border text-white",
+        "hover:border-[rgb(244,33,46)] hover:bg-[rgb(244,33,46)]/[.15] hover:text-[rgb(244,33,46)]",
+        "focus-visible:border-white focus-visible:bg-white/10 focus-visible:outline-offset-0 focus-visible:outline-white",
         className
       )}
       disabled={following.isLoading || follower.isLoading}
