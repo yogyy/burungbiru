@@ -17,22 +17,24 @@
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 import { prisma } from "~/server/db";
-
 /**
  * This is the actual context you will use in your router. It will be used to process every request
  * that goes through your tRPC endpoint.
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (opts: CreateNextContextOptions) => {
-  const { req } = opts;
-  const sesh = getAuth(req);
-  const userId = sesh.userId;
+type Session = typeof auth.$Infer.Session;
 
-  return {
-    prisma,
-    userId,
-  };
+export const createTRPCContext = async (opts: CreateNextContextOptions) => {
+  const { session, user } = (await auth.api.getSession({
+    headers: fromNodeHeaders(opts.req.headers),
+  })) as Session;
+
+  if (!session || !user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return { prisma, session, user };
 };
 
 /**
@@ -45,7 +47,8 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { getAuth } from "@clerk/nextjs/server";
+import { auth } from "~/lib/auth";
+import { fromNodeHeaders } from "better-auth/node";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -85,17 +88,11 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.userId) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-    });
+  if (!ctx.session) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  return next({
-    ctx: {
-      userId: ctx.userId,
-    },
-  });
+  return next({ ctx: { userId: ctx.user.id } });
 });
 
 export const privateProcedure = t.procedure.use(enforceUserIsAuthed);
