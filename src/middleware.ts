@@ -1,15 +1,23 @@
-import { authMiddleware } from "@clerk/nextjs/server";
+import { getSessionCookie } from "better-auth";
+import { NextRequest, NextResponse } from "next/server";
 
-export default authMiddleware({
-  publicRoutes: ["/api/webhook(.*)", "/"],
-  ignoredRoutes: [
-    "/favicon.ico",
-    "/fonts/chirp-medium-web.woff",
-    "/fonts/chirp-bold-web.woff",
-    "/fonts/chirp-regular-web.woff",
-  ],
-});
+export async function middleware(request: NextRequest) {
+  const sessionCookie = getSessionCookie(request);
+  console.log("middleware running");
+
+  if (!sessionCookie) {
+    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+  }
+
+  if (request.nextUrl.pathname.startsWith("/p/@")) {
+    return NextResponse.redirect(
+      new URL(`${request.nextUrl.pathname.replace("@", "")}`, request.url)
+    );
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: ["/((?!_next/image|_next/static|favicon.ico).*)", "/"],
+  matcher: ["/home", "/i/bookmarks", "/p/:path*"],
 };
