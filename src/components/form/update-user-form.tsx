@@ -12,6 +12,7 @@ import { featureNotReady } from "~/lib/utils";
 import { updateUserSchema } from "./form";
 import { Input } from "../ui/input";
 import { useUpdateUserModal } from "~/hooks/store";
+import { env } from "~/env.mjs";
 
 interface FormProps {
   user: RouterOutputs["profile"]["getCurrentUser"] | undefined;
@@ -63,25 +64,32 @@ export const UpdateUserForm = ({ user }: FormProps) => {
     <Comp.Form {...form}>
       <div className="relative">
         <div className="relative flex aspect-[3/1] w-full items-center justify-center">
-          <Image
-            alt={`banner @${user?.username}`}
-            src={user?.bannerUrl || ""}
-            width="585"
-            height="195"
-            priority
-            className="h-full max-h-[12.3rem] w-full border-2 border-transparent bg-no-repeat object-cover opacity-70"
-          />
+          {user?.banner ? (
+            <Image
+              alt={`banner @${user?.username}`}
+              src={user?.banner}
+              width="585"
+              height="195"
+              priority
+              className="h-full max-h-[12.3rem] w-full border-2 border-transparent bg-no-repeat object-cover opacity-70"
+            />
+          ) : (
+            <div className="h-full w-full border-2 border-black bg-border"></div>
+          )}
           <div className="absolute flex h-11 w-full justify-center">
             <div className="flex items-center justify-center">
               <button
                 className="button-edit-picture rounded-full border backdrop-blur-sm transition-colors duration-200"
                 title="Add photo"
-                onClick={() => featureNotReady("change-user-banner")}
+                onClick={() => {
+                  featureNotReady("change-user-banner");
+                  console.log(user);
+                }}
               >
                 <TbCameraPlus className="text-white" size={22} />
               </button>
               <button
-                className="button-edit-picture ml-5 rounded-full backdrop-blur-sm transition-colors duration-200"
+                className="button-edit-picture ml-5 rounded-full border backdrop-blur-sm transition-colors duration-200"
                 title="Remove photo"
                 onClick={() => featureNotReady("delete-user-banner")}
               >
@@ -92,7 +100,7 @@ export const UpdateUserForm = ({ user }: FormProps) => {
         </div>
         <div className="relative -mt-12 ml-4 flex h-auto w-fit items-center justify-center overflow-hidden rounded-full bg-background">
           <Image
-            src={user?.imageUrl || ""}
+            src={user?.image || ""}
             alt={`${user?.username ?? user?.name}'s profile pic`}
             width="120"
             height="120"

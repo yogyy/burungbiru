@@ -2,7 +2,6 @@ import { z } from "zod";
 import { useRef } from "react";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
@@ -15,10 +14,18 @@ import { FormButtons } from "./form-buttons";
 import { ImagePreview } from "./image-preview";
 import { ToastPostSuccess } from "./toast-form";
 import { CreateTweetVariant, tweetSchema } from "./form";
-import * as Comp from "../ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
 import { Button } from "../ui/button";
 import { UserAvatar } from "../avatar";
 import { GlobeIcon, ImageIcon } from "../icons";
+import { authClient } from "~/lib/auth-client";
 
 const CreateTweet = ({
   variant = "default",
@@ -30,7 +37,7 @@ const CreateTweet = ({
   const setTweetModal = useTweetModal((state) => state.setShow);
   const { textareaRef, adjustTextareaHeight } = useTextarea();
   const inputImageRef = useRef<HTMLTextAreaElement | null>(null);
-  const { user, isLoaded } = useUser();
+  const { data, isPending } = authClient.useSession();
   const ctx = api.useUtils();
 
   const form = useForm<z.infer<typeof tweetSchema>>({
@@ -86,12 +93,12 @@ const CreateTweet = ({
   }
 
   return (
-    <Comp.Form {...form}>
+    <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="relative flex w-full flex-col pb-2"
       >
-        <Comp.FormField
+        <FormField
           control={form.control}
           name="text"
           render={({ field }) => (
@@ -105,13 +112,13 @@ const CreateTweet = ({
             >
               <div className="relative flex h-auto w-auto items-start gap-4">
                 <UserAvatar
-                  username={user?.username!}
-                  imageUrl={user?.imageUrl!}
+                  username={data?.user.username!}
+                  image={data?.user.image!}
                   className="mt-3 flex-shrink-0"
                   onModal={variant === "modal"}
                 />
-                <Comp.FormItem className="h-full w-full space-y-0">
-                  <Comp.FormControl>
+                <FormItem className="h-full w-full space-y-0">
+                  <FormControl>
                     <div
                       className={cn(
                         "h-full w-full pt-1",
@@ -142,9 +149,9 @@ const CreateTweet = ({
                         />
                       )}
                     </div>
-                  </Comp.FormControl>
-                  <Comp.FormMessage className="absolute bottom-2 cursor-default select-none text-accent" />
-                </Comp.FormItem>
+                  </FormControl>
+                  <FormMessage className="absolute bottom-2 cursor-default select-none text-accent" />
+                </FormItem>
               </div>
             </div>
           )}
@@ -165,19 +172,19 @@ const CreateTweet = ({
             variant={variant}
             actions={createTweetActions}
             submitButtonDisabled={
-              !isLoaded ||
+              isPending ||
               isPosting ||
               form.formState.isSubmitting ||
               textareaRef.current?.value.length! >= 255 ||
               textareaRef.current?.value.trim().length === 0
             }
             field={
-              <Comp.FormField
+              <FormField
                 control={form.control}
                 name="image.secure_url"
                 render={({ field }) => (
-                  <Comp.FormItem className="space-y-0">
-                    <Comp.FormLabel className="relative cursor-pointer">
+                  <FormItem className="space-y-0">
+                    <FormLabel className="relative cursor-pointer">
                       <Button
                         size={"icon"}
                         variant={"ghost"}
@@ -189,8 +196,8 @@ const CreateTweet = ({
                         <span className="sr-only">add image</span>
                         <ImageIcon className="h-5 w-5 fill-current" />
                       </Button>
-                    </Comp.FormLabel>
-                    <Comp.FormControl ref={inputImageRef}>
+                    </FormLabel>
+                    <FormControl ref={inputImageRef}>
                       <input
                         accept="image/*"
                         {...field}
@@ -200,8 +207,8 @@ const CreateTweet = ({
                         disabled={isPosting || form.formState.isSubmitting}
                         className="hidden"
                       />
-                    </Comp.FormControl>
-                  </Comp.FormItem>
+                    </FormControl>
+                  </FormItem>
                 )}
               />
             }
@@ -210,7 +217,7 @@ const CreateTweet = ({
           </FormButtons>
         </div>
       </form>
-    </Comp.Form>
+    </Form>
   );
 };
 

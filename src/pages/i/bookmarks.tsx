@@ -1,21 +1,18 @@
-import { useUser } from "@clerk/nextjs";
-import React from "react";
 import { ButtonBack } from "~/components/button-back";
 import { Feed, PageLayout } from "~/components/layouts";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { SEO } from "~/components/simple-seo";
+import { authClient } from "~/lib/auth-client";
 import { api } from "~/utils/api";
 
 const Bookmarks = () => {
-  const { user, isLoaded } = useUser();
-
-  if (!isLoaded) return <LoadingPage />;
-  if (!user) return;
+  const { data, isPending } = authClient.useSession();
 
   const { data: bookmarks, isLoading: userBookmarkLoading } =
-    api.profile.userBookmarkedPosts.useQuery({
-      userId: user.id,
-    });
+    api.profile.userBookmarkedPosts.useQuery(
+      { userId: data?.user.id || "" },
+      { enabled: !isPending }
+    );
 
   return (
     <>
@@ -32,7 +29,7 @@ const Bookmarks = () => {
                   Bookmarks
                 </h1>
                 <p className="text-[14px] font-thin leading-4 text-accent">
-                  @{user?.username}
+                  @{data?.user.username}
                 </p>
               </div>
             </div>

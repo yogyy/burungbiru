@@ -9,12 +9,12 @@ import { AdsIcon, AnalyticIcon, LogOutIcon } from "../icons";
 import { LogoutModal } from "../modal";
 import { SettingsAndSupport } from "~/constant";
 import { cn } from "~/lib/utils";
-import { useUser } from "@clerk/nextjs";
+import { authClient } from "~/lib/auth-client";
 
 type TYPE = "mobile" | "dekstop";
 
 export const MoreNavbar = ({ type }: { type: TYPE }) => {
-  const { user } = useUser();
+  const { data } = authClient.useSession();
 
   return (
     <Accordion type="multiple" className="text-[18px] font-semibold leading-5">
@@ -59,7 +59,7 @@ export const MoreNavbar = ({ type }: { type: TYPE }) => {
             <LogoutModal>
               <button className="flex w-full p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]">
                 <LogOutIcon size="18.75" className="mr-3" />
-                {`Log Out @${user?.username}`}
+                {`Log Out @${data?.user.username}`}
               </button>
             </LogoutModal>
           )}
