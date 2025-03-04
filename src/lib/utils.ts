@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { nanoid } from "nanoid";
 import { toast } from "react-hot-toast";
 import { twMerge } from "tailwind-merge";
 
@@ -61,11 +62,23 @@ export function formatViews(num: number, precision = 1) {
 export function featureNotReady(featureName: string, message?: string) {
   const toastMessage = message
     ? message
-    : "Sorry, This feature is currently under development";
+    : "This feature is not yet implemented.";
   return toast(toastMessage, {
     icon: "🚧",
     position: "top-center",
     id: `feature-${featureName}`,
-    style: { background: "#008000" },
+    style: { background: message ? "#00800080" : "#008000" },
   });
+}
+
+export const generateRandId = (prefix = "", length = 21) => {
+  const rand = nanoid(length);
+  return prefix ? `${prefix}_${rand}` : rand;
+};
+
+export function formatUsername(username: string) {
+  const randomString = nanoid(5).replace(/-/g, "");
+  const formattedUsername = username.slice(0, 5) + randomString;
+
+  return formattedUsername;
 }
