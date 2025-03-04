@@ -80,7 +80,7 @@ export const TweetPost = ({
           <div className="mr-3 flex flex-grow-0 basis-10 justify-end">
             <RetweetIcon />
           </div>
-          <UserCard username={repostAuthor.username!}>
+          <UserCard username={repostAuthor.username!} align="center">
             <Link
               href={`/p/${repostAuthor.username}`}
               className="hover:underline"

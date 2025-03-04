@@ -10,8 +10,13 @@ import { LoadingItem } from "./loading";
 interface UserCardProps {
   username: string;
   children: React.ReactNode;
+  align?: "center" | "end" | "start";
 }
-export const UserCard = ({ children, username }: UserCardProps) => {
+export const UserCard = ({
+  children,
+  username,
+  align = "start",
+}: UserCardProps) => {
   const { data } = authClient.useSession();
   const { data: user, isLoading } = getUserbyUsername({ username });
 
@@ -19,21 +24,22 @@ export const UserCard = ({ children, username }: UserCardProps) => {
   const onDekstop = useMediaQuery("(min-width: 768px)");
 
   return isClient && onDekstop ? (
-    <HoverCard>
+    <HoverCard openDelay={250} closeDelay={250}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
       {isLoading ? (
-        <HoverCardContent>
+        <HoverCardContent className="shadow-none">
           <LoadingItem />
         </HoverCardContent>
       ) : (
         <HoverCardContent
+          align={align}
           onClick={(e) => e.stopPropagation()}
           className="flex cursor-default flex-col gap-2 rounded-2xl border-none shadow-x"
         >
           <div className="flex w-full items-start justify-between">
             <Link href={`/p/${user?.username}`}>
               <Image
-                src={user?.image ?? ""}
+                src={user?.image!}
                 alt={`${user?.username} profile pic`}
                 width={60}
                 height={60}
@@ -53,7 +59,9 @@ export const UserCard = ({ children, username }: UserCardProps) => {
               <h2 className="leading-5 text-accent">@{user?.username}</h2>
             </Link>
           </div>
-          {user?.bio && <p className="text-[15px] leading-5">{user?.bio}</p>}
+          {user?.bio && (
+            <p className="text-[15px] font-medium leading-5">{user?.bio}</p>
+          )}
           <div className="flex gap-2 text-[14px] font-medium leading-5 text-foreground">
             <p>
               {user?.following.length}&nbsp;
