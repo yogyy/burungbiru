@@ -10,9 +10,10 @@ const IndexPage = () => {
 
   useEffect(() => {
     push("/home");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
-  if (!isPending)
+  if (isPending)
     return (
       <div className="flex h-[100dvh] w-screen items-center justify-center">
         <Image
