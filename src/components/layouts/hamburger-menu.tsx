@@ -44,7 +44,7 @@ export const BurgerMenu = ({ className, ...props }: BurgerMenuProps) => {
       <Sheet open={show} onOpenChange={setShow}>
         <SheetTrigger className="rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.imageUrl} alt={`@${user?.username}`} />
+            <AvatarImage src={user?.image!} alt={`@${user?.username}`} />
             <AvatarFallback className="bg-background text-primary">
               {user?.username?.slice(0, 2)}
             </AvatarFallback>
@@ -57,10 +57,7 @@ export const BurgerMenu = ({ className, ...props }: BurgerMenuProps) => {
           <SheetHeader className="text-left">
             <SheetTitle className="p-4 text-base leading-5  ">
               <div className="w-fit">
-                <UserAvatar
-                  imageUrl={user?.imageUrl!}
-                  username={user?.username!}
-                />
+                <UserAvatar image={user?.image} username={user?.username} />
               </div>
               <div className="mt-2">
                 <Link
@@ -108,7 +105,7 @@ export const BurgerMenu = ({ className, ...props }: BurgerMenuProps) => {
                         )}
                         href={
                           link.link === "/profile"
-                            ? `/@${user?.username}`
+                            ? `/p/${user?.username}`
                             : link.link
                         }
                       >
