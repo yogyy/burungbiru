@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
-  console.log("middleware running");
 
   if (!sessionCookie) {
     return NextResponse.redirect(new URL("/auth/sign-in", request.url));
