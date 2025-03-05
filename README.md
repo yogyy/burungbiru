@@ -43,7 +43,7 @@ cp .env.example .env
 - [tRPC](https://trpc.io/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Prisma](https://www.prisma.io/)
-- [Clerk](https://clerk.dev/)
+- [better-auth](https://www.better-auth.com/)
 - [Tanstack Query](https://tanstack.com/docs/overview)
 
 ## Contributing
