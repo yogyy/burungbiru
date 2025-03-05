@@ -1,13 +1,11 @@
 import { LuSearch } from "react-icons/lu";
-import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
 import { UserAvatar } from "../avatar";
 import { LoadingSpinner } from "../loading";
 import { useRouter } from "next/router";
 import { FollowButton } from "../button-follow";
 
-export const RightAside = (props: React.ComponentProps<"aside">) => {
-  const { className, ...rest } = props;
+export const RightAside = () => {
   const { data: peoples, isLoading } = api.profile.getUserRandomUserDB.useQuery(
     {},
     { refetchOnWindowFocus: false, refetchOnMount: false }
@@ -15,13 +13,7 @@ export const RightAside = (props: React.ComponentProps<"aside">) => {
   const { push } = useRouter();
 
   return (
-    <aside
-      className={cn(
-        "sticky top-1 mr-2.5 hidden h-[100.5vh] bg-background lg:block lg:w-[290px] xl:w-[350px]",
-        className
-      )}
-      {...rest}
-    >
+    <aside className="sticky top-1 mr-2.5 hidden h-[100.5vh] bg-background lg:block lg:w-[290px] xl:w-[350px]">
       <div className="sticky top-1 z-20 mb-3 bg-background pb-1">
         {" "}
         <div className="group flex w-full overflow-hidden rounded-full border bg-background text-accent focus-within:border-primary">
@@ -53,12 +45,12 @@ export const RightAside = (props: React.ComponentProps<"aside">) => {
                 className="group relative flex w-full cursor-pointer items-center justify-between px-4 py-3 hover:bg-white/[.03] focus-visible:outline focus-visible:-outline-offset-1 focus-visible:outline-primary"
                 key={ppl.username}
                 tabIndex={0}
-                onClick={() => push(`/@${ppl.username}`)}
+                onClick={() => push(`/p/${ppl.username}`)}
               >
                 <div className="flex w-full overflow-hidden">
                   <UserAvatar
                     tabIndex={-1}
-                    imageUrl={ppl.imageUrl}
+                    image={ppl.image}
                     username={ppl.username}
                     className="mr-3 aspect-square h-10 rounded-full"
                   />

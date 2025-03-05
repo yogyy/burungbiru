@@ -1,15 +1,15 @@
-import { useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
 import { BookmarkIcon, BookmarkIconFill } from "~/components/icons";
 import { toast } from "react-hot-toast";
 import { TweetProps } from "../types";
+import { authClient } from "~/lib/auth-client";
 
 interface BookmarkProps extends Omit<TweetProps, "author" | "repostAuthor"> {}
 export const BookmarkTweet = ({ variant, post }: BookmarkProps) => {
   const ctx = api.useUtils();
-  const { user: currentUser } = useUser();
+  const { data } = authClient.useSession();
   const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { mutate: addToBookmark, isLoading: loadingMutate } =
     api.action.bookmarkPost.useMutation({
@@ -39,7 +39,7 @@ export const BookmarkTweet = ({ variant, post }: BookmarkProps) => {
   );
 
   function bookmarkAction() {
-    if (!postBookmark?.some((mark) => mark.userId === currentUser?.id)) {
+    if (!postBookmark?.some((mark) => mark.userId === data?.user.id)) {
       addToBookmark({ postId });
     } else {
       deleteBookmark({ postId });
@@ -68,12 +68,12 @@ export const BookmarkTweet = ({ variant, post }: BookmarkProps) => {
             "hover:bg-primary/10 focus-visible:border-primary/50 focus-visible:bg-primary/10 group-hover:bg-primary/10"
           )}
         >
-          {postBookmark?.some((mark) => mark.userId === currentUser?.id) ? (
+          {postBookmark?.some((mark) => mark.userId === data?.user.id) ? (
             <BookmarkIconFill
               className={cn(
                 "transition-transform duration-300",
                 variant === "details" ? "h-6 w-6" : "h-5 w-5",
-                postBookmark?.some((mark) => mark.userId === currentUser?.id) &&
+                postBookmark?.some((mark) => mark.userId === data?.user.id) &&
                   "fill-primary"
               )}
             />
@@ -83,7 +83,7 @@ export const BookmarkTweet = ({ variant, post }: BookmarkProps) => {
                 "h-5 w-5",
                 variant === "details" && "h-6 w-6",
                 "fill-accent transition duration-300 group-hover:fill-primary group-focus-visible/button:fill-primary",
-                postBookmark?.some((mark) => mark.userId === currentUser?.id) &&
+                postBookmark?.some((mark) => mark.userId === data?.user.id) &&
                   "fill-primary"
               )}
             />

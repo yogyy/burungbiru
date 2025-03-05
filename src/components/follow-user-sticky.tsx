@@ -1,11 +1,11 @@
 import React from "react";
-import { useUser } from "@clerk/nextjs";
 import { UserDetail } from "~/types";
 import { FollowButton } from "./button-follow";
+import { authClient } from "~/lib/auth-client";
 
 export const FollowUser = ({ user }: UserDetail) => {
   const [showFollow, setShowFollow] = React.useState(false);
-  const { user: currentUser, isLoaded } = useUser();
+  const { data, isPending } = authClient.useSession();
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -21,7 +21,7 @@ export const FollowUser = ({ user }: UserDetail) => {
     };
   }, []);
 
-  if (!isLoaded || currentUser?.id === user.id) {
+  if (isPending || data?.session.userId === user.id) {
     return null;
   }
 

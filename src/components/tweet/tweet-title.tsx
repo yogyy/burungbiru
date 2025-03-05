@@ -41,27 +41,26 @@ export const TweetTitle = ({
         {type !== "modal" ? (
           <>
             <UserCard username={author.username}>
-              <Link
-                onClick={(e) => e.stopPropagation()}
-                className="-mt-0.5 flex w-fit flex-shrink-0 items-end text-base font-bold outline-none focus-within:underline hover:underline"
-                href={`/@${author.username}`}
-              >
-                {author.name}
-                <Badge variant={author.type} className="-mr-1" />
-              </Link>
-            </UserCard>
-            <UserCard username={author.username}>
-              <Link
-                tabIndex={-1}
-                onClick={(e) => e.stopPropagation()}
-                className={cn(
-                  "inline-flex w-fit text-accent outline-none",
-                  variant === "details" ? "" : "ml-1"
-                )}
-                href={`/@${author.username}`}
-              >
-                {`@${author.username}`}
-              </Link>
+              <div className="flex">
+                <Link
+                  onClick={(e) => e.stopPropagation()}
+                  className="-mt-0.5 flex w-fit flex-shrink-0 items-end text-base font-[500] outline-none focus-within:underline hover:underline"
+                  href={`/p/${author.username}`}
+                >
+                  {author.name}
+                  <Badge variant={author.type} className="-mr-1" />
+                </Link>
+                <Link
+                  tabIndex={-1}
+                  onClick={(e) => e.stopPropagation()}
+                  className={cn(
+                    "ml-1 inline-flex w-fit text-accent outline-none"
+                  )}
+                  href={`/p/${author.username}`}
+                >
+                  {`@${author.username}`}
+                </Link>
+              </div>
             </UserCard>
           </>
         ) : (

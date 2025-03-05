@@ -1,28 +1,15 @@
 import { type AppType } from "next/app";
-
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 import { SEO } from "~/components/simple-seo";
-import { dark } from "@clerk/themes";
 import Script from "next/script";
 import { env } from "~/env.mjs";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <ClerkProvider
-      appearance={{
-        baseTheme: dark,
-        variables: {
-          colorPrimary: "#1E9CF0",
-          colorBackground: "#010100",
-        },
-        elements: {
-          card: "border border-primary",
-        },
-      }}
-    >
+    <>
+      {/* <Script src="https://unpkg.com/react-scan/dist/auto.global.js" /> */}
       {process.env.NODE_ENV === "production" && (
         <Script
           defer
@@ -54,7 +41,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           },
         }}
       />
-    </ClerkProvider>
+    </>
   );
 };
 

@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { TbDots } from "react-icons/tb";
 import { toast } from "react-hot-toast";
 import { BiSolidUserPlus, BiTrash } from "react-icons/bi";
-import { useUser } from "@clerk/nextjs";
 import { Post, User } from "@prisma/client";
 import {
   Popover,
@@ -23,6 +22,7 @@ import {
 import { cn } from "~/lib/utils";
 import { cloudinaryDestroy } from "~/lib/cloudinary";
 import { Button, buttonVariants } from "../ui/button";
+import { authClient } from "~/lib/auth-client";
 
 interface TweetMenuProps {
   post: Post;
@@ -30,7 +30,7 @@ interface TweetMenuProps {
 }
 
 export const TweetMenu = ({ post, author }: TweetMenuProps) => {
-  const { user } = useUser();
+  const { data } = authClient.useSession();
   const ctx = api.useUtils();
   const router = useRouter();
   const { mutate, isLoading: deleting } = api.post.deletePost.useMutation({
@@ -51,7 +51,7 @@ export const TweetMenu = ({ post, author }: TweetMenuProps) => {
         .then(() => toast.success("Your post was deleted"));
     },
     onError: () => {
-      if (post.authorId !== user?.id) {
+      if (post.authorId !== data?.user.id) {
         toast.error("Failed to delete, you not the author.");
       } else {
         toast.error("Post NOT_FOUND");
@@ -95,7 +95,7 @@ export const TweetMenu = ({ post, author }: TweetMenuProps) => {
         onClick={(e) => e.stopPropagation()}
         className="z-20 overflow-hidden rounded-xl p-0 shadow-x"
       >
-        {user?.id !== post.authorId ? (
+        {data?.user.id !== post.authorId ? (
           <Button
             disabled
             variant="ghost"

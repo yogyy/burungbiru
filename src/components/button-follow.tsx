@@ -1,17 +1,17 @@
 import React from "react";
-import { useUser } from "@clerk/nextjs";
 import { useHover } from "usehooks-ts";
 import { api, RouterOutputs } from "~/utils/api";
 import { Button, ButtonProps } from "./ui/button";
 import { cn } from "~/lib/utils";
 import { getUserFollower } from "~/hooks/queries";
+import { authClient } from "~/lib/auth-client";
 
 interface FollowButtonProps extends ButtonProps {
   user: RouterOutputs["profile"]["getUserByUsernameDB"];
 }
 export const FollowButton = (props: FollowButtonProps) => {
   const { user, className, ...rest } = props;
-  const { user: currentUser } = useUser();
+  const { data, isPending } = authClient.useSession();
   const hoverRef = React.useRef(null);
   const isHover = useHover(hoverRef);
   const ctx = api.useUtils();
@@ -31,7 +31,7 @@ export const FollowButton = (props: FollowButtonProps) => {
   });
 
   const userInFollowing = !follower.data?.followers.some(
-    (foll) => foll.followingId === currentUser?.id
+    (foll) => foll.followingId === data?.user.id
   );
 
   function FollowAction(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {

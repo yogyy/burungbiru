@@ -6,9 +6,9 @@ import { cn } from "~/lib/utils";
 import { CreatePostModal } from "../modal/create-post-modal";
 
 import { useScroll } from "~/hooks/use-scroll";
-import { useAuth } from "@clerk/nextjs";
 import { HomeLink } from "./navlink";
 import { useMediaQuery } from "usehooks-ts";
+import { authClient } from "~/lib/auth-client";
 
 const mobileNavbar = [
   { name: "Home", icon: HomeLink, link: "/home" },
@@ -22,7 +22,8 @@ export const MobileNav = () => {
   const arrOfRoute = r.route.split("/");
   const baseRoute = "/" + arrOfRoute[1];
   const show = useScroll();
-  const { isSignedIn } = useAuth();
+  const { data } = authClient.useSession();
+
   const showMobileNavbar = useMediaQuery("(max-width: 570px)");
 
   if (!showMobileNavbar || r.pathname !== "/home") return null;
@@ -56,7 +57,7 @@ export const MobileNav = () => {
             </li>
           ))}
         </ul>
-        {isSignedIn ? (
+        {!data ? (
           <CreatePostModal
             className={cn(
               "fixed right-2 z-30 transition-all duration-500 min-[570px]:hidden",

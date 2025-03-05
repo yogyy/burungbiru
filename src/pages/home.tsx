@@ -2,38 +2,36 @@ import React from "react";
 import { api } from "~/utils/api";
 import dynamic from "next/dynamic";
 import { type NextPage } from "next";
-import { useUser } from "@clerk/nextjs";
 import { useMediaQuery } from "usehooks-ts";
 import { SEO } from "~/components/simple-seo";
 import { useInView } from "react-intersection-observer";
 import { LoadingItem, LoadingPage } from "~/components/loading";
 import { BurgerMenu, PageLayout, Feed } from "~/components/layouts";
+import { authClient } from "~/lib/auth-client";
 
 const LazyForm = dynamic(() => import("~/components/form/tweet-form"));
 
 const Home: NextPage = () => {
-  const { isLoaded } = useUser();
   const ctx = api.useUtils();
+  const { isPending } = authClient.useSession();
   const showBurgerMenu = useMediaQuery("(max-width: 570px)");
 
-  if (!isLoaded) <LoadingPage />;
+  if (isPending) <LoadingPage />;
 
-  const { ref, inView } = useInView({
-    rootMargin: "40% 0px",
-  });
+  const { ref, inView } = useInView({ rootMargin: "40% 0px" });
 
   const {
     data,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-    isLoading: postLoading,
+    isLoading: feedLoading,
   } = api.post.timeline.useInfiniteQuery(
     {},
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
 
-  if (hasNextPage && inView && !postLoading) {
+  if (hasNextPage && inView && !feedLoading) {
     fetchNextPage();
   }
 
@@ -70,7 +68,7 @@ const Home: NextPage = () => {
           )}
           <Feed
             post={data?.pages.flatMap((page) => page.posts)}
-            postLoading={postLoading}
+            postLoading={feedLoading}
           />
           {inView && isFetchingNextPage && <LoadingItem />}
           {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}

@@ -1,15 +1,15 @@
-import { useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
 import { TweetProps } from "../types";
 import { RetweetIcon } from "~/components/icons";
+import { authClient } from "~/lib/auth-client";
 
 interface RepostTweetProps
   extends Omit<TweetProps, "author" | "repostAuthor"> {}
 export const RepostTweet = ({ variant, post }: RepostTweetProps) => {
   const ctx = api.useUtils();
-  const { user: currentUser } = useUser();
+  const { data } = authClient.useSession();
   const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
   const { mutate: repost, isLoading: loadingRepost } =
     api.action.retweetPost.useMutation({
@@ -31,7 +31,7 @@ export const RepostTweet = ({ variant, post }: RepostTweetProps) => {
     { refetchOnWindowFocus: false }
   );
   function retweetPost() {
-    if (!postRepost?.some((repost) => repost.userId === currentUser?.id)) {
+    if (!postRepost?.some((repost) => repost.userId === data?.user.id)) {
       repost({ postId });
     } else {
       deleteRepost({ postId });
@@ -60,7 +60,7 @@ export const RepostTweet = ({ variant, post }: RepostTweetProps) => {
               "h-5 w-5",
               variant === "details" && "h-6 w-6",
               "fill-accent transition duration-300 group-hover:fill-[#00BA7C] group-focus-visible/button:fill-[#00BA7C]",
-              postRepost?.some((like) => like.userId === currentUser?.id) &&
+              postRepost?.some((like) => like.userId === data?.user.id) &&
                 "fill-[#00BA7C]"
             )}
           />
@@ -70,7 +70,7 @@ export const RepostTweet = ({ variant, post }: RepostTweetProps) => {
           className={cn(
             "h-fit pl-0.5 font-sans text-[13px] leading-4 xs:px-2 md:cursor-pointer",
             "font-normal transition duration-300 group-hover:text-[#00BA7C] group-focus:text-[#00BA7C]",
-            postRepost?.some((like) => like.userId === currentUser?.id) &&
+            postRepost?.some((like) => like.userId === data?.user.id) &&
               "text-[#00BA7C]"
           )}
         >

@@ -1,7 +1,6 @@
 import React from "react";
 import { ButtonBack } from "../button-back";
 import { PageLayout } from "./root-layout";
-import { useUser } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { userMenu } from "~/constant";
 import { api } from "~/utils/api";
@@ -12,8 +11,8 @@ import { SEO } from "../simple-seo";
 import { Badge } from "../ui/badge";
 import { UserDetail } from "~/types";
 import { FollowUser } from "../follow-user-sticky";
-import { env } from "~/env.mjs";
 import { UserDetails } from "./user-details";
+import { authClient } from "~/lib/auth-client";
 
 interface UserLayoutProps extends UserDetail {
   children: React.ReactNode;
@@ -23,12 +22,10 @@ interface UserLayoutProps extends UserDetail {
 
 export const UserLayout = (props: UserLayoutProps) => {
   const { children, topbar, user, title } = props;
-  const { user: currentUser } = useUser();
+  const { data } = authClient.useSession();
   const pathname = usePathname();
   const { data: posts, isLoading: userpostLoading } =
-    api.profile.userPosts.useQuery({
-      userId: user?.id,
-    });
+    api.profile.userPosts.useQuery({ userId: user?.id });
 
   const ScrollToTop = () => {
     if (window !== undefined) {
@@ -75,37 +72,38 @@ export const UserLayout = (props: UserLayoutProps) => {
             </div>
           </div>
           <div className="relative aspect-[3/1] w-full overflow-hidden">
-            <ImageModal
-              alt={`${user?.username}'s banner`}
-              src={
-                user.bannerUrl ? user.bannerUrl : env.NEXT_PUBLIC_DEFAULT_BANNER
-              }
-              width="600"
-              height="200"
-              priority
-              className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover"
-            />
+            {user.banner ? (
+              <ImageModal
+                alt={`${user?.username}'s banner`}
+                src={user.banner}
+                width="600"
+                height="200"
+                priority
+                className="h-full max-h-[12.5rem] w-full bg-no-repeat object-cover"
+              />
+            ) : (
+              <div className="h-full w-full bg-border"></div>
+            )}
           </div>
           <UserDetails user={user} />
           <div className="hide-scrollbar flex h-fit w-full items-center overflow-x-scroll border-b border-border">
             {userMenu.map(
               (menu) =>
-                (menu.name !== "Highlights" || user.id === currentUser?.id) && (
+                (menu.name !== "Likes" || user.id === data?.user.id) && (
                   <Link
                     key={menu.name}
-                    href={`/@${user.username}${menu.href}`}
+                    href={`/p/${user.username}${menu.href}`}
                     className={cn(
                       "flex flex-1 justify-center px-4 text-[16px] leading-5 text-accent",
                       "-outline-offset-1 hover:bg-white/[.03] focus-visible:bg-white/[.03] focus-visible:outline-2",
-                      user.username + menu.href ===
-                        pathname.substring(1).replace("@", "") &&
+                      user.username + menu.href === pathname.substring(3) &&
                         "font-semibold text-white"
                     )}
                   >
                     <div className="relative flex justify-center px-2 py-4">
                       {menu.name}
                       {`${user.username}${menu.href}` ===
-                      pathname.substring(1).replace("@", "") ? (
+                      pathname.substring(3) ? (
                         <div className="absolute bottom-0 h-1 w-full rounded-md bg-primary" />
                       ) : null}
                     </div>

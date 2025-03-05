@@ -1,34 +1,34 @@
-import { RedirectToSignIn, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import React from "react";
-import { LogoIcon } from "~/components/icons";
+import { useEffect } from "react";
 import { LoadingPage } from "~/components/loading";
+import { authClient } from "~/lib/auth-client";
 
 const IndexPage = () => {
-  const { isLoaded, isSignedIn } = useUser();
   const { push } = useRouter();
-  React.useEffect(() => {
+  const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
     push("/home");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSignedIn]);
+  }, [session]);
 
-  if (!isLoaded)
+  if (isPending)
     return (
       <div className="flex h-[100dvh] w-screen items-center justify-center">
-        <LogoIcon size={80} className="text-white" />
+        <Image
+          src="/apple-touch-icon.png"
+          className="grayscale"
+          draggable={false}
+          priority
+          width={100}
+          height={100}
+          alt="logo"
+        />
       </div>
     );
 
-  return (
-    <React.Fragment>
-      <SignedIn>
-        <LoadingPage />
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </React.Fragment>
-  );
+  return <LoadingPage />;
 };
 
 export default IndexPage;

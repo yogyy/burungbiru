@@ -113,7 +113,7 @@ export const TweetParentPost = ({
                 width="40"
                 height="40"
                 draggable={false}
-                src={parent.author.imageUrl}
+                src={parent.author.image!}
                 alt={`@${parent.author.name}'s profile picture`}
                 className="first-letter mt-1 flex h-10 basis-12 rounded-full"
               />
@@ -123,7 +123,7 @@ export const TweetParentPost = ({
               width="40"
               height="40"
               draggable={false}
-              src={parent.author.imageUrl}
+              src={parent.author.image!}
               alt={`@${parent.author.name}'s profile picture`}
               className="first-letter mt-1 flex h-10 basis-12 rounded-full"
             />

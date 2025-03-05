@@ -4,12 +4,12 @@ import { LoadingSpinner } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
-import { useUser } from "@clerk/nextjs";
 import { getUserbyUsername } from "~/hooks/queries";
+import { authClient } from "~/lib/auth-client";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = getUserbyUsername({ username });
-  const { user: currentUser, isLoaded } = useUser();
+  const { data } = authClient.useSession();
   if (!user) return <UserNotFound username={username} />;
 
   const { data: media, isLoading: userMediaLoading } =
@@ -22,12 +22,12 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
       <div className="mx-auto my-8 flex w-full max-w-[calc(5*80px)] flex-col items-center px-8">
         <div className="w-full">
           <h2 className="mb-2 break-words text-left text-[31px] font-extrabold leading-8">
-            {user.id !== currentUser?.id
+            {user.id !== data?.user.id
               ? `@${user.username} hasn’t posted media`
               : "Lights, camera … attachments!"}
           </h2>
           <p className="mb-8 break-words text-left text-[15px] leading-5 text-accent">
-            {user.id !== currentUser?.id
+            {user.id !== data?.user.id
               ? "Once they do, those posts will show up here."
               : "When you post photos or videos, they will show up here."}
           </p>
@@ -65,12 +65,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = generateSSGHelper();
-
-  const slug = context.params?.slug;
-
-  if (typeof slug !== "string") throw new Error("no slug");
-
-  const username = slug.replace("@", "");
+  const username = context.params?.slug;
+  if (typeof username !== "string") throw new Error("no slug");
 
   await ssg.profile.getUserByUsernameDB.prefetch({ username });
 

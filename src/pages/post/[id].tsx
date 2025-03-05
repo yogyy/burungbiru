@@ -16,7 +16,6 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { api } from "~/utils/api";
-import { useUser } from "@clerk/nextjs";
 import { renderText } from "~/lib/tweet";
 import { cn, formatViews } from "~/lib/utils";
 import { ImageModal } from "~/components/modal";
@@ -37,20 +36,21 @@ import { getDetailPost } from "~/hooks/queries";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { Feed as Comments, PageLayout } from "~/components/layouts";
+import { authClient } from "~/lib/auth-client";
 
 const SinglePostPage = ({
   id,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const { data, error, isLoading } = getDetailPost({ id });
-  const { user: currentUser } = useUser();
-  if (!data || error?.message === "NOT_FOUND") {
+  const { data: detail, error, isLoading } = getDetailPost({ id });
+  const { data } = authClient.useSession();
+  if (!detail || error?.message === "NOT_FOUND") {
     return <PostNotFound />;
   }
 
-  const { author, post, repostAuthor } = data;
+  const { author, post, repostAuthor } = detail;
 
   const { data: replies, isLoading: repliesloading } =
-    api.post.postReplies.useQuery({ postId: id }, { enabled: !!data });
+    api.post.postReplies.useQuery({ postId: id }, { enabled: !!detail });
 
   return (
     <>
@@ -86,7 +86,7 @@ const SinglePostPage = ({
                       width="40"
                       height="40"
                       draggable={false}
-                      src={author.imageUrl}
+                      src={author.image!}
                       alt={`@${author.name}'s profile picture`}
                       className="first-letter flex h-10 w-10 rounded-full"
                     />
@@ -154,7 +154,7 @@ const SinglePostPage = ({
                       Views
                     </p>
                   </div>
-                  {currentUser?.id === post.authorId && (
+                  {data?.user.id === post.authorId && (
                     <button className="flex w-full border-t py-3 text-[15px] leading-5 text-accent hover:bg-white/[.03]">
                       <AnalyticIcon className="h-5 w-5 fill-accent" />
                       &nbsp;<span>View post engagements</span>

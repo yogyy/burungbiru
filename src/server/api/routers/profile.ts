@@ -1,4 +1,3 @@
-import { clerkClient } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
@@ -11,30 +10,9 @@ import { addUserDataToPosts } from "~/server/helper/dbHelper";
 import { updateUserSchema } from "~/components/form/form";
 
 export const profileRouter = createTRPCRouter({
-  getUserByUsername: publicProcedure
-    .input(z.object({ username: z.string() }))
-    .query(async ({ input }) => {
-      const [user] = await clerkClient.users.getUserList({
-        username: [input.username],
-      });
-
-      if (!user) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "User not found",
-        });
-      }
-      return user;
-    }),
-
   updateUserInfo: privateProcedure
     .input(updateUserSchema)
     .mutation(async ({ ctx, input }) => {
-      await clerkClient.users.updateUser(ctx.userId, {
-        firstName: input.name,
-        lastName: "",
-      });
-      // await clerkClient.users.updateUserProfileImage(ctx.userId, { file: "" });
       return ctx.prisma.user.update({
         where: { id: ctx.userId },
         data: {
@@ -50,7 +28,7 @@ export const profileRouter = createTRPCRouter({
     .input(z.object({ follow: z.boolean().optional().default(false) }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.user.findUnique({
-        where: { id: ctx.userId! },
+        where: { id: ctx.user.id },
         include: { followers: input.follow, following: input.follow },
       });
     }),
@@ -73,20 +51,20 @@ export const profileRouter = createTRPCRouter({
       return user;
     }),
 
-  getUserRandomUser: publicProcedure.input(z.object({})).query(async () => {
-    const users = await clerkClient.users.getUserList({
-      orderBy: "-created_at",
-      limit: 3,
-    });
-    return users;
-  }),
+  getUserByUsernameMutate: privateProcedure
+    .input(z.object({ username: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.user.findFirst({
+        where: { username: input.username },
+      });
+    }),
 
   getUserRandomUserDB: publicProcedure
     .input(z.object({}))
     .query(async ({ ctx }) => {
       return await ctx.prisma.user.findMany({
         take: 3,
-        where: { id: { not: { equals: ctx.userId ?? "" } } },
+        where: { id: { not: { equals: ctx.user.id ?? "" } } },
         orderBy: { createdAt: "desc" },
         include: { followers: true, following: true },
       });

@@ -1,5 +1,4 @@
 import React from "react";
-import { RouterOutputs } from "~/utils/api";
 import { BalloonIcon, CalendarIcon, LocationIcon } from "../icons";
 import { RiLinkM } from "react-icons/ri";
 import { getUserFollower } from "~/hooks/queries";
@@ -10,12 +9,9 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import Image from "next/image";
-import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { FollowButton } from "../button-follow";
-import { UserResource } from "@clerk/types/dist";
-import { toast } from "react-hot-toast";
 import { TweetText as Website } from "../tweet";
 import { renderText } from "~/lib/tweet";
 import { Badge } from "../ui/badge";
@@ -26,13 +22,14 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { EditUserModal } from "../modal/edit-profile-modal";
-import { useUser } from "@clerk/nextjs";
 import { UserDetail } from "~/types";
+import { authClient } from "~/lib/auth-client";
+import { featureNotReady } from "~/lib/utils";
 
 // TODO: change badge from Tooltip to Popover
 
 export const UserDetails = ({ user }: UserDetail) => {
-  const { user: currentUser, isLoaded, isSignedIn } = useUser();
+  const { data, isPending } = authClient.useSession();
   const { data: follow, isLoading: LoadingFollow } = getUserFollower({
     userId: user.id,
   });
@@ -44,7 +41,7 @@ export const UserDetails = ({ user }: UserDetail) => {
           <Dialog>
             <DialogTrigger className="rounded-full">
               <Image
-                src={user?.imageUrl}
+                src={user?.image!}
                 alt={`${user?.username ?? user?.name}'s profile pic`}
                 width="140"
                 height="140"
@@ -58,7 +55,7 @@ export const UserDetails = ({ user }: UserDetail) => {
               overlayClassName="bg-background/40"
             >
               <Image
-                src={user?.imageUrl}
+                src={user?.image!}
                 alt={`${user?.name}'s profile pic`}
                 width="370"
                 height="370"
@@ -67,7 +64,7 @@ export const UserDetails = ({ user }: UserDetail) => {
             </DialogContent>
           </Dialog>
         </div>
-        {!isLoaded || !isSignedIn ? null : currentUser?.id === user.id ? (
+        {isPending ? null : data?.user.id === user.id ? (
           <EditUserModal />
         ) : (
           <FollowButton user={user} />
@@ -154,7 +151,8 @@ export const UserDetails = ({ user }: UserDetail) => {
       </div>
       <div className="flex flex-wrap text-base leading-5 text-accent">
         <Link
-          href="/#follow"
+          href={`/p/${user.username}#following`}
+          onClick={() => featureNotReady("following-route")}
           className="mr-5 break-words text-[15px] leading-4 hover:underline"
         >
           <span className="font-bold text-[rgb(231,233,234)]">
@@ -164,7 +162,8 @@ export const UserDetails = ({ user }: UserDetail) => {
           Following
         </Link>
         <Link
-          href="/#follow"
+          href={`/p/${user.username}#follower`}
+          onClick={() => featureNotReady("follower-route")}
           className="break-words text-[15px] leading-4 hover:underline"
         >
           <span className="font-bold text-[rgb(231,233,234)]">

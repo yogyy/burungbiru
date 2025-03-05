@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { BsTwitterX } from "react-icons/bs";
-import { useClerk } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { useBurgerMenu, useUserPopover } from "~/hooks/store";
 import {
@@ -13,16 +12,24 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { buttonVariants } from "../ui/button";
+import { authClient } from "~/lib/auth-client";
+import { useRouter } from "next/router";
 
 export const LogoutModal = ({ children }: { children: ReactNode }) => {
+  const { push } = useRouter();
   const closeBurgerMenu = useBurgerMenu((state) => state.setShow);
   const closeUserPopover = useUserPopover((state) => state.setShow);
-  const { signOut } = useClerk();
 
-  function Logout() {
-    signOut();
-    closeBurgerMenu((prev) => !prev);
-    closeUserPopover((prev) => !prev);
+  async function Logout() {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          push("/auth/sign-in");
+          closeBurgerMenu((prev) => !prev);
+          closeUserPopover((prev) => !prev);
+        },
+      },
+    });
   }
 
   return (

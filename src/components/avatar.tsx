@@ -8,16 +8,16 @@ interface AvatarType
   extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
     Pick<
       RouterOutputs["profile"]["getUserByUsernameDB"],
-      "username" | "imageUrl"
+      "username" | "image"
     > {
   onModal?: boolean;
 }
 
 export const UserAvatar = (props: AvatarType) => {
-  const { className, username, imageUrl, onModal = false, ...rest } = props;
+  const { className, username, image, onModal = false, ...rest } = props;
   return !onModal ? (
     <Link
-      href={`/@${username}`}
+      href={`/p/${username}`}
       className={cn(
         "rounded-full outline-none outline-offset-0 focus-visible:outline-2 focus-visible:outline-primary",
         className
@@ -25,16 +25,16 @@ export const UserAvatar = (props: AvatarType) => {
       {...rest}
     >
       <Avatar>
-        <AvatarImage src={imageUrl} alt={`@${username}`} />
-        <AvatarFallback className="bg-background font-semibold text-primary">
+        <AvatarImage src={image!} alt={`@${username}`} />
+        <AvatarFallback className="bg-secondary font-semibold text-primary">
           {username?.slice(0, 2)}
         </AvatarFallback>
       </Avatar>
     </Link>
   ) : (
     <Avatar className={className}>
-      <AvatarImage src={imageUrl} alt={`@${username}`} />
-      <AvatarFallback className="bg-background font-semibold text-primary">
+      <AvatarImage src={image!} alt={`@${username}`} />
+      <AvatarFallback className="bg-secondary font-semibold text-primary">
         {username?.slice(0, 2)}
       </AvatarFallback>
     </Avatar>

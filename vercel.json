@@ -1,8 +1,7 @@
 {
   "git": {
     "deploymentEnabled": {
-      "main": true,
-      "add-umami": false
+      "main": true
     }
   }
 }

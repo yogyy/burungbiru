@@ -2,7 +2,6 @@ import { z } from "zod";
 import { toast } from "react-hot-toast";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "~/utils/api";
 import { cn } from "~/lib/utils";
@@ -19,6 +18,7 @@ import { ImageIcon } from "../icons";
 import { Button } from "../ui/button";
 import { UserAvatar } from "../avatar";
 import { TweetProps } from "../tweet/types";
+import { authClient } from "~/lib/auth-client";
 
 interface CommentFormProps extends Pick<TweetProps, "post"> {
   variant?: CreateTweetVariant;
@@ -36,7 +36,7 @@ const CreateReply = ({
   const { textareaRef, adjustTextareaHeight } = useTextarea();
   const inputImageRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const { user } = useUser();
+  const { data } = authClient.useSession();
   const ctx = api.useUtils();
 
   const form = useForm<z.infer<typeof replySchema>>({
@@ -116,8 +116,8 @@ const CreateReply = ({
             <div className="hide-scrollbar w-full overflow-y-scroll">
               <div className="relative flex h-auto w-auto items-start gap-4 px-4 pt-1">
                 <UserAvatar
-                  username={user?.username!}
-                  imageUrl={user?.imageUrl!}
+                  username={data?.user.username!}
+                  image={data?.user.image!}
                   className="flex-shrink-0"
                   onModal={variant === "modal"}
                 />

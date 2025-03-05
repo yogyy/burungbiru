@@ -8,7 +8,6 @@ import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 import { RetweetIcon } from "../icons";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import {
   AnalyticTweet,
@@ -19,6 +18,7 @@ import {
   ShareTweet,
 } from "./actions";
 import { TweetProps } from "./types";
+import { authClient } from "~/lib/auth-client";
 dayjs.extend(LocalizedFormat);
 
 interface TweetPostProps
@@ -34,7 +34,7 @@ export const TweetPost = ({
   className,
   ...props
 }: TweetPostProps) => {
-  const { user: currentUser } = useUser();
+  const { data } = authClient.useSession();
   const { pathname } = useRouter();
   const { push } = useRouter();
   const toPostDetails = () => {
@@ -80,12 +80,12 @@ export const TweetPost = ({
           <div className="mr-3 flex flex-grow-0 basis-10 justify-end">
             <RetweetIcon />
           </div>
-          <UserCard username={repostAuthor.username!}>
+          <UserCard username={repostAuthor.username!} align="center">
             <Link
-              href={`/@${repostAuthor.username}`}
+              href={`/p/${repostAuthor.username}`}
               className="hover:underline"
             >
-              {currentUser?.id !== post.authorParentId
+              {data?.user.id !== post.authorParentId
                 ? `${repostAuthor.name} `
                 : "you "}{" "}
               reposted
@@ -112,7 +112,7 @@ export const TweetPost = ({
                 width="40"
                 height="40"
                 draggable={false}
-                src={author.imageUrl}
+                src={author.image!}
                 alt={`@${author.name}'s profile picture`}
                 className="first-letter mt-1 flex h-10 basis-12 rounded-full"
               />
@@ -122,7 +122,7 @@ export const TweetPost = ({
               width="40"
               height="40"
               draggable={false}
-              src={author.imageUrl}
+              src={author.image!}
               alt={`@${author.name}'s profile picture`}
               className="first-letter mt-1 flex h-10 basis-12 rounded-full"
             />
@@ -147,7 +147,7 @@ export const TweetPost = ({
               <div className="-mt-1 text-accent">
                 Replying to&nbsp;
                 <Link
-                  href={`/@${repostAuthor.username}`}
+                  href={`/p/${repostAuthor.username}`}
                   className="text-primary hover:underline"
                   onClick={(e) => e.stopPropagation()}
                 >
