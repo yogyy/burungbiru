@@ -35,9 +35,9 @@ ALTER TABLE "burbir_user" ALTER COLUMN "image" DROP NOT NULL;
 
 ALTER TABLE "burbir_user" ADD COLUMN "email" TEXT NOT NULL DEFAULT '';
 
-ALTER TABLE "burbir_user" ADD COLUMN "emailVerified" BOOLEAN NOT NULL SET DEFAULT false;
+ALTER TABLE "burbir_user" ADD COLUMN "emailVerified" BOOLEAN NOT NULL DEFAULT false;
 
-ALTER TABLE "burbir_user" ADD COLUMN "usernameSet" BOOLEAN NOT NULL SET DEFAULT false;
+ALTER TABLE "burbir_user" ADD COLUMN "usernameSet" BOOLEAN NOT NULL DEFAULT false;
 
 ALTER TABLE "burbir_user" ALTER COLUMN "createdAt" DROP DEFAULT;
 
