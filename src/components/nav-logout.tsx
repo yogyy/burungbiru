@@ -2,12 +2,7 @@ import Image from "next/image";
 import { TbDots } from "react-icons/tb";
 import { useMediaQuery } from "usehooks-ts";
 import { useUserPopover } from "~/hooks/store";
-import {
-  PopoverArrow,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "./ui/popover";
+import { PopoverArrow, Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { LogoutModal } from "./modal/logout-modal";
 import { authClient } from "~/lib/auth-client";
@@ -32,7 +27,6 @@ export const NavbarLogout = () => {
                     <AvatarImage
                       src={data?.user.image!}
                       alt={`${data?.user.username}'s profile pic`}
-                      fetchPriority="auto"
                     />
                     <AvatarFallback className="bg-secondary font-semibold text-primary">
                       {data?.user.username?.slice(0, 2)}
