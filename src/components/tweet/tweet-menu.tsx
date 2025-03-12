@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/router";
 import { TbDots } from "react-icons/tb";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { BiSolidUserPlus, BiTrash } from "react-icons/bi";
 import { Post, User } from "@prisma/client";
 import {

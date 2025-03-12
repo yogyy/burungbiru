@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { useRef } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "~/lib/utils";

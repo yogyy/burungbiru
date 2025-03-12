@@ -1,50 +1,45 @@
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import { TweetProps } from "../types";
+import { TweetProps, VariantTweet } from "../types";
 import { ShareIcon } from "~/components/icons";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
 import { authClient } from "~/lib/auth-client";
 
-interface ShareTweetProps extends Omit<TweetProps, "repostAuthor"> {}
-export const ShareTweet = ({ variant, post, author }: ShareTweetProps) => {
-  const [value, copy] = useCopyToClipboard();
+interface ShareTweetProps {
+  post: TweetProps;
+  variant: VariantTweet;
+}
+export const ShareTweet = ({ variant, post }: ShareTweetProps) => {
+  const [_, copy] = useCopyToClipboard();
   const { data } = authClient.useSession();
 
   function copyPostUrl() {
-    copy(`${window.location.origin}/p/${author.username}/${post.id}`);
+    copy(`${window.location.origin}/p/${post.author.username}/${post.id}`);
     toast.success("Copied to clipboard", { id: `copy ${post.id}` });
-    console.log(value);
   }
 
   return (
-    <div
-      className="hidden w-fit flex-none justify-end text-accent xs:flex"
-      aria-label="share post"
-    >
-      <div
-        className="group flex items-center"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="hidden w-fit flex-none justify-end text-accent xs:flex" aria-label="share post">
+      <div className="group flex items-center" onClick={(e) => e.stopPropagation()}>
         <Button
           variant="ghost"
           type="button"
           size="icon"
-          disabled={data?.user.id === author.id}
+          disabled={data?.user.username === post.author.username}
           onClick={copyPostUrl}
           className={cn(
             "group/button z-10 flex border-2 transition-all ease-in",
-            data?.user.id === author.id
+            data?.user.username === post.author.username
               ? "hover:bg-none"
               : "hover:bg-primary/10 focus-visible:border-primary/50 focus-visible:bg-primary/10 group-hover:bg-primary/10"
           )}
         >
           <ShareIcon
             className={cn(
-              "h-5 w-5",
-              variant === "details" && "h-6 w-6",
+              variant === "details" ? "h-5 w-5" : "h-[18px] w-[18px]",
               "fill-accent transition duration-300",
-              data?.user.id !== author.id &&
+              data?.user.username !== post.author.username &&
                 "group-hover:fill-primary group-focus-visible/button:fill-primary"
             )}
           />
