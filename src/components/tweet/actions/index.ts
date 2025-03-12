@@ -1,4 +1,3 @@
-export * from "./analytic-tweet";
 export * from "./bookmark-tweet";
 export * from "./like-tweet";
 export * from "./reply-tweet";
