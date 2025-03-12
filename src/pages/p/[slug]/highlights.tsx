@@ -1,33 +1,39 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/router";
+import React, { useEffect } from "react";
 import { UserLayout } from "~/components/layouts";
 import { buttonVariants } from "~/components/ui/button";
 import UserNotFound from "~/components/user-not-found";
 import { getUserbyUsername } from "~/hooks/queries";
-import { cn } from "~/lib/utils";
+import { cn, featureNotReady } from "~/lib/utils";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = getUserbyUsername({ username });
+  const { push } = useRouter();
+
+  useEffect(() => {
+    if (user?.type !== "user") {
+      push(`/p/${username}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   if (!user) return <UserNotFound username={username} />;
 
   return (
-    <UserLayout
-      user={user}
-      title={`${user?.name} (@${user?.username}) / burbir`}
-    >
+    <UserLayout user={user} title={`${user?.name} (@${user?.username}) / burbir`}>
       <div className="mx-auto my-8 flex w-full max-w-[calc(5*80px)] flex-col items-center px-8">
         <div className="w-full">
           <h2 className="mb-2 break-words text-left text-[31px] font-extrabold leading-8">
             Highlight on your profile
           </h2>
           <p className="mb-8 break-words text-left text-[15px] leading-5 text-accent">
-            You must be subscribed to Premium to highlight posts on your
-            profile.
+            You must be subscribed to Premium to highlight posts on your profile.
           </p>
           <Link
             href="#/subscribe-premium"
+            onClick={() => featureNotReady("switch-to-pro", "This feature won't be implemented")}
             className={cn(
               buttonVariants({ variant: "secondary" }),
               "min-h-[52px] max-w-fit flex-1 flex-grow whitespace-nowrap break-words px-8 text-base font-bold leading-5"
