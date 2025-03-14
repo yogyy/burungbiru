@@ -9,52 +9,53 @@ import {
 } from "~/components/tweet";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
 import { api } from "~/utils/api";
 import { renderText } from "~/lib/tweet";
-import { cn, formatViews } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 import { ImageModal } from "~/components/modal";
-import { AnalyticIcon } from "~/components/icons";
 import { LoadingItem } from "~/components/loading";
 import { ButtonBack } from "~/components/button-back";
 import CreateReply from "~/components/form/reply-form";
-import {
-  AnalyticTweet,
-  BookmarkTweet,
-  LikeTweet,
-  ReplyTweet,
-  RepostTweet,
-  ShareTweet,
-} from "~/components/tweet/actions";
+import { ReplyTweet } from "~/components/tweet/actions/reply-tweet";
+import { RepostTweet } from "~/components/tweet/actions/repost-tweet";
+import { LikeTweet } from "~/components/tweet/actions/like-tweet";
+import { BookmarkTweet } from "~/components/tweet/actions/bookmark-tweet";
+import { ShareTweet } from "~/components/tweet/actions/share-tweet";
 import { SEO } from "~/components/simple-seo";
-import { getDetailPost } from "~/hooks/queries";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { Feed as Comments, PageLayout } from "~/components/layouts";
-import { authClient } from "~/lib/auth-client";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import { useIsClient } from "usehooks-ts";
 
-const SinglePostPage = ({
-  id,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const { data: detail, error, isLoading } = getDetailPost({ id });
-  const { data } = authClient.useSession();
+const SinglePostPage = ({ id }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { data: detail, error, isLoading, isSuccess } = api.post.detailPost.useQuery({ id });
+  const { ref, inView } = useInView({ rootMargin: "40% 0px" });
+  const {
+    data: replies,
+    fetchNextPage,
+    isLoading: repliesloading,
+    isFetchingNextPage,
+  } = api.feed.postReplies.useInfiniteQuery(
+    { postId: id },
+    { getNextPageParam: (lastPage) => lastPage.nextCursor, enabled: !!detail }
+  );
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, inView]);
+
   if (!detail || error?.message === "NOT_FOUND") {
     return <PostNotFound />;
   }
 
-  const { author, post, repostAuthor } = detail;
-
-  const { data: replies, isLoading: repliesloading } =
-    api.post.postReplies.useQuery({ postId: id }, { enabled: !!detail });
-
   return (
     <>
-      <SEO title={`${author.username} on burbir: "${post.content}" / burbir`} />
+      <SEO title={`${detail.author.username} on burbir: "${detail?.content}" / burbir`} />
       <PageLayout className="flex">
         <div className="flex h-full min-h-screen w-full max-w-[600px] flex-col border-x border-border">
           <div className="sticky top-0 z-20 flex h-[53px] w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">
@@ -64,56 +65,52 @@ const SinglePostPage = ({
             <p>Post</p>
           </div>
           <div className="relative w-full max-w-full border-b border-border outline-none">
-            {post.type === "COMMENT" && post.parentId && (
-              <TweetParentPost id={post.parentId} showParent={true} />
+            {detail.type === "COMMENT" && detail.parentId && (
+              <TweetParentPost parentId={detail.parentId} showParent={true} />
             )}
             {isLoading ? (
               <LoadingItem />
             ) : (
               <article
                 className="relative flex w-full scroll-mt-[52px] flex-col"
-                id={post.type.toLowerCase()}
+                id={detail.type.toLowerCase()}
+                key={detail.id}
               >
                 <div className="flex px-4">
                   <div className="mr-3 flex flex-shrink-0 basis-10 flex-col">
                     <div
                       className={cn(
                         "mx-auto mb-1 h-2 w-0.5 bg-transparent",
-                        post.type === "COMMENT" && " bg-[rgb(51,54,57)]"
+                        detail.type === "COMMENT" && " bg-[rgb(51,54,57)]"
                       )}
                     />
                     <Image
                       width="40"
                       height="40"
                       draggable={false}
-                      src={author.image!}
-                      alt={`@${author.name}'s profile picture`}
+                      src={detail.author.image!}
+                      alt={`@${detail.author.name}'s profile picture`}
                       className="first-letter flex h-10 w-10 rounded-full"
                     />
                   </div>
-                  <TweetTitle
-                    author={author}
-                    post={post}
-                    variant="details"
-                    className="pt-3"
-                  >
-                    <TweetMenu post={post} author={author} />
+                  <TweetTitle author={detail.author} post={detail} variant="details">
+                    <TweetMenu post={detail} author={detail.author} />
                   </TweetTitle>
                 </div>
                 <div className="relative mt-3 w-full flex-col px-4">
                   <div className="flex w-fit justify-start">
                     <TweetText
-                      content={renderText(post.content)}
+                      content={renderText(detail?.content || "")}
                       className="text-[17px] leading-5"
                     />
                   </div>
-                  {post.image && (
+                  {detail.image && (
                     <div className="relative flex h-fit w-full">
                       <div className="relative mt-3 flex w-full items-start justify-center overflow-hidden rounded-2xl border">
                         <div className="relative h-full w-fit max-w-full transition-colors duration-200 hover:bg-secondary xs:w-full">
                           <ImageModal
-                            src={post.image}
-                            alt={`${post.id}'s image`}
+                            src={detail.image}
+                            alt={`${detail.id}'s image`}
                             width="600"
                             height="400"
                             priority
@@ -125,67 +122,55 @@ const SinglePostPage = ({
                   )}
                   <div className="flex items-center text-[15px] leading-5 text-accent">
                     <Link
-                      href={`/post/${post.id}`}
+                      href={`/post/${detail.id}`}
                       className="group relative flex w-max items-end py-4 text-sm font-thin outline-none hover:underline focus:underline"
-                      aria-label={dayjs(post.createdAt).format("LL LT")}
+                      aria-label={dayjs(detail.createdAt).format("LL LT")}
                     >
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild className="font-normal">
-                            <time dateTime={post.createdAt.toISOString()}>
-                              {dayjs(post.createdAt).format("LT")} ·&nbsp;
-                              {dayjs(post.createdAt).format("ll")}
+                            <time dateTime={detail.createdAt.toISOString()}>
+                              {dayjs(detail.createdAt).format("LT")} ·&nbsp;
+                              {dayjs(detail.createdAt).format("ll")}
                             </time>
                           </TooltipTrigger>
                           <TooltipContent
                             side="bottom"
                             className="rounded-none border-none bg-[#495A69] p-1 text-xs text-white"
                           >
-                            {dayjs(post.createdAt).format("LT LL")}
+                            {dayjs(detail.createdAt).format("LT LL")}
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </Link>
-                    <p className="text-inherit">
-                      &nbsp;·&nbsp;
-                      <span className="font-semibold text-white">
-                        {post.view !== 0 ? formatViews(post.view) : ""}&nbsp;
-                      </span>
-                      Views
-                    </p>
                   </div>
-                  {data?.user.id === post.authorId && (
-                    <button className="flex w-full border-t py-3 text-[15px] leading-5 text-accent hover:bg-white/[.03]">
-                      <AnalyticIcon className="h-5 w-5 fill-accent" />
-                      &nbsp;<span>View post engagements</span>
-                    </button>
-                  )}
+
                   <hr />
                   <TweetAction>
-                    <ReplyTweet
-                      post={post}
-                      variant="details"
-                      author={author}
-                      repostAuthor={repostAuthor}
-                    />
-                    <RepostTweet post={post} variant="details" />
-                    <LikeTweet post={post} variant="details" />
-                    <AnalyticTweet post={post} variant="details" />
-                    <BookmarkTweet post={post} variant="details" />
-                    <ShareTweet post={post} variant="details" author={author} />
+                    <ReplyTweet post={detail} variant="details" />
+                    <RepostTweet post={detail} variant="details" />
+                    <LikeTweet post={detail} variant="details" />
+                    <BookmarkTweet post={detail} variant="details" />
+                    <ShareTweet postId={detail.id} author={detail.author} variant="details" />
                   </TweetAction>
                   <hr className="mb-1 mt-3" />
                   <p className="ml-14 text-[15px] leading-5 text-accent">
                     Replying to&nbsp;
-                    <span className="text-primary">{`@${author.username}`}</span>
+                    <span className="text-primary">{`@${detail.author.username}`}</span>
                   </p>
                 </div>
-                <CreateReply post={post} />
+                <CreateReply post={detail} />
               </article>
             )}
           </div>
-          <Comments post={replies} postLoading={repliesloading} />
-          <div className="h-[90vh]" />
+
+          <Comments
+            posts={replies?.pages.flatMap((page) => page.comments!)}
+            postLoading={repliesloading}
+          />
+          <div className="h-[55rem]" ref={ref}>
+            {isFetchingNextPage && <LoadingItem />}
+          </div>
         </div>
       </PageLayout>
     </>
