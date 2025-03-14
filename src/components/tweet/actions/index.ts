@@ -1,5 +1,7 @@
-export * from "./bookmark-tweet";
-export * from "./like-tweet";
-export * from "./reply-tweet";
-export * from "./repost-tweet";
-export * from "./share-tweet";
+import { type Format } from "@number-flow/react";
+
+export const numberFlowFormat: Format = {
+  notation: "compact",
+  compactDisplay: "short",
+  roundingMode: "trunc",
+};
