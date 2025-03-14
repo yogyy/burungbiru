@@ -5,15 +5,11 @@ import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 import { useInView } from "react-intersection-observer";
-import { getUserbyUsername } from "~/hooks/queries";
+import { useEffect } from "react";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = getUserbyUsername({ username });
-  const { ref, inView } = useInView({
-    rootMargin: "40% 0px",
-  });
-
-  if (!user) return <UserNotFound username={username} />;
+  const { data: user } = api.profile.getUserByUsernameDB.useQuery({ username });
+  const { ref, inView } = useInView({ rootMargin: "40% 0px" });
 
   const {
     data: posts,
@@ -21,26 +17,25 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = api.profile.userPosts.useInfiniteQuery(
-    { userId: user?.id },
+  } = api.feed.userPosts.useInfiniteQuery(
+    { userId: user!.id },
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
 
-  if (hasNextPage && inView && !userpostLoading) {
-    fetchNextPage();
-  }
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView]);
+
+  if (!user) return <UserNotFound username={username} />;
 
   return (
-    <UserLayout
-      user={user}
-      title={`${user?.name} (${user?.username}) / burbir`}
-    >
-      <Feed
-        post={posts?.pages.flatMap((page) => page.posts)}
-        postLoading={userpostLoading}
-      />
+    <UserLayout user={user} title={`${user?.name} (${user?.username}) / burbir`}>
+      <Feed posts={posts?.pages.flatMap((page) => page.posts)} postLoading={userpostLoading} />
       {inView && isFetchingNextPage && <LoadingItem />}
-      {hasNextPage && <div ref={ref} />}
+      {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
     </UserLayout>
   );
 };
@@ -53,10 +48,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   await ssg.profile.getUserByUsernameDB.prefetch({ username });
 
   return {
-    props: {
-      trpcState: ssg.dehydrate(),
-      username,
-    },
+    props: { trpcState: ssg.dehydrate(), username },
   };
 };
 

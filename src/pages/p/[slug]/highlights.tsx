@@ -5,16 +5,18 @@ import React, { useEffect } from "react";
 import { UserLayout } from "~/components/layouts";
 import { buttonVariants } from "~/components/ui/button";
 import UserNotFound from "~/components/user-not-found";
-import { getUserbyUsername } from "~/hooks/queries";
+import { api } from "~/utils/api";
 import { cn, featureNotReady } from "~/lib/utils";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
+import { authClient } from "~/lib/auth-client";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = getUserbyUsername({ username });
+  const { data: user } = api.profile.getUserByUsernameDB.useQuery({ username });
+  const { data } = authClient.useSession();
   const { push } = useRouter();
 
   useEffect(() => {
-    if (user?.type !== "user") {
+    if (username !== data?.user.username) {
       push(`/p/${username}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
