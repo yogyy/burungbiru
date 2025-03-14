@@ -8,7 +8,7 @@ const UserNotFound = ({ username }: { username: string }) => {
   return (
     <>
       <SEO title="Profile / burbir" />
-      <PageLayout className="flex">
+      <PageLayout>
         <div className="flex h-full w-full max-w-[600px] flex-col border-x border-border">
           <div className="sticky top-0 z-20 flex h-auto w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">
             <div className="relative flex h-[53px] w-full items-center md:max-w-[600px]">
@@ -16,9 +16,7 @@ const UserNotFound = ({ username }: { username: string }) => {
                 <ButtonBack />
               </div>
               <div className="flex w-max flex-shrink flex-col justify-center">
-                <h1 className="font-sans text-lg font-bold leading-6">
-                  Profile
-                </h1>
+                <h1 className="font-sans text-lg font-bold leading-6">Profile</h1>
               </div>
             </div>
           </div>

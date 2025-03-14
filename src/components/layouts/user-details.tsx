@@ -2,12 +2,7 @@ import React from "react";
 import { BalloonIcon, CalendarIcon, LocationIcon } from "../icons";
 import { RiLinkM } from "react-icons/ri";
 import { getUserFollower } from "~/hooks/queries";
-import {
-  Dialog,
-  DialogContent,
-  DialogOverlay,
-  DialogTrigger,
-} from "~/components/ui/dialog";
+import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "~/components/ui/dialog";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -15,12 +10,7 @@ import { FollowButton } from "../button-follow";
 import { TweetText as Website } from "../tweet";
 import { renderText } from "~/lib/tweet";
 import { Badge } from "../ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
 import { EditUserModal } from "../modal/edit-profile-modal";
 import { UserDetail } from "~/types";
 import { authClient } from "~/lib/auth-client";
@@ -74,7 +64,7 @@ export const UserDetails = ({ user }: UserDetail) => {
         <div className="inline-flex items-end text-xl font-extrabold leading-6">
           <h2>{user.name}</h2>
           <TooltipProvider>
-            <Tooltip>
+            <Tooltip delayDuration={250}>
               <TooltipTrigger className="relative flex">
                 <Badge variant={user.type} />
               </TooltipTrigger>
@@ -94,8 +84,7 @@ export const UserDetails = ({ user }: UserDetail) => {
                   </span>
                 </p>
                 <p className="inline-flex gap-3 text-[15px] leading-5 text-accent">
-                  <CalendarIcon size={20} fill="white" /> Verified since
-                  undefined undefined
+                  <CalendarIcon size={20} fill="white" /> Verified since undefined undefined
                 </p>
                 <Button
                   type="button"
@@ -108,9 +97,7 @@ export const UserDetails = ({ user }: UserDetail) => {
             </Tooltip>
           </TooltipProvider>
         </div>
-        <p className="flex text-[15px] leading-6 text-accent">
-          @{user.username}
-        </p>
+        <p className="flex text-[15px] leading-6 text-accent">@{user.username}</p>
       </div>
       {user.bio && <div className="mb-3">{user.bio}</div>}
       <div className="mb-3 flex w-full flex-wrap items-center justify-start gap-x-2.5 break-words text-base leading-3 text-accent">
@@ -123,10 +110,7 @@ export const UserDetails = ({ user }: UserDetail) => {
         {user.website && (
           <span className="flex items-center gap-1">
             <RiLinkM size="1.25em" />
-            <Website
-              className="text-base leading-3"
-              content={renderText(user.website)}
-            />
+            <Website className="text-base leading-3" content={renderText(user.website)} />
           </span>
         )}
 

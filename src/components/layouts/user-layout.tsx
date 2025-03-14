@@ -46,7 +46,7 @@ export const UserLayout = (props: UserLayoutProps) => {
   return (
     <>
       <SEO title={title} />
-      <PageLayout className="flex">
+      <PageLayout>
         <div className="flex h-full w-full max-w-[600px] flex-col border-x border-border">
           <div
             className="sticky top-0 z-[25] flex h-auto w-full items-center scroll-smooth bg-background/[.65] px-4 font-semibold backdrop-blur-md hover:cursor-pointer"

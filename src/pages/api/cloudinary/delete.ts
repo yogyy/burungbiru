@@ -3,10 +3,7 @@ import { env } from "~/env.mjs";
 import axios, { AxiosError } from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const publicId = await req.body.publicId;
   const timestamp = new Date().getTime();
   const apiKey = env.CLOUDINARY_API_KEY;
@@ -28,12 +25,7 @@ export default async function handler(
   try {
     const { data } = await axios.post(
       `https:api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD_NAME}/image/destroy`,
-      {
-        public_id: publicId,
-        signature: signature,
-        api_key: apiKey,
-        timestamp: timestamp,
-      }
+      { public_id: publicId, signature: signature, api_key: apiKey, timestamp: timestamp }
     );
 
     return res.status(200).json(data);

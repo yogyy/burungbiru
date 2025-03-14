@@ -1,47 +1,26 @@
 import dayjs from "dayjs";
 import Link from "next/link";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import { tweetTime } from "~/lib/tweet";
-import { TweetProps } from "./types";
+import { TweetProps, TweetTypeVariant } from "./types";
 import { Badge } from "../ui/badge";
 import { UserCard } from "../user-hover-card";
+import { ReactNode } from "react";
 
-interface TweetTitleProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    Omit<TweetProps, "repostAuthor"> {}
-export const TweetTitle = ({
-  author,
-  post,
-  variant,
-  className,
-  type = "default",
-  children,
-  ...props
-}: TweetTitleProps) => {
+interface TitleProps extends Omit<TweetTypeVariant, "showParent">, Pick<TweetProps, "author"> {
+  post: Pick<TweetProps, "id" | "createdAt">;
+  children: ReactNode;
+}
+
+export const TweetTitle = ({ children, post, author, type, variant }: TitleProps) => {
   return (
-    <div
-      className={cn(
-        "relative flex w-full flex-nowrap items-center justify-between pt-0.5",
-        className
-      )}
-      {...props}
-    >
-      <div
-        className={cn(
-          "flex w-full overflow-hidden",
-          variant === "details" && "flex-col"
-        )}
-      >
+    <div className="relative flex w-full flex-nowrap items-center justify-between pt-0.5">
+      <div className={cn("flex w-full overflow-hidden", variant === "details" && "flex-col")}>
         {type !== "modal" ? (
           <>
-            <UserCard username={author.username}>
-              <div className="flex">
+            <UserCard user={author}>
+              <div className="flex w-fit">
                 <Link
                   onClick={(e) => e.stopPropagation()}
                   className="-mt-0.5 flex w-fit flex-shrink-0 items-end text-base font-[500] outline-none focus-within:underline hover:underline"
@@ -53,9 +32,7 @@ export const TweetTitle = ({
                 <Link
                   tabIndex={-1}
                   onClick={(e) => e.stopPropagation()}
-                  className={cn(
-                    "ml-1 inline-flex w-fit text-accent outline-none"
-                  )}
+                  className={cn("ml-1 inline-flex w-fit text-accent outline-none")}
                   href={`/p/${author.username}`}
                 >
                   {`@${author.username}`}
@@ -88,11 +65,8 @@ export const TweetTitle = ({
               >
                 <TooltipProvider>
                   <Tooltip>
-                    <TooltipTrigger
-                      asChild
-                      className="text-[15px] font-normal leading-5"
-                    >
-                      <time dateTime={post?.createdAt.toISOString()}>
+                    <TooltipTrigger asChild className="text-[15px] font-normal leading-5">
+                      <time dateTime={post?.createdAt?.toISOString()}>
                         {tweetTime(post?.createdAt ?? post.createdAt)}
                       </time>
                     </TooltipTrigger>

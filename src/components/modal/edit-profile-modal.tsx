@@ -59,25 +59,15 @@ export const EditUserModal = () => {
             <div className="flex h-5 ">
               <p className="text-accent">Birth Date</p>
               <span className="px-1">·</span>
-              <button
-                className="text-primary"
-                onClick={() => featureNotReady("edit-birth-date")}
-              >
+              <button className="text-primary" onClick={() => featureNotReady("edit-birth-date")}>
                 Edit
               </button>
             </div>
-            <div className="h-6 text-xl">
-              {dayjs(currentUser?.birthDate).format("LL") || ""}
-            </div>
+            <div className="h-6 text-xl">{dayjs(currentUser?.birthDate).format("LL") || ""}</div>
           </div>
           <button
             className="flex justify-between px-4 py-3 text-left text-xl leading-6 transition-colors duration-200 hover:bg-[rgb(22,24,28)] disabled:cursor-not-allowed"
-            onClick={() =>
-              featureNotReady(
-                "switch-to-pro",
-                "This feature won't be implemented"
-              )
-            }
+            onClick={() => featureNotReady("switch-to-pro", "This feature won't be implemented")}
           >
             Switch to professional
             <IoChevronForwardSharp className="text-accent" width={20} />

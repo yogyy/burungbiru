@@ -6,9 +6,7 @@ import { Fields, Files, IncomingForm } from "formidable";
 
 export const config = { api: { bodyParser: false } };
 
-const parseFormData = (
-  req: NextApiRequest
-): Promise<{ fields: Fields; files: Files }> =>
+const parseFormData = (req: NextApiRequest): Promise<{ fields: Fields; files: Files }> =>
   new Promise((resolve, reject) => {
     const form = new IncomingForm({ multiples: false });
     form.parse(req, (err, fields, files) => {
@@ -17,10 +15,7 @@ const parseFormData = (
     });
   });
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
 
   const fData = await parseFormData(req);
@@ -34,7 +29,7 @@ export default async function handler(
     formData.append("file", blob);
     formData.append("upload_preset", env.CLOUDINARY_CLOUD_PRESET);
 
-    const { data, status } = await axios.post(
+    const { data, status } = await axios.post<{ result: string }>(
       `https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD_NAME}/image/upload`,
       formData
     );

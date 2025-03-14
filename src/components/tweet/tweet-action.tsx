@@ -1,10 +1,6 @@
 import { cn } from "~/lib/utils";
 
-export const TweetAction = ({
-  children,
-  className,
-  ...props
-}: React.ComponentProps<"div">) => {
+export const TweetAction = ({ children, className, ...props }: React.ComponentProps<"div">) => {
   return (
     <div className={cn("relative z-10 -mr-2 flex", className)} {...props}>
       <div

@@ -13,18 +13,15 @@ import { TweetPost } from "../tweet";
 import { Button } from "../ui/button";
 import { TweetProps } from "../tweet/types";
 
-const LazyReplyForm = dynamic(() => import("~/components/form/reply-form"));
+const LazyReplyForm = dynamic(() => import("~/components/form/reply-form"), {
+  ssr: false,
+});
 
-interface ReplyModalProps
-  extends Pick<TweetProps, "author" | "post" | "repostAuthor"> {
+interface ReplyModalProps {
   children: React.ReactNode;
+  post: TweetProps;
 }
-export const ReplyPostModal = ({
-  children,
-  author,
-  post,
-  repostAuthor,
-}: ReplyModalProps) => {
+export const ReplyPostModal = ({ children, post }: ReplyModalProps) => {
   const [show, setShow] = React.useState(false);
 
   return (
@@ -62,9 +59,7 @@ export const ReplyPostModal = ({
             </div>
           </DialogDescription>
           <TweetPost
-            author={author}
             post={post}
-            repostAuthor={repostAuthor}
             variant="parent"
             type="modal"
             className="border-none"
