@@ -1,80 +1,59 @@
 import React from "react";
 import { useHover } from "usehooks-ts";
-import { api, RouterOutputs } from "~/utils/api";
+import { api } from "~/utils/api";
 import { Button, ButtonProps } from "./ui/button";
 import { cn } from "~/lib/utils";
-import { getUserFollower } from "~/hooks/queries";
-import { authClient } from "~/lib/auth-client";
 
 interface FollowButtonProps extends ButtonProps {
-  user: RouterOutputs["profile"]["getUserByUsernameDB"];
+  userId: string;
 }
 export const FollowButton = (props: FollowButtonProps) => {
-  const { user, className, ...rest } = props;
-  const { data, isPending } = authClient.useSession();
+  const { userId, className, ...rest } = props;
   const hoverRef = React.useRef(null);
   const isHover = useHover(hoverRef);
-  const ctx = api.useUtils();
+  const utils = api.useUtils();
 
-  const follower = getUserFollower({ userId: user.id });
+  const { data: user, isLoading } = api.profile.userIsFollowed.useQuery({ userId });
   const following = api.action.followUser.useMutation({
     onSuccess: () => {
-      ctx.profile.userFollower.invalidate({ userId: user.id });
-      ctx.profile.getUserRandomUserDB.invalidate();
+      utils.profile.userFollow.invalidate({ userId });
+      utils.profile.userIsFollowed.invalidate({ userId });
     },
   });
   const unfollow = api.action.unfollowUser.useMutation({
     onSuccess: () => {
-      ctx.profile.userFollower.invalidate({ userId: user.id });
-      ctx.profile.getUserRandomUserDB.invalidate();
+      utils.profile.userFollow.invalidate({ userId });
+      utils.profile.userIsFollowed.invalidate({ userId });
     },
   });
 
-  const userInFollowing = !follower.data?.followers.some(
-    (foll) => foll.followingId === data?.user.id
-  );
-
   function FollowAction(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.stopPropagation();
-    if (userInFollowing) {
-      following.mutate({ userId: user.id });
+    if (user?.is_followed) {
+      unfollow.mutate({ userId });
     } else {
-      unfollow.mutate({ userId: user.id });
+      following.mutate({ userId });
     }
   }
 
-  if (follower.isLoading) return null;
+  if (isLoading) return null;
 
-  return userInFollowing ? (
-    <Button
-      ref={hoverRef}
-      type="button"
-      className={cn(
-        "border-none bg-white text-card hover:bg-white/80 focus-visible:outline-offset-1 focus-visible:outline-primary",
-        className
-      )}
-      disabled={unfollow.isLoading || follower.isLoading}
-      onClick={FollowAction}
-      {...rest}
-    >
-      Follow
-    </Button>
-  ) : (
+  return (
     <Button
       ref={hoverRef}
       variant="ghost"
       type="button"
       className={cn(
-        "min-w-[101.05px] border border-border text-white",
-        "hover:border-[rgb(244,33,46)] hover:bg-[rgb(244,33,46)]/[.15] hover:text-[rgb(244,33,46)]",
-        "focus-visible:border-white focus-visible:bg-white/10 focus-visible:outline-offset-0 focus-visible:outline-white",
+        user?.is_followed
+          ? "min-w-[101.05px] border border-border text-white hover:border-[rgb(244,33,46)] hover:bg-[rgb(244,33,46)]/[.15] hover:text-[rgb(244,33,46)] focus-visible:border-white focus-visible:bg-white/10 focus-visible:outline-offset-0 focus-visible:outline-white"
+          : "border-none bg-white text-card hover:bg-white/80 focus-visible:outline-offset-1 focus-visible:outline-primary",
         className
       )}
-      disabled={following.isLoading || follower.isLoading}
+      disabled={following.isLoading || unfollow.isLoading}
       onClick={FollowAction}
       {...rest}
     >
-      {isHover ? "Unfollow" : "Following"}
+      {user?.is_followed ? (isHover ? "Unfollow" : "Following") : "Follow"}
     </Button>
   );
 };

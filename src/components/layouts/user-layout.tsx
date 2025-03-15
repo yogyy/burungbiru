@@ -49,7 +49,7 @@ export const UserLayout = (props: UserLayoutProps) => {
       <PageLayout>
         <div className="flex h-full w-full max-w-[600px] flex-col border-x border-border">
           <div
-            className="sticky top-0 z-[25] flex h-auto w-full items-center scroll-smooth bg-background/[.65] px-4 font-semibold backdrop-blur-md hover:cursor-pointer"
+            className="flex h-auto w-full items-center scroll-smooth bg-background/[.65] px-4 font-semibold hover:cursor-pointer"
             onClick={ScrollToTop}
           >
             <div className="relative flex h-[53px] w-full items-center md:max-w-[600px]">
@@ -74,7 +74,6 @@ export const UserLayout = (props: UserLayoutProps) => {
                   </p>
                 )}
               </div>
-              <FollowUser user={user} />
             </div>
           </div>
           <div className="relative aspect-[3/1] w-full overflow-hidden">
@@ -91,8 +90,8 @@ export const UserLayout = (props: UserLayoutProps) => {
               <div className="h-full w-full bg-border"></div>
             )}
           </div>
-          <UserDetails user={user} />
-          <div className="hide-scrollbar flex h-fit w-full items-center overflow-x-scroll border-b border-border">
+          <UserDetails />
+          <div className="hide-scrollbar sticky top-0 z-[25] flex h-fit w-full items-center overflow-x-scroll border-b border-border bg-background/[.65] backdrop-blur-md">
             {userMenu.map(
               (menu) =>
                 shouldShowMenu(menu) && (

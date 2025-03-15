@@ -20,9 +20,7 @@ import { featureNotReady } from "~/lib/utils";
 
 export const UserDetails = ({ user }: UserDetail) => {
   const { data, isPending } = authClient.useSession();
-  const { data: follow, isLoading: LoadingFollow } = getUserFollower({
-    userId: user.id,
-  });
+  const { data: follow } = api.profile.userFollow.useQuery({ userId: user.id });
 
   return (
     <div className="px-4 pb-3 pt-3">
@@ -57,7 +55,7 @@ export const UserDetails = ({ user }: UserDetail) => {
         {isPending ? null : data?.user.id === user.id ? (
           <EditUserModal />
         ) : (
-          <FollowButton user={user} />
+          <FollowButton userId={user.id} />
         )}
       </div>
       <div className="-mt-1 mb-1 flex flex-col">
@@ -140,7 +138,7 @@ export const UserDetails = ({ user }: UserDetail) => {
           className="mr-5 break-words text-[15px] leading-4 hover:underline"
         >
           <span className="font-bold text-[rgb(231,233,234)]">
-            {LoadingFollow ? user.following.length : follow?.following.length}
+            {follow?.total_following}
             &nbsp;
           </span>
           Following
@@ -151,7 +149,7 @@ export const UserDetails = ({ user }: UserDetail) => {
           className="break-words text-[15px] leading-4 hover:underline"
         >
           <span className="font-bold text-[rgb(231,233,234)]">
-            {LoadingFollow ? user.followers.length : follow?.followers.length}
+            {follow?.total_follower}
             &nbsp;
           </span>
           Follower

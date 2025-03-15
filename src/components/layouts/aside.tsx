@@ -61,7 +61,7 @@ export const RightAside = () => {
                     <span className="text-accent">@{ppl.username}</span>
                   </div>
                 </div>
-                <FollowButton user={ppl} className="ml-3" />
+                <FollowButton userId={ppl.id} className="ml-3" />
               </div>
             ))}
             <button

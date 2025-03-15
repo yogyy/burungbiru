@@ -7,12 +7,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
 import { GoGear } from "react-icons/go";
 import { UserAvatar } from "../avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -22,31 +17,32 @@ import { useBurgerMenu } from "~/hooks/store";
 import { hamburgerNavbarLink } from "~/constant";
 import { MoreNavbar } from "../navbar/more";
 import { api } from "~/utils/api";
+import { authClient } from "~/lib/auth-client";
 
 interface BurgerMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
 export const BurgerMenu = ({ className, ...props }: BurgerMenuProps) => {
   const { show, setShow } = useBurgerMenu();
-  const { data: user, isSuccess } = api.profile.getCurrentUser.useQuery(
-    { follow: true },
-    { refetchOnWindowFocus: false, refetchOnMount: false }
+  const { data, isPending } = authClient.useSession();
+  const { data: follow, isSuccess } = api.profile.userFollow.useQuery(
+    {
+      userId: data?.user.id!,
+    },
+    { enabled: !!isPending }
   );
 
-  if (!user) return null;
+  if (!data) return null;
 
   return (
     <div
-      className={cn(
-        "sticky top-0 z-30 flex h-[53px] items-center justify-between px-4",
-        className
-      )}
+      className={cn("sticky top-0 z-30 flex h-[53px] items-center justify-between px-4", className)}
       {...props}
     >
       <Sheet open={show} onOpenChange={setShow}>
         <SheetTrigger className="rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.image!} alt={`@${user?.username}`} />
+            <AvatarImage src={data?.user.image!} alt={`@${data?.user.username}`} />
             <AvatarFallback className="bg-background text-primary">
-              {user?.username?.slice(0, 2)}
+              {data?.user.username.slice(0, 4)}
             </AvatarFallback>
           </Avatar>
         </SheetTrigger>
@@ -57,33 +53,33 @@ export const BurgerMenu = ({ className, ...props }: BurgerMenuProps) => {
           <SheetHeader className="text-left">
             <SheetTitle className="p-4 text-base leading-5  ">
               <div className="w-fit">
-                <UserAvatar image={user?.image} username={user?.username} />
+                <UserAvatar image={data?.user.image!} username={data?.user.username} />
               </div>
               <div className="mt-2">
                 <Link
                   className="flex items-start break-words text-base font-bold outline-none focus-within:underline hover:underline"
-                  href={`/${user?.username}`}
+                  href={`/${data?.user.username}`}
                 >
-                  {user?.name}
+                  {data?.user.name}
                 </Link>
                 <Link
                   className="flex font-thin text-accent outline-none"
-                  href={`/${user?.username}`}
+                  href={`/${data?.user.username}`}
                 >
-                  {`@${user?.username}`}
+                  {`@${data?.user.username}`}
                 </Link>
               </div>
               <div className="mt-3 flex justify-start gap-2 text-[14px] text-base font-medium leading-4 text-accent">
                 <p>
                   <span className="font-bold text-[rgb(231,233,234)]">
-                    {isSuccess && user?.following.length}
+                    {isSuccess && follow.total_following}
                     &nbsp;
                   </span>
                   Following
                 </p>
                 <p>
                   <span className="font-bold text-[rgb(231,233,234)]">
-                    {isSuccess && user?.followers.length}
+                    {isSuccess && follow.total_follower}
                     &nbsp;
                   </span>
                   Follower
@@ -94,29 +90,17 @@ export const BurgerMenu = ({ className, ...props }: BurgerMenuProps) => {
               <>
                 <ul className="flex w-full flex-col">
                   {hamburgerNavbarLink.map((link) => (
-                    <li
-                      key={link.name}
-                      className={cn("flex w-full justify-start py-0.5")}
-                    >
+                    <li key={link.name} className={cn("flex w-full justify-start py-0.5")}>
                       <Link
                         className={cn(
                           "flex w-full items-center border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
                           "hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]"
                         )}
-                        href={
-                          link.link === "/profile"
-                            ? `/p/${user?.username}`
-                            : link.link
-                        }
+                        href={link.link === "/profile" ? `/p/${data?.user.username}` : link.link}
                       >
-                        <link.icon
-                          className={cn("fill-current stroke-none")}
-                          size="24"
-                        />
+                        <link.icon className={cn("fill-current stroke-none")} size="24" />
                         <span
-                          className={cn(
-                            "ml-5 mr-4 text-xl font-semibold leading-6 tracking-wide"
-                          )}
+                          className={cn("ml-5 mr-4 text-xl font-semibold leading-6 tracking-wide")}
                         >
                           <p>{link.name}</p>
                         </span>
