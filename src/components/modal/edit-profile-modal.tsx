@@ -11,17 +11,23 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { featureNotReady } from "~/lib/utils";
-import { getCurrentUser } from "~/hooks/queries";
 import { useUpdateUserModal } from "~/hooks/store";
 import { Button } from "../ui/button";
+import { useProfileContext } from "~/context";
+import { authClient } from "~/lib/auth-client";
 
-const LazyForm = dynamic(() =>
-  import("~/components/form/update-user-form").then((mod) => mod.UpdateUserForm)
+const LazyForm = dynamic(
+  () => import("../form/update-user-form").then((mod) => mod.UpdateUserForm),
+  { ssr: false }
 );
 
 export const EditUserModal = () => {
-  const { data: currentUser } = getCurrentUser();
   const { show, setShow } = useUpdateUserModal();
+  const { data } = authClient.useSession();
+  const user = useProfileContext();
+
+  if (data?.user.id !== user.id) return null;
+
   return (
     <Dialog open={show} onOpenChange={setShow}>
       <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -54,7 +60,7 @@ export const EditUserModal = () => {
               </Button>
             </div>
           </DialogDescription>
-          <LazyForm user={currentUser} />
+          <LazyForm />
           <div className="flex flex-col p-4 leading-6">
             <div className="flex h-5 ">
               <p className="text-accent">Birth Date</p>
@@ -63,7 +69,7 @@ export const EditUserModal = () => {
                 Edit
               </button>
             </div>
-            <div className="h-6 text-xl">{dayjs(currentUser?.birthDate).format("LL") || ""}</div>
+            <div className="h-6 text-xl">{dayjs(user?.birthDate).format("LL") || ""}</div>
           </div>
           <button
             className="flex justify-between px-4 py-3 text-left text-xl leading-6 transition-colors duration-200 hover:bg-[rgb(22,24,28)] disabled:cursor-not-allowed"

@@ -7,6 +7,7 @@ import UserNotFound from "~/components/user-not-found";
 import { authClient } from "~/lib/auth-client";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
+import { ProfileContext } from "~/context";
 
 const UserHasNoMedia = ({ userId, username }: { userId: string; username: string }) => {
   const { data } = authClient.useSession();
@@ -55,29 +56,30 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   if (!user) return <UserNotFound username={username} />;
 
   return (
-    <UserLayout
-      user={user}
-      title={`Media Posts by ${user?.name} (@${user?.username}) / burbir`}
-      topbar={
-        <p className="text-[13px] font-thin leading-4 text-accent">
-          {totalMediaLoading ? (
-            <span className="select-none text-background">loading</span>
-          ) : (
-            <span>{totalMedia} Photos & videos</span>
-          )}
-        </p>
-      }
-    >
-      {totalMedia ? (
-        <>
-          <Feed posts={posts?.pages.flatMap((page) => page.media)} postLoading={isLoading} />
-          {inView && isFetchingNextPage && <LoadingItem />}
-          {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
-        </>
-      ) : (
-        <UserHasNoMedia userId={user.id} username={user.username} />
-      )}
-    </UserLayout>
+    <ProfileContext.Provider value={user}>
+      <UserLayout
+        title="Media posts"
+        topbar={
+          <p className="text-[13px] font-thin leading-4 text-accent">
+            {totalMediaLoading ? (
+              <span className="select-none text-background">loading</span>
+            ) : (
+              <span>{totalMedia} Photos & videos</span>
+            )}
+          </p>
+        }
+      >
+        {totalMedia ? (
+          <>
+            <Feed posts={posts?.pages.flatMap((page) => page.media)} postLoading={isLoading} />
+            {inView && isFetchingNextPage && <LoadingItem />}
+            {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
+          </>
+        ) : (
+          <UserHasNoMedia userId={user.id} username={user.username} />
+        )}
+      </UserLayout>
+    </ProfileContext.Provider>
   );
 };
 

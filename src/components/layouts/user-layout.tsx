@@ -10,18 +10,18 @@ import { usePathname } from "next/navigation";
 import { SEO } from "../simple-seo";
 import { Badge } from "../ui/badge";
 import { UserDetail } from "~/types";
-import { FollowUser } from "../follow-user-sticky";
 import { UserDetails } from "./user-details";
 import { authClient } from "~/lib/auth-client";
+import { useProfileContext } from "~/context";
 
-interface UserLayoutProps extends UserDetail {
+interface UserLayoutProps {
   children: React.ReactNode;
   topbar?: React.ReactNode;
-  title: string;
+  title?: string;
 }
 
-export const UserLayout = (props: UserLayoutProps) => {
-  const { children, topbar, user, title } = props;
+export const UserLayout = ({ children, topbar, title }: UserLayoutProps) => {
+  const user = useProfileContext();
   const { data } = authClient.useSession();
   const pathname = usePathname();
   const { data: posts, isLoading: userpostLoading } = api.feed.userPosts.useQuery({
@@ -45,7 +45,13 @@ export const UserLayout = (props: UserLayoutProps) => {
 
   return (
     <>
-      <SEO title={title} />
+      <SEO
+        title={
+          title
+            ? title + ` by ${user?.name} (${user?.username}) / burbir`
+            : `${user?.name} (${user?.username}) / burbir`
+        }
+      />
       <PageLayout>
         <div className="flex h-full w-full max-w-[600px] flex-col border-x border-border">
           <div

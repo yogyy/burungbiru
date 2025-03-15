@@ -1,7 +1,6 @@
 import React from "react";
 import { BalloonIcon, CalendarIcon, LocationIcon } from "../icons";
 import { RiLinkM } from "react-icons/ri";
-import { getUserFollower } from "~/hooks/queries";
 import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "~/components/ui/dialog";
 import Image from "next/image";
 import { Button } from "../ui/button";
@@ -12,13 +11,16 @@ import { renderText } from "~/lib/tweet";
 import { Badge } from "../ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
 import { EditUserModal } from "../modal/edit-profile-modal";
-import { UserDetail } from "~/types";
 import { authClient } from "~/lib/auth-client";
 import { featureNotReady } from "~/lib/utils";
+import { api } from "~/utils/api";
+import { useProfileContext } from "~/context";
 
 // TODO: change badge from Tooltip to Popover
 
-export const UserDetails = ({ user }: UserDetail) => {
+export const UserDetails = () => {
+  const user = useProfileContext();
+
   const { data, isPending } = authClient.useSession();
   const { data: follow } = api.profile.userFollow.useQuery({ userId: user.id });
 
@@ -97,7 +99,7 @@ export const UserDetails = ({ user }: UserDetail) => {
         </div>
         <p className="flex text-[15px] leading-6 text-accent">@{user.username}</p>
       </div>
-      {user.bio && <div className="mb-3">{user.bio}</div>}
+      <div className="mb-3">{user.bio}</div>
       <div className="mb-3 flex w-full flex-wrap items-center justify-start gap-x-2.5 break-words text-base leading-3 text-accent">
         {user.location && (
           <span className="flex items-center gap-1">

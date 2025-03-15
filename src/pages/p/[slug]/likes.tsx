@@ -8,6 +8,7 @@ import { authClient } from "~/lib/auth-client";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
+import { ProfileContext } from "~/context";
 
 const UserHasnoLikes = () => {
   return (
@@ -63,37 +64,37 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   if (!user) return <UserNotFound username={username} />;
 
   return (
-    <UserLayout
-      user={user}
-      title={`Post Liked by ${user?.name} (@${user?.username}) / burbir`}
-      topbar={
-        <p className="text-[13px] font-thin leading-4 text-accent">
-          {totalLikesLoading ? (
-            <span className="select-none text-background">loading</span>
+    <ProfileContext.Provider value={user}>
+      <UserLayout
+        title="Posts liked"
+        topbar={
+          <p className="text-[13px] font-thin leading-4 text-accent">
+            {totalLikesLoading ? (
+              <span className="select-none text-background">loading</span>
+            ) : (
+              <span>{totalLikes} Likes</span>
+            )}
+          </p>
+        }
+      >
+        <div className="flex w-full flex-col items-center">
+          {totalLikes! > 0 ? (
+            <>
+              <Feed
+                posts={posts?.pages.flatMap((page) => page.likes)}
+                postLoading={isLoading}
+                showParent={false}
+              />
+              {inView && isFetchingNextPage && <LoadingItem />}
+              {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
+            </>
           ) : (
-            <span>{totalLikes} Likes</span>
+            <UserHasnoLikes />
           )}
-        </p>
-      }
-    >
-      <div className="flex w-full flex-col items-center">
-        {totalLikes! > 0 ? (
-          <>
-            <Feed
-              posts={posts?.pages.flatMap((page) => page.likes)}
-              postLoading={isLoading}
-              showParent={false}
-            />
-            {inView && isFetchingNextPage && <LoadingItem />}
-            {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
-          </>
-        ) : (
-          <UserHasnoLikes />
-        )}
-
-        <div style={{ height: "50dvh" }}></div>
-      </div>
-    </UserLayout>
+          <div style={{ height: "50dvh" }}></div>
+        </div>
+      </UserLayout>
+    </ProfileContext.Provider>
   );
 };
 

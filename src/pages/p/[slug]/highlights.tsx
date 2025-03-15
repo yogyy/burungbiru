@@ -9,6 +9,7 @@ import { api } from "~/utils/api";
 import { cn, featureNotReady } from "~/lib/utils";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { authClient } from "~/lib/auth-client";
+import { ProfileContext } from "~/context";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({ username });
@@ -24,28 +25,30 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   if (!user) return <UserNotFound username={username} />;
 
   return (
-    <UserLayout user={user} title={`${user?.name} (@${user?.username}) / burbir`}>
-      <div className="mx-auto my-8 flex w-full max-w-[calc(5*80px)] flex-col items-center px-8">
-        <div className="w-full">
-          <h2 className="mb-2 break-words text-left text-[31px] font-extrabold leading-8">
-            Highlight on your profile
-          </h2>
-          <p className="mb-8 break-words text-left text-[15px] leading-5 text-accent">
-            You must be subscribed to Premium to highlight posts on your profile.
-          </p>
-          <Link
-            href="#/subscribe-premium"
-            onClick={() => featureNotReady("switch-to-pro", "This feature won't be implemented")}
-            className={cn(
-              buttonVariants({ variant: "secondary" }),
-              "min-h-[52px] max-w-fit flex-1 flex-grow whitespace-nowrap break-words px-8 text-base font-bold leading-5"
-            )}
-          >
-            Subscribe to Premium
-          </Link>
+    <ProfileContext.Provider value={user}>
+      <UserLayout>
+        <div className="mx-auto my-8 flex w-full max-w-[calc(5*80px)] flex-col items-center px-8">
+          <div className="w-full">
+            <h2 className="mb-2 break-words text-left text-[31px] font-extrabold leading-8">
+              Highlight on your profile
+            </h2>
+            <p className="mb-8 break-words text-left text-[15px] leading-5 text-accent">
+              You must be subscribed to Premium to highlight posts on your profile.
+            </p>
+            <Link
+              href="#/subscribe-premium"
+              onClick={() => featureNotReady("switch-to-pro", "This feature won't be implemented")}
+              className={cn(
+                buttonVariants({ variant: "secondary" }),
+                "min-h-[52px] max-w-fit flex-1 flex-grow whitespace-nowrap break-words px-8 text-base font-bold leading-5"
+              )}
+            >
+              Subscribe to Premium
+            </Link>
+          </div>
         </div>
-      </div>
-    </UserLayout>
+      </UserLayout>
+    </ProfileContext.Provider>
   );
 };
 

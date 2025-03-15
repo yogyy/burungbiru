@@ -6,6 +6,7 @@ import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
+import { ProfileContext } from "~/context";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({ username });
@@ -32,11 +33,14 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   if (!user) return <UserNotFound username={username} />;
 
   return (
-    <UserLayout user={user} title={`${user?.name} (${user?.username}) / burbir`}>
-      <Feed posts={posts?.pages.flatMap((page) => page.posts)} postLoading={userpostLoading} />
-      {inView && isFetchingNextPage && <LoadingItem />}
-      {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
-    </UserLayout>
+    <ProfileContext.Provider value={user}>
+      <UserLayout>
+        <Feed posts={posts?.pages.flatMap((page) => page.posts)} postLoading={userpostLoading} />
+        <div className="h-[100dvh]"></div>
+        {inView && isFetchingNextPage && <LoadingItem />}
+        {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
+      </UserLayout>
+    </ProfileContext.Provider>
   );
 };
 

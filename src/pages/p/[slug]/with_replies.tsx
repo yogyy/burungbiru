@@ -4,6 +4,7 @@ import { useInView } from "react-intersection-observer";
 import { Feed, UserLayout } from "~/components/layouts";
 import { LoadingItem } from "~/components/loading";
 import UserNotFound from "~/components/user-not-found";
+import { ProfileContext } from "~/context";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { api } from "~/utils/api";
 
@@ -31,18 +32,17 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   if (!user) return <UserNotFound username={username} />;
 
   return (
-    <UserLayout
-      user={user}
-      title={`Post with replies by ${user?.name} (@${user?.username}) / burbir`}
-    >
-      <Feed
-        posts={posts?.pages.flatMap((page) => page.comments)}
-        postLoading={isLoading}
-        showParent={true}
-      />
-      {inView && isFetchingNextPage && <LoadingItem />}
-      {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
-    </UserLayout>
+    <ProfileContext.Provider value={user}>
+      <UserLayout title="Posts with replies">
+        <Feed
+          posts={posts?.pages.flatMap((page) => page.comments)}
+          postLoading={isLoading}
+          showParent={true}
+        />
+        {inView && isFetchingNextPage && <LoadingItem />}
+        {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
+      </UserLayout>
+    </ProfileContext.Provider>
   );
 };
 
