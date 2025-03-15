@@ -18,7 +18,7 @@ interface ReplyProps {
 
 export const ReplyTweet = ({ post, variant }: ReplyProps) => {
   const postId = post.type === "REPOST" ? post.parentId! : post.id;
-  const { data, isLoading } = api.post.replies.useQuery({ postId });
+  const { data } = api.post.replies.useQuery({ postId });
 
   return (
     <div className="flex w-full flex-1 text-accent" aria-label="reply post">
@@ -35,7 +35,7 @@ export const ReplyTweet = ({ post, variant }: ReplyProps) => {
         {data?.total_replies! > 0 ? (
           <span
             className={cn(
-              "h-fit overflow-hidden pl-0.5 font-sans text-[13px] leading-4 xs:px-2 md:cursor-pointer",
+              "h-fit flex-1 overflow-hidden pl-0.5 font-sans text-[13px] leading-4 xs:px-2 md:cursor-pointer",
               "font-normal transition-colors duration-300 group-hover:text-primary group-focus:text-primary"
             )}
           >

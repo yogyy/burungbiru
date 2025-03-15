@@ -44,7 +44,7 @@ export const LikeTweet = ({ variant, post }: LikeProps) => {
       <div className="group flex w-full items-center" onClick={(e) => e.stopPropagation()}>
         <Button
           variant="ghost"
-          disabled={loadingLike || loadingUnlike}
+          disabled={loadingLike || loadingUnlike || isLoading}
           onClick={LikePost}
           type="button"
           size="icon"
