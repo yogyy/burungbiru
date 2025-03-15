@@ -1,37 +1,26 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-
-import {
-  createTRPCRouter,
-  privateProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
-import { addUserDataToPosts } from "~/server/helper/dbHelper";
+import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 import { updateUserSchema } from "~/components/form/form";
 
 export const profileRouter = createTRPCRouter({
-  updateUserInfo: privateProcedure
-    .input(updateUserSchema)
-    .mutation(async ({ ctx, input }) => {
-      return ctx.prisma.user.update({
-        where: { id: ctx.userId },
-        data: {
-          name: input.name,
-          bio: input.bio,
-          location: input.location,
-          website: input.website,
-        },
-      });
-    }),
+  updateUserInfo: privateProcedure.input(updateUserSchema).mutation(async ({ ctx, input }) => {
+    return ctx.prisma.user.update({
+      where: { id: ctx.userId },
+      data: {
+        name: input.name,
+        bio: input.bio,
+        location: input.location,
+        website: input.website,
+      },
+    });
+  }),
 
-  getCurrentUser: publicProcedure
-    .input(z.object({ follow: z.boolean().optional().default(false) }))
-    .query(async ({ ctx, input }) => {
-      return await ctx.prisma.user.findUnique({
-        where: { id: ctx.user.id },
-        include: { followers: input.follow, following: input.follow },
-      });
-    }),
+  getCurrentUser: privateProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.user.findUnique({
+      where: { id: ctx.user?.id },
+    });
+  }),
 
   getUserByUsername: publicProcedure
     .input(z.object({ username: z.string() }))
@@ -58,113 +47,54 @@ export const profileRouter = createTRPCRouter({
       });
     }),
 
-  getUserRandomUserDB: publicProcedure
-    .input(z.object({}))
-    .query(async ({ ctx }) => {
-      return await ctx.prisma.user.findMany({
-        take: 3,
-        where: { id: { not: { equals: ctx.user.id ?? "" } } },
-        orderBy: { createdAt: "desc" },
-        include: { followers: true, following: true },
-      });
-    }),
+  getUserRandomUser: publicProcedure.input(z.object({})).query(async ({ ctx }) => {
+    return await ctx.prisma.user.findMany({
+      take: 3,
+      where: { id: { not: { equals: ctx.user?.id ?? "" } } },
+      orderBy: { createdAt: "desc" },
+      include: { followers: true, following: true },
+    });
+  }),
 
-  userPosts: privateProcedure
-    .input(
-      z.object({
-        userId: z.string(),
-        limit: z.number().optional(),
-        cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
-      })
-    )
-    .query(async ({ ctx, input: { limit = 10, cursor, userId } }) => {
-      const posts = await ctx.prisma.post
-        .findMany({
-          take: limit + 1,
-          cursor: cursor ? { createdAt_id: cursor } : undefined,
-          where: {
-            OR: [
-              { type: "POST", authorId: userId },
-              { type: "REPOST", authorParentId: userId },
-            ],
-          },
-          orderBy: [{ createdAt: "desc" }],
-        })
-        .then(addUserDataToPosts);
-
-      let nextCursor: typeof cursor | undefined;
-      if (posts.length > limit) {
-        const nextItem = posts.pop();
-        if (nextItem != null) {
-          nextCursor = {
-            id: nextItem?.post.id,
-            createdAt: nextItem?.post?.createdAt,
-          };
-        }
-      }
-
-      return {
-        posts,
-        nextCursor,
-      };
-    }),
-
-  userPostwithMedia: privateProcedure
+  userMediaCount: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const media = await ctx.prisma.post.findMany({
+      return await ctx.prisma.post.count({
         where: {
           authorId: input.userId,
-          NOT: { image: "" },
-          type: { not: "REPOST" },
+          type: { notIn: ["REPOST"] },
+          image: { not: "" },
         },
-        orderBy: [{ createdAt: "desc" }],
       });
-      return addUserDataToPosts(media);
     }),
 
-  userLikedPosts: privateProcedure
+  userLikesCount: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.like
-        .findMany({
-          where: { userId: input.userId },
-          orderBy: [{ createdAt: "desc" }],
-          include: {
-            post: true,
-          },
-        })
-        .then((liked) => liked.map((like) => like.post))
-        .then(addUserDataToPosts);
+      return await ctx.prisma.like.count({ where: { userId: input.userId } });
     }),
 
-  userBookmarkedPosts: privateProcedure
+  userFollow: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const bookmark = await ctx.prisma.post.findMany({
-        where: {
-          bookmarks: { some: { userId: input.userId } },
-        },
-        orderBy: [{ createdAt: "desc" }],
+      const follower = await ctx.prisma.follow.count({
+        where: { followerId: input.userId },
       });
-      return addUserDataToPosts(bookmark);
+      const following = await ctx.prisma.follow.count({
+        where: { followingId: input.userId },
+      });
+
+      return { total_following: following, total_follower: follower };
     }),
 
-  userWithReplies: privateProcedure
+  userIsFollowed: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const replies = await ctx.prisma.post.findMany({
-        where: { authorId: input.userId, AND: { type: "COMMENT" } },
+      const followedByUser = await ctx.prisma.follow.findUnique({
+        where: { followerId_followingId: { followingId: ctx.userId, followerId: input.userId } },
+        select: { id: true },
       });
-      return addUserDataToPosts(replies);
-    }),
 
-  userFollower: privateProcedure
-    .input(z.object({ userId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return await ctx.prisma.user.findUnique({
-        where: { id: input.userId },
-        select: { followers: true, following: true },
-      });
+      return { is_followed: Boolean(followedByUser?.id) };
     }),
 });
