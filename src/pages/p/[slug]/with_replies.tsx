@@ -8,7 +8,7 @@ import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { api } from "~/utils/api";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = api.profile.getUserByUsernameDB.useQuery({ username });
+  const { data: user } = api.profile.getUserByUsername.useQuery({ username });
   const { ref, inView } = useInView({ rootMargin: "40% 0px" });
 
   const {
@@ -51,7 +51,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const username = context.params?.slug;
   if (typeof username !== "string") throw new Error("no slug");
 
-  await ssg.profile.getUserByUsernameDB.prefetch({ username });
+  await ssg.profile.getUserByUsername.prefetch({ username });
 
   return {
     props: {

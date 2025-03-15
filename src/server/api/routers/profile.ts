@@ -33,12 +33,11 @@ export const profileRouter = createTRPCRouter({
       });
     }),
 
-  getUserByUsernameDB: publicProcedure
+  getUserByUsername: publicProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ ctx, input }) => {
       const user = await ctx.prisma.user.findUnique({
         where: { username: input.username },
-        include: { followers: true, following: true },
       });
 
       if (!user) {

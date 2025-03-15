@@ -29,7 +29,7 @@ const UserHasNoMedia = ({ userId, username }: { userId: string; username: string
 };
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = api.profile.getUserByUsernameDB.useQuery({ username });
+  const { data: user } = api.profile.getUserByUsername.useQuery({ username });
   const { data: totalMedia, isLoading: totalMediaLoading } = api.profile.userMediaCount.useQuery({
     userId: user!.id,
   });
@@ -86,7 +86,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const username = context.params?.slug;
   if (typeof username !== "string") throw new Error("no slug");
 
-  await ssg.profile.getUserByUsernameDB.prefetch({ username });
+  await ssg.profile.getUserByUsername.prefetch({ username });
 
   return {
     props: {

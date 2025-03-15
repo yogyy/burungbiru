@@ -11,7 +11,7 @@ import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { authClient } from "~/lib/auth-client";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = api.profile.getUserByUsernameDB.useQuery({ username });
+  const { data: user } = api.profile.getUserByUsername.useQuery({ username });
   const { data } = authClient.useSession();
   const { push } = useRouter();
 
@@ -54,7 +54,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const username = context.params?.slug;
   if (typeof username !== "string") throw new Error("no slug");
 
-  await ssg.profile.getUserByUsernameDB.prefetch({ username });
+  await ssg.profile.getUserByUsername.prefetch({ username });
 
   return {
     props: {
