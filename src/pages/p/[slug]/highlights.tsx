@@ -1,5 +1,4 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { UserLayout } from "~/components/layouts";
@@ -35,8 +34,7 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
             <p className="mb-8 break-words text-left text-[15px] leading-5 text-accent">
               You must be subscribed to Premium to highlight posts on your profile.
             </p>
-            <Link
-              href="#/subscribe-premium"
+            <button
               onClick={() => featureNotReady("switch-to-pro", "This feature won't be implemented")}
               className={cn(
                 buttonVariants({ variant: "secondary" }),
@@ -44,7 +42,7 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
               )}
             >
               Subscribe to Premium
-            </Link>
+            </button>
           </div>
         </div>
       </UserLayout>

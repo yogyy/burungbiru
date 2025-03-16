@@ -2,7 +2,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import { AdsIcon, AnalyticIcon, LogOutIcon } from "../icons/twitter-icons";
 import { LogoutModal } from "../modal";
 import { SettingsAndSupport } from "~/constant";
-import { cn } from "~/lib/utils";
+import { cn, featureNotReady } from "~/lib/utils";
 import { authClient } from "~/lib/auth-client";
 
 type TYPE = "mobile" | "dekstop";
@@ -15,7 +15,10 @@ export const MoreNavbar = ({ type }: { type: TYPE }) => {
       <AccordionItem value="item-1" className="border-none">
         <AccordionTrigger className="p-4">Creator Studio</AccordionTrigger>
         <AccordionContent asChild className="pb-0">
-          <button className="flex w-full items-center p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]">
+          <button
+            onClick={() => featureNotReady("more-navbar", "This feature won't be implemented")}
+            className="flex w-full items-center p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]"
+          >
             <AnalyticIcon size="18.75" className="mr-3 fill-current" />
             Analytic
           </button>
@@ -24,22 +27,26 @@ export const MoreNavbar = ({ type }: { type: TYPE }) => {
       <AccordionItem value="item-2" className="border-none">
         <AccordionTrigger className="p-4">Professional Tools</AccordionTrigger>
         <AccordionContent className="p-0">
-          <button className="flex w-full items-center p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]">
+          <button
+            onClick={() => featureNotReady("more-navbar", "This feature won't be implemented")}
+            className="flex w-full items-center p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]"
+          >
             <AdsIcon className="mr-3 fill-current" size="18.75" />
             Ads
           </button>
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3" className="border-none">
-        <AccordionTrigger className="p-4">
-          Settings and Support
-        </AccordionTrigger>
+        <AccordionTrigger className="p-4">Settings and Support</AccordionTrigger>
         <AccordionContent className="p-0 duration-0">
           {SettingsAndSupport.map(
             (btn) =>
               (type === "mobile" || btn.name !== "Data Saver") && (
                 <button
                   key={btn.name}
+                  onClick={() =>
+                    featureNotReady("more-navbar", "This feature won't be implemented")
+                  }
                   className={cn(
                     "flex w-full p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]"
                   )}
@@ -51,7 +58,10 @@ export const MoreNavbar = ({ type }: { type: TYPE }) => {
           )}
           {type === "mobile" && (
             <LogoutModal>
-              <button className="flex w-full p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]">
+              <button
+                onClick={() => featureNotReady("more-navbar", "This feature won't be implemented")}
+                className="flex w-full p-3 hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]"
+              >
                 <LogOutIcon size="18.75" className="mr-3" />
                 {`Log Out @${data?.user.username}`}
               </button>

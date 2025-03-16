@@ -3,7 +3,6 @@ import { RiLinkM } from "react-icons/ri";
 import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "~/components/ui/dialog";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import Link from "next/link";
 import { FollowButton } from "../button-follow";
 import { TweetText as Website } from "../tweet";
 import { renderText } from "~/lib/tweet";
@@ -133,8 +132,7 @@ export const UserDetails = () => {
         </span>
       </div>
       <div className="flex flex-wrap text-base leading-5 text-accent">
-        <Link
-          href={`/p/${user.username}#following`}
+        <button
           onClick={() => featureNotReady("following-route")}
           className="mr-5 break-words text-[15px] leading-4 hover:underline"
         >
@@ -143,9 +141,8 @@ export const UserDetails = () => {
             &nbsp;
           </span>
           Following
-        </Link>
-        <Link
-          href={`/p/${user.username}#follower`}
+        </button>
+        <button
           onClick={() => featureNotReady("follower-route")}
           className="break-words text-[15px] leading-4 hover:underline"
         >
@@ -154,7 +151,7 @@ export const UserDetails = () => {
             &nbsp;
           </span>
           Follower
-        </Link>
+        </button>
       </div>
     </div>
   );

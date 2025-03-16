@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { cn } from "~/lib/utils";
+import { cn, featureNotReady } from "~/lib/utils";
 import { BsTwitterX } from "react-icons/bs";
 import { navbarLink } from "~/constant";
 import { NavbarLogout } from "../nav-logout";
@@ -40,28 +40,41 @@ export const Navbar = () => {
                       link.name === "Premium" && "hidden xl:flex"
                     )}
                   >
-                    <Link
-                      className={cn(
-                        "-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
-                        "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
-                      )}
-                      onClick={(e) => (!data?.user ? e.preventDefault() : null)}
-                      href={
-                        link.link === "/profile"
-                          ? `/p/${data?.user.username}`
-                          : link.link
-                      }
-                    >
-                      <link.icon size={26.25} />
-                      <span
+                    {!link.link ? (
+                      <button
+                        onClick={() =>
+                          featureNotReady("navbar-menu", "This feature won't be implemented")
+                        }
                         className={cn(
-                          "ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block",
-                          baseRoute === link.link && "font-bold"
+                          "-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
+                          "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
                         )}
                       >
-                        <p>{link.name}</p>
-                      </span>
-                    </Link>
+                        <link.icon size={26.25} />
+                        <span className="ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block">
+                          <p>{link.name}</p>
+                        </span>
+                      </button>
+                    ) : (
+                      <Link
+                        className={cn(
+                          "-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
+                          "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
+                        )}
+                        onClick={(e) => (!data?.user ? e.preventDefault() : null)}
+                        href={link.link === "/profile" ? `/p/${data?.user.username}` : link.link}
+                      >
+                        <link.icon size={26.25} />
+                        <span
+                          className={cn(
+                            "ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block",
+                            baseRoute === link.link && "font-bold"
+                          )}
+                        >
+                          <p>{link.name}</p>
+                        </span>
+                      </Link>
+                    )}
                   </li>
                 ))}
                 <li className="flex w-full justify-center py-0.5 xl:justify-start">
