@@ -63,7 +63,7 @@ export const TweetTitle = ({ children, post, author, type, variant }: TitleProps
                 className="group relative flex w-max flex-shrink-0 items-end text-sm font-thin text-accent outline-none hover:underline focus:underline"
                 aria-label={dayjs(post?.createdAt).format("LL LT")}
               >
-                <TooltipProvider>
+                <TooltipProvider delayDuration={250}>
                   <Tooltip>
                     <TooltipTrigger asChild className="text-[15px] font-normal leading-5">
                       <time dateTime={post?.createdAt?.toISOString()}>
