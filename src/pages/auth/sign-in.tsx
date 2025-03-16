@@ -22,9 +22,7 @@ const SignInPage = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-8">
       <div className="mb-8 text-center">
-        <h1 className="mb-2 text-3xl font-bold text-white">
-          Welcome to Burbir
-        </h1>
+        <h1 className="mb-2 text-3xl font-bold text-white">Welcome to Burbir</h1>
         <p className="text-neutral-400">Sign in below</p>
       </div>
       <div className="w-full max-w-xs space-y-6 md:max-w-sm">
@@ -74,17 +72,11 @@ const SignInPage = () => {
       <div className="mt-6 space-y-4 text-center text-sm text-neutral-500">
         <p>
           By continuing, you agree to our&nbsp;
-          <Link
-            href="/terms-of-service"
-            className="text-neutral-400 hover:text-white"
-          >
+          <Link href="/support/terms-of-service" className="text-neutral-400 hover:text-white">
             Terms of Service
           </Link>
           &nbsp; and&nbsp;
-          <Link
-            href="/privacy-policy"
-            className="text-neutral-400 hover:text-white"
-          >
+          <Link href="/support/privacy-policy" className="text-neutral-400 hover:text-white">
             Privacy Policy
           </Link>
         </p>
