@@ -1,6 +1,6 @@
 import { MouseEventHandler } from "react";
 import { LuX } from "react-icons/lu";
-import { ImageModal } from "../modal";
+import { ImageModal } from "../modal/image-modal";
 import { Button } from "../ui/button";
 
 interface ImagePreviewProps {

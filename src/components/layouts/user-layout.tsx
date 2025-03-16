@@ -4,7 +4,7 @@ import { PageLayout } from "./root-layout";
 import { cn } from "~/lib/utils";
 import { userMenu } from "~/constant";
 import { api } from "~/utils/api";
-import { ImageModal } from "../modal";
+import { ImageModal } from "../modal/image-modal";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SEO } from "../simple-seo";

@@ -4,7 +4,7 @@ import { cn, featureNotReady } from "~/lib/utils";
 import { BsTwitterX } from "react-icons/bs";
 import { navbarLink } from "~/constant";
 import { NavbarLogout } from "../nav-logout";
-import { CreatePostModal } from "../modal";
+import { CreatePostModal } from "../modal/create-post-modal";
 import { MenuNavbarButton } from "../menu-button";
 import { authClient } from "~/lib/auth-client";
 

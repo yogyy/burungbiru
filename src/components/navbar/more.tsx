@@ -1,6 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { AdsIcon, AnalyticIcon, LogOutIcon } from "../icons/twitter-icons";
-import { LogoutModal } from "../modal";
+import { LogoutModal } from "../modal/logout-modal";
 import { SettingsAndSupport } from "~/constant";
 import { cn, featureNotReady } from "~/lib/utils";
 import { authClient } from "~/lib/auth-client";

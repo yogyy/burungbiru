@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/comp
 import { api } from "~/utils/api";
 import { renderText } from "~/lib/tweet";
 import { cn } from "~/lib/utils";
-import { ImageModal } from "~/components/modal";
+import { ImageModal } from "~/components/modal/image-modal";
 import { LoadingItem } from "~/components/loading";
 import { ButtonBack } from "~/components/button-back";
 import CreateReply from "~/components/form/reply-form";

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { TbDots } from "react-icons/tb";
 import { useMediaQuery } from "usehooks-ts";
 import { useUserPopover } from "~/hooks/store";

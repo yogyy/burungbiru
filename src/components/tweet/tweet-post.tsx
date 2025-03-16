@@ -1,7 +1,7 @@
 import { cn } from "~/lib/utils";
 import { renderText } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
-import { ImageModal } from "../modal";
+import { ImageModal } from "../modal/image-modal";
 import { TweetTitle, TweetText, TweetAction, TweetMenu } from "./";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
