@@ -42,6 +42,35 @@ const CreateReply = ({ variant = "default", setShowReplyModal, post }: CommentFo
   const { data } = authClient.useSession();
   const utils = api.useUtils();
 
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (!e.shiftKey && e.key === "Enter") {
+        if (
+          textareaRef.current?.value.length! > 4 &&
+          textareaRef.current?.value.trim().length !== 0
+        ) {
+          e.preventDefault();
+          form.handleSubmit(onSubmit)();
+        }
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "/" && document.activeElement !== textareaRef.current) {
+        e.preventDefault();
+        textareaRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const form = useForm<z.infer<typeof replySchema>>({
     resolver: zodResolver(replySchema),
     defaultValues: { text: "", image: { public_id: "", secure_url: "" } },

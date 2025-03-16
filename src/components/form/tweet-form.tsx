@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,10 +24,15 @@ import {
 } from "~/components/ui/form";
 import { Button } from "../ui/button";
 import { UserAvatar } from "../avatar";
-import { GlobeIcon, ImageIcon } from "../icons";
+import { GlobeIcon, ImageIcon } from "../icons/twitter-icons";
 import { authClient } from "~/lib/auth-client";
 
-const CreateTweet = ({ variant = "default" }: { variant?: CreateTweetVariant }) => {
+interface FormProps {
+  variant?: CreateTweetVariant;
+  // children: ReactNode;
+}
+
+const CreateTweet = ({ variant = "default" }: FormProps) => {
   const { image, ImagePrev, setImagePrev, handleImageChange } = useUploadImage();
   const setTweetModal = useTweetModal((state) => state.setShow);
   const { textareaRef, adjustTextareaHeight } = useTextarea();
@@ -45,6 +50,35 @@ const CreateTweet = ({ variant = "default" }: { variant?: CreateTweetVariant }) 
       },
     },
   });
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (!e.shiftKey && e.key === "Enter") {
+        if (
+          textareaRef.current?.value.length! > 4 &&
+          textareaRef.current?.value.trim().length !== 0
+        ) {
+          e.preventDefault();
+          form.handleSubmit(onSubmit)();
+        }
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "/" && document.activeElement !== textareaRef.current) {
+        e.preventDefault();
+        textareaRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { mutate, isLoading: isPosting } = api.post.createPost.useMutation({
     onSuccess: ({ id }) => {
@@ -77,9 +111,6 @@ const CreateTweet = ({ variant = "default" }: { variant?: CreateTweetVariant }) 
   async function onSubmit(values: z.infer<typeof tweetSchema>) {
     try {
       if (ImagePrev) values.image = await imagePost(image);
-    } catch (error) {
-      console.log(error);
-    } finally {
       mutate({
         content: values.text,
         image: {
@@ -88,6 +119,8 @@ const CreateTweet = ({ variant = "default" }: { variant?: CreateTweetVariant }) 
         },
         type: "POST",
       });
+    } catch (error) {
+      toast.error("Something went wrong");
     }
   }
 
@@ -145,7 +178,7 @@ const CreateTweet = ({ variant = "default" }: { variant?: CreateTweetVariant }) 
                       )}
                     </div>
                   </FormControl>
-                  <FormMessage className="absolute bottom-2 cursor-default select-none text-accent" />
+                  <FormMessage className="absolute top-10 cursor-default select-none text-desctructive" />
                 </FormItem>
               </div>
             </div>
