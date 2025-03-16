@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "~/component
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { FollowButton } from "../button-follow";
-import { TweetText as Website } from "../tweet";
+import { TweetText as Website } from "../tweet/tweet-text";
 import { renderText } from "~/lib/tweet";
 import { Badge } from "../ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";

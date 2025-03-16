@@ -1,12 +1,4 @@
 import dayjs from "dayjs";
-import {
-  TweetText,
-  TweetTitle,
-  TweetAction,
-  PostNotFound,
-  TweetMenu,
-  TweetParentPost,
-} from "~/components/tweet";
 import Link from "next/link";
 import Image from "next/image";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
@@ -29,6 +21,12 @@ import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { PageLayout } from "~/components/layouts/root-layout";
 import { Feed } from "~/components/layouts/feed";
+import { TweetParentPost } from "~/components/tweet/tweet-parent-post";
+import { PostNotFound } from "~/components/tweet/tweet-not-found";
+import { TweetTitle } from "~/components/tweet/tweet-title";
+import { TweetMenu } from "~/components/tweet/tweet-menu";
+import { TweetText } from "~/components/tweet/tweet-text";
+import { TweetAction } from "~/components/tweet/tweet-action";
 
 const SinglePostPage = ({ id }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { data: detail, error, isLoading, isSuccess } = api.post.detailPost.useQuery({ id });

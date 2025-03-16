@@ -2,7 +2,6 @@ import { cn } from "~/lib/utils";
 import { renderText } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
 import { ImageModal } from "../modal/image-modal";
-import { TweetTitle, TweetText, TweetAction, TweetMenu } from "./";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 import { RetweetIcon } from "../icons/twitter-icons";
@@ -16,6 +15,10 @@ import { ShareTweet } from "./actions/share-tweet";
 import { TweetProps, TweetTypeVariant } from "./types";
 import { authClient } from "~/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { TweetTitle } from "./tweet-title";
+import { TweetMenu } from "./tweet-menu";
+import { TweetText } from "./tweet-text";
+import { TweetAction } from "./tweet-action";
 dayjs.extend(LocalizedFormat);
 
 interface PostProps extends React.HTMLAttributes<HTMLDivElement>, TweetTypeVariant {

@@ -3,7 +3,6 @@ import { cn } from "~/lib/utils";
 import { renderText } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
 import { ImageModal } from "../modal/image-modal";
-import { TweetTitle, TweetText, TweetAction, TweetMenu } from "./";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
@@ -14,6 +13,10 @@ import { RepostTweet } from "./actions/repost-tweet";
 import { LikeTweet } from "./actions/like-tweet";
 import { BookmarkTweet } from "./actions/bookmark-tweet";
 import { ShareTweet } from "./actions/share-tweet";
+import { TweetText } from "./tweet-text";
+import { TweetTitle } from "./tweet-title";
+import { TweetMenu } from "./tweet-menu";
+import { TweetAction } from "./tweet-action";
 dayjs.extend(LocalizedFormat);
 
 interface TweetParentProps extends React.HTMLAttributes<HTMLDivElement>, TweetTypeVariant {

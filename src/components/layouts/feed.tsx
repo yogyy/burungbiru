@@ -1,9 +1,9 @@
 import { LoadingSpinner } from "../loading";
-import { RouterOutputs } from "~/utils/api";
 import { cn } from "~/lib/utils";
-import { TweetParentPost, TweetPost } from "../tweet";
 import React from "react";
 import { TweetProps } from "../tweet/types";
+import { TweetPost } from "../tweet/tweet-post";
+import { TweetParentPost } from "../tweet/tweet-parent-post";
 
 interface FeedProps {
   posts: TweetProps[] | undefined;
