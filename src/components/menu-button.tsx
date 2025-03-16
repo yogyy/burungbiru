@@ -1,30 +1,19 @@
-import { cn } from "~/lib/utils";
-import Link from "next/link";
-import { MenuIcon, MonetIcon } from "./icons";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+import { cn, featureNotReady } from "~/lib/utils";
+import { MenuIcon, MonetIcon } from "./icons/twitter-icons";
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { MoreNavbar } from "./navbar/more";
-import * as PopoverPrimitive from "@radix-ui/react-popover";
 
-interface MenuProps extends PopoverPrimitive.PopoverTriggerProps {}
-export const MenuNavbarButton = ({ className, ...props }: MenuProps) => {
+export const MenuNavbarButton = () => {
   return (
     <Popover>
       <PopoverTrigger
         className={cn(
           "-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
-          "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background",
-          className
+          "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
         )}
-        {...props}
       >
         <MenuIcon size={26.25} />
-        <span className="ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block">
-          More
-        </span>
+        <span className="ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block">More</span>
       </PopoverTrigger>
       <PopoverContent
         side="bottom"
@@ -32,8 +21,8 @@ export const MenuNavbarButton = ({ className, ...props }: MenuProps) => {
         align="start"
         className="hidden flex-col p-0 shadow-x duration-0 min-[570px]:flex"
       >
-        <Link
-          href="/#monet"
+        <button
+          onClick={() => featureNotReady("monetization", "This feature won't be implemented")}
           className={cn(
             "flex w-full items-center border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
             "hover:bg-border/30 focus-visible:border-primary focus-visible:bg-white/[.03]"
@@ -43,7 +32,7 @@ export const MenuNavbarButton = ({ className, ...props }: MenuProps) => {
           <span className="ml-5 mr-4 text-xl font-semibold leading-6 tracking-wide">
             Monetization
           </span>
-        </Link>
+        </button>
         <hr className="my-0.5 w-[89%] place-items-center self-center" />
         <MoreNavbar type="dekstop" />
       </PopoverContent>

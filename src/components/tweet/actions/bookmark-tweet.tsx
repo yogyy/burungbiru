@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
-import { BookmarkIcon, BookmarkIconFill } from "~/components/icons";
+import { BookmarkIcon, BookmarkIconFill } from "~/components/icons/twitter-icons";
 import { toast } from "sonner";
 import { TweetProps, VariantTweet } from "../types";
 import { useRouter } from "next/router";

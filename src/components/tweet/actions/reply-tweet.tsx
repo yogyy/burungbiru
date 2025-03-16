@@ -1,6 +1,6 @@
 import { cn } from "~/lib/utils";
 import { TweetProps, VariantTweet } from "../types";
-import { CommentIcon } from "~/components/icons";
+import { CommentIcon } from "~/components/icons/twitter-icons";
 import dynamic from "next/dynamic";
 import { api } from "~/utils/api";
 import NumberFlow from "@number-flow/react";

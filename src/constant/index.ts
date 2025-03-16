@@ -1,22 +1,17 @@
 import { GoGear } from "react-icons/go";
-import * as icon from "~/components/icons";
-import {
-  BookmarkLink,
-  HomeLink,
-  ProfileLink,
-} from "~/components/navbar/navlink";
+import * as icon from "~/components/icons/twitter-icons";
+import { BookmarkLink, HomeLink, ProfileLink } from "~/components/navbar/navlink";
 
 const navbarLink = [
   { name: "Home", icon: HomeLink, link: "/home" },
-  { name: "Explore", icon: icon.SearchIcon, link: "#explore" },
-  { name: "Notifications", icon: icon.BellIcon, link: "#notification" },
-  { name: "Messages", icon: icon.MessageIcon, link: "#messages" },
-  { name: "Lists", icon: icon.ListIcon, link: "#list" },
+  { name: "Explore", icon: icon.SearchIcon },
+  { name: "Notifications", icon: icon.BellIcon },
+  { name: "Messages", icon: icon.MessageIcon },
+  { name: "Lists", icon: icon.ListIcon },
   { name: "Bookmarks", icon: BookmarkLink, link: "/i/bookmarks" },
-  { name: "Communities", icon: icon.GroupIcon, link: "#group" },
-  { name: "Premium", icon: icon.LogoIcon, link: "#premium" },
+  { name: "Communities", icon: icon.GroupIcon },
+  { name: "Premium", icon: icon.LogoIcon },
   { name: "Profile", icon: ProfileLink, link: "/profile" },
-  // { name: "More", icon: icon.MenuIcon, link: "/#more" },
 ];
 
 const hamburgerNavbarLink = [

@@ -2,7 +2,7 @@ import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
 import { TweetProps, VariantTweet } from "../types";
-import { RetweetIcon } from "~/components/icons";
+import { RetweetIcon } from "~/components/icons/twitter-icons";
 import { authClient } from "~/lib/auth-client";
 import NumberFlow from "@number-flow/react";
 import { numberFlowFormat } from ".";

@@ -5,7 +5,7 @@ import { ImageModal } from "../modal";
 import { TweetTitle, TweetText, TweetAction, TweetMenu } from "./";
 import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
-import { RetweetIcon } from "../icons";
+import { RetweetIcon } from "../icons/twitter-icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReplyTweet } from "./actions/reply-tweet";

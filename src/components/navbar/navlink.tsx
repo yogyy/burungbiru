@@ -6,7 +6,7 @@ import {
   HomeIconFill,
   PersonIcon,
   PersonIconFill,
-} from "~/components/icons";
+} from "~/components/icons/twitter-icons";
 import { IconBaseProps } from "../icons/type";
 import { authClient } from "~/lib/auth-client";
 

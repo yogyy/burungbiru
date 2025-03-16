@@ -21,7 +21,7 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { ImageIcon } from "../icons";
+import { ImageIcon } from "../icons/twitter-icons";
 import { Button } from "../ui/button";
 import { UserAvatar } from "../avatar";
 import { TweetProps } from "../tweet/types";

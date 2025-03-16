@@ -1,5 +1,4 @@
-import React from "react";
-import { BalloonIcon, CalendarIcon, LocationIcon } from "../icons";
+import { BalloonIcon, CalendarIcon, LocationIcon } from "../icons/twitter-icons";
 import { RiLinkM } from "react-icons/ri";
 import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "~/components/ui/dialog";
 import Image from "next/image";

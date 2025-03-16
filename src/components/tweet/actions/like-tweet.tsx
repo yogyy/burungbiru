@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { api } from "~/utils/api";
-import { LikeIcon, LikeIconFill } from "~/components/icons";
+import { LikeIcon, LikeIconFill } from "~/components/icons/twitter-icons";
 import { TweetProps, VariantTweet } from "../types";
 import NumberFlow from "@number-flow/react";
 import { numberFlowFormat } from ".";

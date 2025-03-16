@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { TweetProps, VariantTweet } from "../types";
-import { ShareIcon } from "~/components/icons";
+import { ShareIcon } from "~/components/icons/twitter-icons";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
 import { authClient } from "~/lib/auth-client";

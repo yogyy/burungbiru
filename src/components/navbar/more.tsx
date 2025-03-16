@@ -1,11 +1,5 @@
-import React from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../ui/accordion";
-import { AdsIcon, AnalyticIcon, LogOutIcon } from "../icons";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import { AdsIcon, AnalyticIcon, LogOutIcon } from "../icons/twitter-icons";
 import { LogoutModal } from "../modal";
 import { SettingsAndSupport } from "~/constant";
 import { cn } from "~/lib/utils";
