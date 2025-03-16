@@ -72,7 +72,7 @@ const SignInPage = () => {
       <div className="mt-6 space-y-4 text-center text-sm text-neutral-500">
         <p>
           By continuing, you agree to our&nbsp;
-          <Link href="/support/terms-of-service" className="text-neutral-400 hover:text-white">
+          <Link href="/support/tos" className="text-neutral-400 hover:text-white">
             Terms of Service
           </Link>
           &nbsp; and&nbsp;
