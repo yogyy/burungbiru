@@ -2,13 +2,14 @@ import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { api } from "~/utils/api";
 import { LoadingItem } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
-import { Feed, UserLayout } from "~/components/layouts";
 import UserNotFound from "~/components/user-not-found";
 import { authClient } from "~/lib/auth-client";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
 import { ProfileContext } from "~/context";
+import { UserLayout } from "~/components/layouts/user-layout";
+import { Feed } from "~/components/layouts/feed";
 
 const UserHasnoLikes = () => {
   return (

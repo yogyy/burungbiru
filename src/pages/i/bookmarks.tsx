@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { ButtonBack } from "~/components/button-back";
-import { Feed, PageLayout } from "~/components/layouts";
+import { Feed } from "~/components/layouts/feed";
+import { PageLayout } from "~/components/layouts/root-layout";
 import { LoadingItem } from "~/components/loading";
-import { SEO } from "~/components/simple-seo";
 import { api } from "~/utils/api";
 
 const Bookmarks = () => {
@@ -29,7 +29,6 @@ const Bookmarks = () => {
 
   return (
     <>
-      <SEO title={`Bookmarks / burbir`} />
       <PageLayout>
         <div className="flex h-full min-h-screen w-full max-w-[600px] flex-col border-x border-border">
           <div className="sticky top-0 z-[25] flex h-auto w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">

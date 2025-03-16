@@ -9,7 +9,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SEO } from "../simple-seo";
 import { Badge } from "../ui/badge";
-import { UserDetail } from "~/types";
 import { UserDetails } from "./user-details";
 import { authClient } from "~/lib/auth-client";
 import { useProfileContext } from "~/context";

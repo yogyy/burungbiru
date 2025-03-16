@@ -25,10 +25,10 @@ import { ShareTweet } from "~/components/tweet/actions/share-tweet";
 import { SEO } from "~/components/simple-seo";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
-import { Feed as Comments, PageLayout } from "~/components/layouts";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import { useIsClient } from "usehooks-ts";
+import { PageLayout } from "~/components/layouts/root-layout";
+import { Feed } from "~/components/layouts/feed";
 
 const SinglePostPage = ({ id }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { data: detail, error, isLoading, isSuccess } = api.post.detailPost.useQuery({ id });
@@ -47,7 +47,8 @@ const SinglePostPage = ({ id }: InferGetStaticPropsType<typeof getStaticProps>) 
     if (inView) {
       fetchNextPage();
     }
-  }, [fetchNextPage, inView]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView]);
 
   if (!detail || error?.message === "NOT_FOUND") {
     return <PostNotFound />;
@@ -56,7 +57,7 @@ const SinglePostPage = ({ id }: InferGetStaticPropsType<typeof getStaticProps>) 
   return (
     <>
       <SEO title={`${detail.author.username} on burbir: "${detail?.content}" / burbir`} />
-      <PageLayout className="flex">
+      <PageLayout>
         <div className="flex h-full min-h-screen w-full max-w-[600px] flex-col border-x border-border">
           <div className="sticky top-0 z-20 flex h-[53px] w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">
             <div className="w-16">
@@ -164,7 +165,7 @@ const SinglePostPage = ({ id }: InferGetStaticPropsType<typeof getStaticProps>) 
             )}
           </div>
 
-          <Comments
+          <Feed
             posts={replies?.pages.flatMap((page) => page.comments!)}
             postLoading={repliesloading}
           />

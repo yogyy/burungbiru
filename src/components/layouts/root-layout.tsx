@@ -1,4 +1,4 @@
-import { RightAside } from ".";
+import { RightAside } from "./aside";
 import { Navbar } from "../navbar";
 import { MobileNav } from "../navbar/mobile-navbar";
 

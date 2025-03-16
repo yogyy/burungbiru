@@ -1,7 +1,8 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import React, { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import { Feed, UserLayout } from "~/components/layouts";
+import { UserLayout } from "~/components/layouts/user-layout";
+import { Feed } from "~/components/layouts/feed";
 import { LoadingItem } from "~/components/loading";
 import UserNotFound from "~/components/user-not-found";
 import { ProfileContext } from "~/context";

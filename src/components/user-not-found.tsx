@@ -1,5 +1,5 @@
 import React from "react";
-import { PageLayout } from "./layouts";
+import { PageLayout } from "./layouts/root-layout";
 import { ButtonBack } from "./button-back";
 import { cn } from "~/lib/utils";
 import { SEO } from "./simple-seo";

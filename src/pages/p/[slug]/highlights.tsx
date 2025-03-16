@@ -1,7 +1,6 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
-import { UserLayout } from "~/components/layouts";
 import { buttonVariants } from "~/components/ui/button";
 import UserNotFound from "~/components/user-not-found";
 import { api } from "~/utils/api";
@@ -9,6 +8,7 @@ import { cn, featureNotReady } from "~/lib/utils";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { authClient } from "~/lib/auth-client";
 import { ProfileContext } from "~/context";
+import { UserLayout } from "~/components/layouts/user-layout";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({ username });

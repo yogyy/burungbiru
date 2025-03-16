@@ -1,15 +1,17 @@
 import { useEffect } from "react";
 import { api } from "~/utils/api";
-import dynamic from "next/dynamic";
 import { type NextPage } from "next";
 import { useMediaQuery } from "usehooks-ts";
 import { SEO } from "~/components/simple-seo";
 import { useInView } from "react-intersection-observer";
 import { LoadingItem, LoadingPage } from "~/components/loading";
-import { BurgerMenu, PageLayout, Feed } from "~/components/layouts";
 import { authClient } from "~/lib/auth-client";
+import { PageLayout } from "~/components/layouts/root-layout";
+import { BurgerMenu } from "~/components/layouts/hamburger-menu";
+import { Feed } from "~/components/layouts/feed";
+import dynamic from "next/dynamic";
 
-const LazyForm = dynamic(() => import("~/components/form/tweet-form"));
+const LazyForm = dynamic(() => import("~/components/form/tweet-form"), { ssr: false });
 
 const Home: NextPage = () => {
   const ctx = api.useUtils();
@@ -27,7 +29,7 @@ const Home: NextPage = () => {
     isFetchingNextPage,
     isLoading: feedLoading,
   } = api.feed.home.useInfiniteQuery(
-    { limit: 3 },
+    { limit: 10 },
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
 
