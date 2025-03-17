@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { cn, featureNotReady } from "~/lib/utils";
-import { BsTwitterX } from "react-icons/bs";
 import { navbarLink } from "~/constant";
 import { NavbarLogout } from "../nav-logout";
 import { CreatePostModal } from "../modal/create-post-modal";
 import { MenuNavbarButton } from "../menu-button";
 import { authClient } from "~/lib/auth-client";
+import { Logo } from "../icons/logo";
 
 export const Navbar = () => {
   const { data } = authClient.useSession();
@@ -23,7 +23,7 @@ export const Navbar = () => {
               href="/home"
               className="rounded-full border border-transparent p-2.5 transition-colors duration-300 hover:bg-border/30"
             >
-              <BsTwitterX size={27} className="fill-current" />
+              <Logo size={27} />
               <span className="sr-only">logo</span>
             </Link>
           </div>
@@ -47,13 +47,13 @@ export const Navbar = () => {
                         }
                         className={cn(
                           "-ml-0.5 flex w-fit items-center rounded-full border-2 border-transparent p-3 outline-none transition duration-200 ease-in-out",
-                          "hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
+                          "grayscale hover:bg-border/30 focus-visible:border-foreground focus-visible:hover:bg-background"
                         )}
                       >
                         <link.icon size={26.25} />
-                        <span className="ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block">
-                          <p>{link.name}</p>
-                        </span>
+                        <p className="ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block">
+                          {link.name}
+                        </p>
                       </button>
                     ) : (
                       <Link
@@ -65,14 +65,14 @@ export const Navbar = () => {
                         href={link.link === "/profile" ? `/p/${data?.user.username}` : link.link}
                       >
                         <link.icon size={26.25} />
-                        <span
+                        <p
                           className={cn(
                             "ml-5 mr-4 hidden text-xl leading-6 tracking-wide xl:block",
                             baseRoute === link.link && "font-bold"
                           )}
                         >
-                          <p>{link.name}</p>
-                        </span>
+                          {link.name}
+                        </p>
                       </Link>
                     )}
                   </li>
