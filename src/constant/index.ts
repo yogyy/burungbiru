@@ -1,4 +1,4 @@
-import { GoGear } from "react-icons/go";
+import { PatchCheck, Settings } from "~/components/icons";
 import * as icon from "~/components/icons/twitter-icons";
 import { BookmarkLink, HomeLink, ProfileLink } from "~/components/navbar/navlink";
 
@@ -10,13 +10,13 @@ const navbarLink = [
   { name: "Lists", icon: icon.ListIcon },
   { name: "Bookmarks", icon: BookmarkLink, link: "/i/bookmarks" },
   { name: "Communities", icon: icon.GroupIcon },
-  { name: "Premium", icon: icon.LogoIcon },
+  { name: "Premium", icon: PatchCheck },
   { name: "Profile", icon: ProfileLink, link: "/profile" },
 ];
 
 const hamburgerNavbarLink = [
   { name: "Profile", icon: icon.PersonIcon, link: "/profile" },
-  { name: "Premium", icon: icon.LogoIcon, link: "#premium" },
+  { name: "Premium", icon: PatchCheck, link: "#premium" },
   { name: "Lists", icon: icon.ListIcon, link: "#list" },
   { name: "Bookmarks", icon: icon.BookmarkIcon, link: "#bookmark" },
   { name: "Communities", icon: icon.GroupIcon, link: "#group" },
@@ -24,7 +24,7 @@ const hamburgerNavbarLink = [
 ];
 
 const SettingsAndSupport = [
-  { name: "Settings and privacy", icon: GoGear },
+  { name: "Settings and privacy", icon: Settings },
   { name: "Help Center", icon: icon.HelpIcon },
   { name: "Data Saver", icon: icon.DataSaverIcon },
   { name: "Display", icon: icon.DisplayIcon },

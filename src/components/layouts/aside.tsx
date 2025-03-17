@@ -1,10 +1,10 @@
-import { LuSearch } from "react-icons/lu";
 import { api } from "~/utils/api";
 import { UserAvatar } from "../avatar";
 import { LoadingSpinner } from "../loading";
 import { useRouter } from "next/router";
 import { FollowButton } from "../button-follow";
 import Footer from "./footer";
+import { Search } from "../icons";
 
 export const RightAside = () => {
   const { data: peoples, isLoading } = api.profile.getUserRandomUser.useQuery(
@@ -18,10 +18,7 @@ export const RightAside = () => {
       <div className="sticky top-1 z-20 mb-3 bg-background pb-1">
         <div className="group flex w-full overflow-hidden rounded-full border bg-background text-accent focus-within:border-primary">
           <div className="flex w-10 flex-shrink items-center">
-            <LuSearch
-              className="h-[1.25em] min-w-[32px] pl-3 group-focus-within:text-primary"
-              size={16}
-            />
+            <Search className="h-[1.25em] min-w-[32px] pl-3 group-focus-within:text-primary" />
           </div>
           <input
             placeholder="Search"

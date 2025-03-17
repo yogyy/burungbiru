@@ -1,8 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { TbDots } from "react-icons/tb";
 import { toast } from "sonner";
-import { BiSolidUserPlus, BiTrash } from "react-icons/bi";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { api } from "~/utils/api";
 import {
@@ -19,11 +17,13 @@ import { cloudinaryDestroy } from "~/lib/cloudinary";
 import { Button, buttonVariants } from "../ui/button";
 import { authClient } from "~/lib/auth-client";
 import { TweetProps } from "./types";
-interface TweetMenuProps extends Pick<TweetProps, "author"> {
+import { Dots, Trash, UserPlus } from "../icons";
+
+interface MenuProps extends Pick<TweetProps, "author"> {
   post: Pick<TweetProps, "id" | "parentId" | "imageId">;
 }
 
-export const TweetMenu = ({ post, author }: TweetMenuProps) => {
+export const TweetMenu = ({ post, author }: MenuProps) => {
   const { data } = authClient.useSession();
   const ctx = api.useUtils();
   const { back, query, pathname } = useRouter();
@@ -66,10 +66,7 @@ export const TweetMenu = ({ post, author }: TweetMenuProps) => {
           onClick={(e) => e.stopPropagation()}
           className="group -mr-2 -mt-1.5 inline-flex aspect-square h-[34.75px] w-[34.75px] items-center justify-center rounded-full text-accent focus-within:bg-primary/5 hover:bg-primary/5"
         >
-          <TbDots
-            size={18.75}
-            className="group-focus-within:text-primary group-hover:text-primary"
-          />
+          <Dots size={18.75} className="group-focus-within:text-primary group-hover:text-primary" />
           <span className="sr-only">menu</span>
         </Button>
       </PopoverTrigger>
@@ -88,7 +85,7 @@ export const TweetMenu = ({ post, author }: TweetMenuProps) => {
             className="flex h-auto w-full justify-start gap-2 rounded-xl p-2.5 text-[16px]"
             onClick={(e) => e.stopPropagation()}
           >
-            <BiSolidUserPlus size={20} />
+            <UserPlus size={20} />
             Follow @{author?.username}
           </Button>
         ) : (
@@ -98,7 +95,7 @@ export const TweetMenu = ({ post, author }: TweetMenuProps) => {
                 variant="ghost"
                 className="flex h-auto w-full justify-start gap-2 rounded-xl p-2.5 text-[16px] font-bold text-desctructive"
               >
-                <BiTrash size={18} /> Delete
+                <Trash size={18} /> Delete
               </Button>
             </DialogTrigger>
             <DialogContent className="!rounded-2xl border-none p-8 text-start [&>button]:invisible">

@@ -1,10 +1,8 @@
 import { z } from "zod";
 import Image from "next/image";
 import { useRef } from "react";
-import { IoClose } from "react-icons/io5";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TbCameraPlus } from "react-icons/tb";
 import { api } from "~/utils/api";
 import {
   Form,
@@ -19,6 +17,8 @@ import { updateUserSchema } from "./form";
 import { Input } from "../ui/input";
 import { useUpdateUserModal } from "~/hooks/store";
 import { useProfileContext } from "~/context";
+import { CameraPlus, X } from "../icons";
+import { toast } from "sonner";
 
 export const UpdateUserForm = () => {
   const user = useProfileContext();
@@ -86,22 +86,22 @@ export const UpdateUserForm = () => {
                 title="Add photo"
                 onClick={() => featureNotReady("change-user-banner")}
               >
-                <TbCameraPlus className="text-white" size={22} />
+                <CameraPlus className="text-white" size={22} />
               </button>
               <button
                 className="button-edit-picture ml-5 rounded-full border backdrop-blur-sm transition-colors duration-200"
                 title="Remove photo"
                 onClick={() => featureNotReady("delete-user-banner")}
               >
-                <IoClose className="text-white" size={24} />
+                <X className="text-white" size={22} />
               </button>
             </div>
           </div>
         </div>
         <div className="relative -mt-12 ml-4 flex h-auto w-fit items-center justify-center overflow-hidden rounded-full bg-background">
           <Image
-            src={user?.image || ""}
-            alt={`${user?.username ?? user?.name}'s profile pic`}
+            src={user?.image!}
+            alt={`${user?.username}'s profile pic`}
             width="120"
             height="120"
             className="aspect-square rounded-full object-cover p-1 opacity-75"
@@ -112,7 +112,7 @@ export const UpdateUserForm = () => {
             title="Add photo"
             onClick={() => featureNotReady("change-user-picture")}
           >
-            <TbCameraPlus className="text-white" size={22} />
+            <CameraPlus className="text-white" size={22} />
           </button>
         </div>
       </div>

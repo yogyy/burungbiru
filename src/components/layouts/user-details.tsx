@@ -1,5 +1,4 @@
 import { BalloonIcon, CalendarIcon, LocationIcon } from "../icons/twitter-icons";
-import { RiLinkM } from "react-icons/ri";
 import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "~/components/ui/dialog";
 import Image from "next/image";
 import { Button } from "../ui/button";
@@ -13,6 +12,7 @@ import { featureNotReady } from "~/lib/utils";
 import { api } from "~/utils/api";
 import { useProfileContext } from "~/context";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { LinkMini } from "../icons";
 
 export const UserDetails = () => {
   const user = useProfileContext();
@@ -105,7 +105,7 @@ export const UserDetails = () => {
         )}
         {user.website && (
           <span className="flex items-center gap-1">
-            <RiLinkM size="1.25em" />
+            <LinkMini size="1.25em" />
             <Website className="text-base leading-3" content={renderText(user.website)} />
           </span>
         )}

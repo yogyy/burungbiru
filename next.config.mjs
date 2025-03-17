@@ -8,37 +8,14 @@
 const config = {
   reactStrictMode: true,
   images: {
-    domains: [
-      "images.clerk.dev",
-      "avatars.githubusercontent.com",
-      "lh3.googleusercontent.com",
-    ],
+    domains: ["images.clerk.dev", "avatars.githubusercontent.com", "lh3.googleusercontent.com"],
     unoptimized: true,
   },
 
-  /**
-   * If you have the "experimental: { appDir: true }" setting enabled, then you
-   * must comment the below `i18n` config out.
-   *
-   * @see https://github.com/vercel/next.js/issues/41980
-   */
-  i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
-  },
+  i18n: { locales: ["en"], defaultLocale: "en" },
 
-  modularizeImports: {
-    "react-icons": {
-      transform: "react-icons/{{member}}",
-    },
-  },
-
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  typescript: { ignoreBuildErrors: true },
+  eslint: { ignoreDuringBuilds: true },
   swcMinify: true,
 
   async rewrites() {

@@ -8,7 +8,6 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
-import { GoGear } from "react-icons/go";
 import { UserAvatar } from "../avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import Link from "next/link";
@@ -18,6 +17,7 @@ import { hamburgerNavbarLink } from "~/constant";
 import { MoreNavbar } from "../navbar/more";
 import { api } from "~/utils/api";
 import { authClient } from "~/lib/auth-client";
+import { Settings } from "../icons";
 
 interface BurgerMenuProps extends React.HTMLAttributes<HTMLDivElement> {}
 export const BurgerMenu = ({ className, ...props }: BurgerMenuProps) => {
@@ -118,7 +118,7 @@ export const BurgerMenu = ({ className, ...props }: BurgerMenuProps) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 focus-visible:bg-white/10">
-              <GoGear className="h-5 w-5" />
+              <Settings className="h-5 w-5" />
             </button>
           </TooltipTrigger>
           <TooltipContent

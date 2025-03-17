@@ -1,6 +1,6 @@
 import React from "react";
 import dynamic from "next/dynamic";
-import { IoArrowBack, IoClose } from "react-icons/io5";
+import { ArrowLeft, X } from "../icons";
 import {
   Dialog,
   DialogContent,
@@ -44,8 +44,8 @@ export const ReplyPostModal = ({ children, post }: ReplyModalProps) => {
                 onClick={() => setShow((prev) => !prev)}
                 className="-ml-2 flex h-9 w-9 items-center justify-center rounded-full  hover:bg-[rgba(239,243,244,0.1)]"
               >
-                <IoArrowBack size={26} className="block sm:hidden" />
-                <IoClose size={26} className="hidden sm:block" />
+                <ArrowLeft size={26} className="block sm:hidden" />
+                <X size={26} className="hidden sm:block" />
                 <span className="sr-only">back</span>
               </button>
               <DialogTitle className="mr-[76px] text-xl font-semibold leading-6 min-[570px]:mr-0">

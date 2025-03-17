@@ -1,6 +1,4 @@
 import dayjs from "dayjs";
-import dynamic from "next/dynamic";
-import { IoArrowBack, IoChevronForwardSharp, IoClose } from "react-icons/io5";
 import {
   Dialog,
   DialogClose,
@@ -15,11 +13,8 @@ import { useUpdateUserModal } from "~/hooks/store";
 import { Button } from "../ui/button";
 import { useProfileContext } from "~/context";
 import { authClient } from "~/lib/auth-client";
-
-const LazyForm = dynamic(
-  () => import("../form/update-user-form").then((mod) => mod.UpdateUserForm),
-  { ssr: false }
-);
+import { ArrowLeft, ChevronRight, X } from "../icons";
+import { UpdateUserForm } from "../form/update-user-form";
 
 export const EditUserModal = () => {
   const { show, setShow } = useUpdateUserModal();
@@ -45,8 +40,8 @@ export const EditUserModal = () => {
             <div className="sticky top-0 z-10 flex h-[53px] w-full items-center bg-black/60 px-4 backdrop-blur-md">
               <div className="min-w-[3.5rem]">
                 <DialogClose className="-ml-2 flex h-9 w-9 items-center justify-center rounded-full hover:bg-[rgba(239,243,244,0.1)] focus-visible:bg-[rgba(239,243,244,0.1)]">
-                  <IoArrowBack size={26} className="block modal:hidden" />
-                  <IoClose size={26} className="hidden modal:block" />
+                  <ArrowLeft size={26} className="block modal:hidden" />
+                  <X size={22} className="hidden modal:block" />
                   <span className="sr-only">cancel</span>
                 </DialogClose>
               </div>
@@ -60,7 +55,7 @@ export const EditUserModal = () => {
               </Button>
             </div>
           </DialogDescription>
-          <LazyForm />
+          <UpdateUserForm />
           <div className="flex flex-col p-4 leading-6">
             <div className="flex h-5 ">
               <p className="text-accent">Birth Date</p>
@@ -69,14 +64,16 @@ export const EditUserModal = () => {
                 Edit
               </button>
             </div>
-            <div className="h-6 text-xl">{dayjs(user?.birthDate).format("LL") || ""}</div>
+            <div className="h-6 text-xl">
+              {user?.birthDate ? dayjs(user?.birthDate).format("LL") : "null, yeah null"}
+            </div>
           </div>
           <button
             className="flex justify-between px-4 py-3 text-left text-xl leading-6 transition-colors duration-200 hover:bg-[rgb(22,24,28)] disabled:cursor-not-allowed"
             onClick={() => featureNotReady("switch-to-pro", "This feature won't be implemented")}
           >
             Switch to professional
-            <IoChevronForwardSharp className="text-accent" width={20} />
+            <ChevronRight className="text-accent" width={20} />
           </button>
         </DialogHeader>
       </DialogContent>

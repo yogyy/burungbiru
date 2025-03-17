@@ -11,11 +11,10 @@ import { IconBaseProps } from "../icons/type";
 import { authClient } from "~/lib/auth-client";
 
 const ProfileLink = (props: IconBaseProps) => {
-  const { asPath } = useRouter();
+  const { route } = useRouter();
   const { data } = authClient.useSession();
 
-  const arrOfRoute = asPath.split("/");
-  return arrOfRoute[1] === `@${data?.user.username}` ? (
+  return route === `/p/${data?.user.username}` ? (
     <PersonIconFill size={26.25} {...props} />
   ) : (
     <PersonIcon size={26.25} {...props} />
