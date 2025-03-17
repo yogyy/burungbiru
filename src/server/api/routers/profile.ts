@@ -2,9 +2,17 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 import { updateUserSchema } from "~/components/form/form";
+import { ratelimit } from "~/server/helper/ratelimit";
 
 export const profileRouter = createTRPCRouter({
-  updateUserInfo: privateProcedure.input(updateUserSchema).mutation(async ({ ctx, input }) => {
+  updateUserProfile: privateProcedure.input(updateUserSchema).mutation(async ({ ctx, input }) => {
+    const { success } = await ratelimit.limit(ctx.userId);
+    if (!success)
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Too Many Request",
+      });
+
     return ctx.prisma.user.update({
       where: { id: ctx.userId },
       data: {

@@ -40,11 +40,17 @@ export const UpdateUserForm = () => {
     },
   });
 
-  const { mutate } = api.profile.updateUserInfo.useMutation({
+  const { mutate, isLoading } = api.profile.updateUserProfile.useMutation({
     onSuccess: () => {
       ctx.profile.getUserByUsername
         .invalidate({ username: user?.username })
         .then(() => closeUpdateuserModal(false));
+    },
+    onError(err) {
+      toast.error(err.message, {
+        position: "top-center",
+        style: { backgroundColor: "hsl(var(--desctructive))" },
+      });
     },
   });
 
@@ -52,7 +58,7 @@ export const UpdateUserForm = () => {
     try {
       mutate(values);
     } catch (error) {
-      console.log(error);
+      console.log("Something went wrong");
     }
   }
 
@@ -133,13 +139,15 @@ export const UpdateUserForm = () => {
                   <FormControl ref={item.ref}>
                     {item.type === "input" ? (
                       <Input
-                        className="h-5 border-none p-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
                         {...field}
+                        className="h-5 border-none p-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+                        disabled={isLoading}
                       />
                     ) : (
                       <textarea
-                        className="hide-scrollbar w-full flex-1 resize-none bg-transparent leading-6 outline-none"
                         {...field}
+                        disabled={isLoading}
+                        className="hide-scrollbar w-full flex-1 resize-none bg-transparent leading-6 outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         maxLength={160}
                       />
                     )}
