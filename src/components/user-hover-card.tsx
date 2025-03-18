@@ -44,7 +44,7 @@ export const UserCard = ({ children, user, align = "start" }: UserCardProps) => 
             <h2 className="leading-5 text-accent">@{user?.username}</h2>
           </Link>
         </div>
-        <p className="text-[15px] font-medium leading-5">bio null</p>
+        <p className="text-[15px] font-medium leading-5">Lorem ipsum dolor sit. 😎</p>
         <div className="flex gap-2 text-[14px] font-medium leading-5 text-foreground">
           <p>
             ??
