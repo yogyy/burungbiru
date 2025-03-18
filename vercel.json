@@ -1,8 +1,7 @@
 {
   "git": {
     "deploymentEnabled": {
-      "main": false,
-      "update-post-schema": false
+      "main": true
     }
   }
 }
