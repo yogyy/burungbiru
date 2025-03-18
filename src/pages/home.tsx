@@ -15,7 +15,7 @@ const LazyForm = dynamic(() => import("~/components/form/tweet-form"), { ssr: fa
 
 const Home: NextPage = () => {
   const ctx = api.useUtils();
-  const { isPending } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const showBurgerMenu = useMediaQuery("(max-width: 570px)");
 
   if (isPending) <LoadingPage />;
@@ -30,7 +30,7 @@ const Home: NextPage = () => {
     isLoading: feedLoading,
   } = api.feed.home.useInfiniteQuery(
     { limit: 10 },
-    { getNextPageParam: (lastPage) => lastPage.nextCursor }
+    { getNextPageParam: (lastPage) => lastPage.nextCursor, enabled: !!session }
   );
 
   useEffect(() => {

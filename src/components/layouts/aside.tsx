@@ -5,11 +5,14 @@ import { useRouter } from "next/router";
 import { FollowButton } from "../button-follow";
 import Footer from "./footer";
 import { Search } from "../icons";
+import { authClient } from "~/lib/auth-client";
 
 export const RightAside = () => {
+  const { data } = authClient.useSession();
+
   const { data: peoples, isLoading } = api.profile.getUserRandomUser.useQuery(
     {},
-    { refetchOnWindowFocus: false, refetchOnMount: false }
+    { enabled: !!data }
   );
   const { push } = useRouter();
 

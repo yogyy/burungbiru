@@ -1,9 +1,18 @@
 import { RightAside } from "./aside";
 import { Navbar } from "../navbar";
 import { MobileNav } from "../navbar/mobile-navbar";
+import { authClient } from "~/lib/auth-client";
+import { useRouter } from "next/router";
 
-interface PageLayoutProps extends React.HTMLAttributes<HTMLElement> {}
+type PageLayoutProps = Pick<React.HTMLAttributes<HTMLElement>, "children">;
 export const PageLayout = ({ children }: PageLayoutProps) => {
+  const { data } = authClient.useSession();
+  const { push } = useRouter();
+
+  if (!data && typeof window !== "undefined") {
+    push("/auth/sign-in");
+  }
+
   return (
     <div className="flex w-full gap-0 max-[570px]:pb-12 xs:justify-center">
       <Navbar />
