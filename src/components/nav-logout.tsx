@@ -28,7 +28,7 @@ export const NavbarLogout = () => {
                       alt={`${data?.user.username}'s profile pic`}
                     />
                     <AvatarFallback className="bg-secondary font-semibold text-primary">
-                      {data?.user.username?.slice(0, 2)}
+                      {data?.user.username?.slice(0, 4)}
                     </AvatarFallback>
                   </Avatar>
                 </div>

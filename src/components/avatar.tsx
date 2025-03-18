@@ -22,7 +22,7 @@ export const UserAvatar = ({ className, username, image, onModal = false }: Avat
       <Avatar>
         <AvatarImage src={image!} alt={`@${username}`} />
         <AvatarFallback className="bg-secondary font-semibold text-primary">
-          {username?.slice(0, 2)}
+          {username?.slice(0, 4)}
         </AvatarFallback>
       </Avatar>
     </Link>
@@ -30,7 +30,7 @@ export const UserAvatar = ({ className, username, image, onModal = false }: Avat
     <Avatar className={className}>
       <AvatarImage src={image!} alt={`@${username}`} />
       <AvatarFallback className="bg-secondary font-semibold text-primary">
-        {username?.slice(0, 2)}
+        {username?.slice(0, 4)}
       </AvatarFallback>
     </Avatar>
   );
