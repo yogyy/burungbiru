@@ -12,25 +12,30 @@ generator client {
 }
 
 model User {
-  id            String    @id
-  name          String    @db.VarChar(50)
-  username      String    @unique @db.VarChar(20)
-  usernameSet   Boolean   @default(false)
+  id            String     @id
+  name          String     @db.VarChar(50)
+  username      String     @unique @db.VarChar(20)
+  usernameSet   Boolean    @default(false)
   image         String?
   banner        String?
-  bio           String?   @db.VarChar(160)
-  location      String?   @db.VarChar(30)
-  website       String?   @db.VarChar(100)
+  bio           String?    @db.VarChar(160)
+  location      String?    @db.VarChar(30)
+  website       String?    @db.VarChar(100)
   birthDate     DateTime?
   email         String
   emailVerified Boolean
   createdAt     DateTime
   updatedAt     DateTime
-  followers     Follow[]  @relation("Follower")
-  following     Follow[]  @relation("Following")
-  type          UserType  @default(user)
+  followers     Follow[]   @relation("Follower")
+  following     Follow[]   @relation("Following")
+  type          UserType   @default(user)
   sessions      Session[]
   accounts      Account[]
+  posts         Post[]
+  likes         Like[]
+  repost        Repost[]
+  bookmarks     Bookmark[]
+  replies       Reply[]
 
   @@unique([email])
   @@map("burbir_user")
@@ -82,34 +87,39 @@ model Verification {
 }
 
 model Follow {
-  id          String @id @default(uuid())
+  id          String   @id @default(uuid())
   followerId  String
   followingId String
+  createdAt   DateTime @default(now())
 
-  user      User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
   following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
 
+  @@unique([followerId, followingId])
   @@map("burbir_follow")
 }
 
 model Post {
-  id             String     @id @default(cuid())
-  createdAt      DateTime   @default(now())
-  content        String     @db.VarChar(255)
-  image          String?
-  imageId        String?
-  authorId       String
-  replies        Reply[]
-  likes          Like[]
-  bookmarks      Bookmark[]
-  parentId       String?
-  authorParentId String?
-  repost         Repost[]
-  type           PostType   @default(POST)
-  view           Int        @default(0)
+  id        String   @id
+  createdAt DateTime @default(now())
+  content   String?  @db.VarChar(255)
+  image     String?
+  imageId   String?
+  authorId  String
+  parentId  String?
+  type      PostType @default(POST)
+
+  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent    Post?      @relation("postToParent", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Post[]     @relation("postToParent")
+  replies   Reply[]
+  likes     Like[]
+  bookmarks Bookmark[]
+  reposts   Repost[]
 
   @@unique([createdAt, id])
-  @@index([authorId, id])
+  @@index([authorId])
+  @@index([type])
   @@map("burbir_post")
 }
 
@@ -118,8 +128,11 @@ model Repost {
   createdAt DateTime @default(now())
   userId    String
   postId    String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
   @@map("burbir_repost")
 }
 
@@ -129,9 +142,12 @@ model Reply {
   userId    String
   parentId  String
   postId    String
-  post      Post     @relation(fields: [parentId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([parentId])
   @@map("burbir_reply")
 }
 
@@ -140,8 +156,11 @@ model Like {
   createdAt DateTime @default(now())
   userId    String
   postId    String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
   @@index([userId])
   @@map("burbir_like")
 }
@@ -151,8 +170,11 @@ model Bookmark {
   createdAt DateTime @default(now())
   userId    String
   postId    String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
   @@index([userId])
   @@map("burbir_bookmark")
 }
