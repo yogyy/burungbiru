@@ -94,29 +94,30 @@ const CreateReply = ({ variant = "default", setShowReplyModal, post }: CommentFo
     onError: (err) => {
       adjustTextareaHeight();
       if (err.shape?.data.zodError?.fieldErrors.content) {
-        toast.error(err.shape?.data.zodError?.fieldErrors.content[0] || "error");
+        toast.error(err.shape?.data.zodError?.fieldErrors.content[0] || "error", {
+          position: "top-center",
+          style: { backgroundColor: "hsl(var(--desctructive))" },
+        });
       } else {
-        toast.error(err.message);
+        toast.error(err.message, {
+          position: "top-center",
+          style: { backgroundColor: "hsl(var(--desctructive))" },
+        });
       }
     },
   });
 
   async function onSubmit(values: z.infer<typeof replySchema>) {
-    try {
-      if (ImagePrev) values.image = await imagePost(image);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      mutate({
-        content: values.text,
-        image: {
-          public_id: values.image?.public_id || "",
-          secure_url: values.image?.secure_url || "",
-        },
-        type: "COMMENT",
-        postId,
-      });
-    }
+    if (ImagePrev) values.image = await imagePost(image);
+    mutate({
+      content: values.text,
+      image: {
+        public_id: values.image?.public_id || "",
+        secure_url: values.image?.secure_url || "",
+      },
+      type: "COMMENT",
+      postId,
+    });
   }
 
   useEffect(() => {

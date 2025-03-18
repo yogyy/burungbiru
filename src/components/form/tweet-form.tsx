@@ -109,19 +109,15 @@ const CreateTweet = ({ variant = "default" }: FormProps) => {
   });
 
   async function onSubmit(values: z.infer<typeof tweetSchema>) {
-    try {
-      if (ImagePrev) values.image = await imagePost(image);
-      mutate({
-        content: values.text,
-        image: {
-          public_id: values.image?.public_id || "",
-          secure_url: values.image?.secure_url || "",
-        },
-        type: "POST",
-      });
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
+    if (ImagePrev) values.image = await imagePost(image);
+    mutate({
+      content: values.text,
+      image: {
+        public_id: values.image?.public_id || "",
+        secure_url: values.image?.secure_url || "",
+      },
+      type: "POST",
+    });
   }
 
   return (
