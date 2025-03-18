@@ -1,17 +1,11 @@
-import Image from "next/image";
-import { TbDots } from "react-icons/tb";
 import { useMediaQuery } from "usehooks-ts";
 import { useUserPopover } from "~/hooks/store";
-import {
-  PopoverArrow,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "./ui/popover";
+import { PopoverArrow, Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { LogoutModal } from "./modal/logout-modal";
 import { authClient } from "~/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Dots } from "./icons";
 
 export const NavbarLogout = () => {
   const { data, isPending } = authClient.useSession();
@@ -32,10 +26,9 @@ export const NavbarLogout = () => {
                     <AvatarImage
                       src={data?.user.image!}
                       alt={`${data?.user.username}'s profile pic`}
-                      fetchPriority="auto"
                     />
                     <AvatarFallback className="bg-secondary font-semibold text-primary">
-                      {data?.user.username?.slice(0, 2)}
+                      {data?.user.username?.slice(0, 4)}
                     </AvatarFallback>
                   </Avatar>
                 </div>
@@ -51,7 +44,7 @@ export const NavbarLogout = () => {
                 </div>
               </div>
               <div className="hidden place-items-end items-center xl:flex">
-                <TbDots size={18.75} className="place-content-end text-xl" />
+                <Dots size={18.75} className="place-content-end" />
               </div>
             </div>
           </div>
@@ -60,7 +53,7 @@ export const NavbarLogout = () => {
         <PopoverContent
           align="center"
           alignOffset={-20}
-          className="data-[side=bottom] sm:data-[align=center] relative z-10 px-0 py-3.5 font-sans text-[15px] leading-5 text-foreground/90 shadow-x"
+          className="data-[side=bottom] sm:data-[align=center] relative z-10 px-0 py-2 font-sans text-[15px] leading-5 text-foreground/90 shadow-x"
         >
           <LogoutModal>
             <Button

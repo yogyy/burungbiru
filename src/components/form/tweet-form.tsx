@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { useRef } from "react";
-import { toast } from "react-hot-toast";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "~/lib/utils";
@@ -24,16 +24,16 @@ import {
 } from "~/components/ui/form";
 import { Button } from "../ui/button";
 import { UserAvatar } from "../avatar";
-import { GlobeIcon, ImageIcon } from "../icons";
+import { GlobeIcon, ImageIcon } from "../icons/twitter-icons";
 import { authClient } from "~/lib/auth-client";
 
-const CreateTweet = ({
-  variant = "default",
-}: {
+interface FormProps {
   variant?: CreateTweetVariant;
-}) => {
-  const { image, ImagePrev, setImagePrev, handleImageChange } =
-    useUploadImage();
+  // children: ReactNode;
+}
+
+const CreateTweet = ({ variant = "default" }: FormProps) => {
+  const { image, ImagePrev, setImagePrev, handleImageChange } = useUploadImage();
   const setTweetModal = useTweetModal((state) => state.setShow);
   const { textareaRef, adjustTextareaHeight } = useTextarea();
   const inputImageRef = useRef<HTMLTextAreaElement | null>(null);
@@ -51,12 +51,41 @@ const CreateTweet = ({
     },
   });
 
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (!e.shiftKey && e.key === "Enter") {
+        if (
+          textareaRef.current?.value.length! > 4 &&
+          textareaRef.current?.value.trim().length !== 0
+        ) {
+          e.preventDefault();
+          form.handleSubmit(onSubmit)();
+        }
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "/" && document.activeElement !== textareaRef.current) {
+        e.preventDefault();
+        textareaRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { mutate, isLoading: isPosting } = api.post.createPost.useMutation({
     onSuccess: ({ id }) => {
       setImagePrev("");
       form.reset();
-      ctx.profile.userPosts.invalidate();
-      ctx.post.timeline.invalidate().then(() => {
+      ctx.feed.userPosts.invalidate();
+      ctx.feed.home.invalidate().then(() => {
         adjustTextareaHeight();
       });
       toast.success(() => <ToastPostSuccess id={id} />);
@@ -66,38 +95,34 @@ const CreateTweet = ({
     onError: (err) => {
       adjustTextareaHeight();
       if (err.shape?.data.zodError?.fieldErrors.content) {
-        toast.error(
-          err.shape?.data.zodError?.fieldErrors.content[0] || "error"
-        );
+        toast.error(err.shape?.data.zodError?.fieldErrors.content[0] || "error", {
+          position: "top-center",
+          style: { backgroundColor: "hsl(var(--desctructive))" },
+        });
       } else {
-        toast.error(err.message);
+        toast.error(err.message, {
+          position: "top-center",
+          style: { backgroundColor: "hsl(var(--desctructive))" },
+        });
       }
     },
   });
 
   async function onSubmit(values: z.infer<typeof tweetSchema>) {
-    try {
-      if (ImagePrev) values.image = await imagePost(image);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      mutate({
-        content: values.text,
-        image: {
-          public_id: values.image?.public_id || "",
-          secure_url: values.image?.secure_url || "",
-        },
-        type: "POST",
-      });
-    }
+    if (ImagePrev) values.image = await imagePost(image);
+    mutate({
+      content: values.text,
+      image: {
+        public_id: values.image?.public_id || "",
+        secure_url: values.image?.secure_url || "",
+      },
+      type: "POST",
+    });
   }
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="relative flex w-full flex-col pb-2"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="relative flex w-full flex-col pb-2">
         <FormField
           control={form.control}
           name="text"
@@ -133,8 +158,7 @@ const CreateTweet = ({
                         className={cn(
                           "flex max-h-[35rem] min-h-[53px] w-full flex-1 resize-none bg-transparent pt-3 text-xl leading-6 outline-none placeholder:font-thin",
                           isPosting && "text-accent",
-                          textareaRef.current?.value.length! >= 255 &&
-                            "text-desctructive",
+                          textareaRef.current?.value.length! >= 255 && "text-desctructive",
                           ImagePrev ? "pb-1.5" : ""
                         )}
                         disabled={isPosting}
@@ -150,19 +174,14 @@ const CreateTweet = ({
                       )}
                     </div>
                   </FormControl>
-                  <FormMessage className="absolute bottom-2 cursor-default select-none text-accent" />
+                  <FormMessage className="absolute top-10 cursor-default select-none text-desctructive" />
                 </FormItem>
               </div>
             </div>
           )}
         />
         <div className="mt-3 px-4">
-          <div
-            className={cn(
-              "-mt-3 pb-3",
-              variant === "default" ? "ml-11" : "-ml-1"
-            )}
-          >
+          <div className={cn("-mt-3 pb-3", variant === "default" ? "ml-11" : "-ml-1")}>
             <span className="flex h-6 w-fit cursor-not-allowed items-center rounded-full px-3 font-sans text-[15px] font-semibold leading-5 text-primary transition-colors duration-200 ease-out hover:bg-primary/10">
               <GlobeIcon className="mr-1" /> Everyone can reply
             </span>

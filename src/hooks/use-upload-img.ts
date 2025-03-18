@@ -1,5 +1,5 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 export function useUploadImage() {
   const [image, setImage] = useState<File | string>("");
@@ -13,7 +13,7 @@ export function useUploadImage() {
     if (!file) return;
 
     if (file.size > maxSizeInBytes)
-      return toast(`Maximum Size Image 2MB`, {
+      return toast.error(`Maximum Size Image 2MB`, {
         position: "top-center",
         style: { backgroundColor: "hsl(var(--desctructive))" },
       });

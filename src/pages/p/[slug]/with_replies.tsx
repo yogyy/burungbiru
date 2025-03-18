@@ -1,37 +1,49 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import React from "react";
-import { Feed, UserLayout } from "~/components/layouts";
-import { LoadingSpinner } from "~/components/loading";
-import { SEO } from "~/components/simple-seo";
+import React, { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import { UserLayout } from "~/components/layouts/user-layout";
+import { Feed } from "~/components/layouts/feed";
+import { LoadingItem } from "~/components/loading";
 import UserNotFound from "~/components/user-not-found";
-import { getUserbyUsername } from "~/hooks/queries";
+import { ProfileContext } from "~/context";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { api } from "~/utils/api";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = getUserbyUsername({ username });
+  const { data: user } = api.profile.getUserByUsername.useQuery({ username });
+  const { ref, inView } = useInView({ rootMargin: "40% 0px" });
+
+  const {
+    data: posts,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = api.feed.userReplies.useInfiniteQuery(
+    { userId: user!.id },
+    { getNextPageParam: (lastPage) => lastPage.nextCursor }
+  );
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView]);
   if (!user) return <UserNotFound username={username} />;
 
-  const { data: replies, isLoading } = api.profile.userWithReplies.useQuery({
-    userId: user.id,
-  });
-
   return (
-    <UserLayout
-      user={user}
-      title={`Post with replies by ${user?.name} (@${user?.username}) / burbir`}
-    >
-      {isLoading ? (
-        <div className="flex h-20 items-center justify-center">
-          <LoadingSpinner size={24} />
-        </div>
-      ) : (
-        replies &&
-        replies?.length >= 1 && (
-          <Feed post={replies} postLoading={isLoading} showParent={true} />
-        )
-      )}
-    </UserLayout>
+    <ProfileContext.Provider value={user}>
+      <UserLayout title="Posts with replies">
+        <Feed
+          posts={posts?.pages.flatMap((page) => page.comments)}
+          postLoading={isLoading}
+          showParent={true}
+        />
+        {inView && isFetchingNextPage && <LoadingItem />}
+        {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
+      </UserLayout>
+    </ProfileContext.Provider>
   );
 };
 
@@ -40,7 +52,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const username = context.params?.slug;
   if (typeof username !== "string") throw new Error("no slug");
 
-  await ssg.profile.getUserByUsernameDB.prefetch({ username });
+  await ssg.profile.getUserByUsername.prefetch({ username });
 
   return {
     props: {

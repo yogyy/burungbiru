@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,51 +13,76 @@ import { FormButtons } from "./form-buttons";
 import { ImagePreview } from "./image-preview";
 import { ToastReplySuccess } from "./toast-form";
 import { CreateTweetVariant, replySchema } from "./form";
-import * as Comp from "../ui/form";
-import { ImageIcon } from "../icons";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+import { ImageIcon } from "../icons/twitter-icons";
 import { Button } from "../ui/button";
 import { UserAvatar } from "../avatar";
 import { TweetProps } from "../tweet/types";
 import { authClient } from "~/lib/auth-client";
 
-interface CommentFormProps extends Pick<TweetProps, "post"> {
+interface CommentFormProps {
   variant?: CreateTweetVariant;
   setShowReplyModal?: React.Dispatch<React.SetStateAction<boolean>>;
+  post: TweetProps;
 }
 
-const CreateReply = ({
-  variant = "default",
-  setShowReplyModal,
-  post,
-}: CommentFormProps) => {
-  const postId = post.type === "REPOST" ? post.parentId ?? "" : post.id;
-  const { image, ImagePrev, setImagePrev, handleImageChange } =
-    useUploadImage();
+const CreateReply = ({ variant = "default", setShowReplyModal, post }: CommentFormProps) => {
+  const postId = post.type === "REPOST" ? post.parentId! : post.id;
+  const { image, ImagePrev, setImagePrev, handleImageChange } = useUploadImage();
   const { textareaRef, adjustTextareaHeight } = useTextarea();
   const inputImageRef = useRef<HTMLTextAreaElement | null>(null);
 
   const { data } = authClient.useSession();
-  const ctx = api.useUtils();
+  const utils = api.useUtils();
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (!e.shiftKey && e.key === "Enter") {
+        if (
+          textareaRef.current?.value.length! > 4 &&
+          textareaRef.current?.value.trim().length !== 0
+        ) {
+          e.preventDefault();
+          form.handleSubmit(onSubmit)();
+        }
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "/" && document.activeElement !== textareaRef.current) {
+        e.preventDefault();
+        textareaRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const form = useForm<z.infer<typeof replySchema>>({
     resolver: zodResolver(replySchema),
-    defaultValues: {
-      text: "",
-      image: {
-        public_id: "",
-        secure_url: "",
-      },
-    },
+    defaultValues: { text: "", image: { public_id: "", secure_url: "" } },
   });
 
   const { mutate, isLoading: isPosting } = api.action.replyPost.useMutation({
     onSuccess: ({ id }) => {
       setImagePrev("");
       form.reset();
-      ctx.action.replies
-        .invalidate({ postId })
-        .then(() => ctx.post.postReplies.invalidate({ postId }));
-      ctx.post.detailPost.invalidate({ id: postId }).then(() => {
+      utils.feed.postReplies.invalidate({ postId });
+      utils.post.replies.invalidate({ postId });
+      utils.post.detailPost.invalidate({ id: postId }).then(() => {
         adjustTextareaHeight();
       });
       toast.success(() => <ToastReplySuccess id={id} />);
@@ -69,32 +94,30 @@ const CreateReply = ({
     onError: (err) => {
       adjustTextareaHeight();
       if (err.shape?.data.zodError?.fieldErrors.content) {
-        toast.error(
-          err.shape?.data.zodError?.fieldErrors.content[0] || "error"
-        );
+        toast.error(err.shape?.data.zodError?.fieldErrors.content[0] || "error", {
+          position: "top-center",
+          style: { backgroundColor: "hsl(var(--desctructive))" },
+        });
       } else {
-        toast.error(err.message);
+        toast.error(err.message, {
+          position: "top-center",
+          style: { backgroundColor: "hsl(var(--desctructive))" },
+        });
       }
     },
   });
 
   async function onSubmit(values: z.infer<typeof replySchema>) {
-    try {
-      if (ImagePrev) values.image = await imagePost(image);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      mutate({
-        content: values.text,
-        image: {
-          public_id: values.image?.public_id || "",
-          secure_url: values.image?.secure_url || "",
-        },
-        type: "COMMENT",
-        postId,
-        authorParentId: post.authorId,
-      });
-    }
+    if (ImagePrev) values.image = await imagePost(image);
+    mutate({
+      content: values.text,
+      image: {
+        public_id: values.image?.public_id || "",
+        secure_url: values.image?.secure_url || "",
+      },
+      type: "COMMENT",
+      postId,
+    });
   }
 
   useEffect(() => {
@@ -104,12 +127,12 @@ const CreateReply = ({
   }, [textareaRef, variant]);
 
   return (
-    <Comp.Form {...form}>
+    <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="group relative flex w-full flex-col pb-2"
       >
-        <Comp.FormField
+        <FormField
           control={form.control}
           name="text"
           render={({ field }) => (
@@ -121,8 +144,8 @@ const CreateReply = ({
                   className="flex-shrink-0"
                   onModal={variant === "modal"}
                 />
-                <Comp.FormItem className="h-full w-full space-y-0">
-                  <Comp.FormControl>
+                <FormItem className="h-full w-full space-y-0">
+                  <FormControl>
                     <div
                       className={cn(
                         "h-full w-full pt-1",
@@ -135,10 +158,9 @@ const CreateReply = ({
                         maxLength={500}
                         placeholder="Post your reply"
                         className={cn(
-                          "flex max-h-[35rem] min-h-[53px] w-full flex-1 resize-none bg-transparent text-xl leading-6 outline-none placeholder:font-thin",
+                          "flex max-h-[35rem] min-h-[53px] w-full flex-1 resize-none bg-transparent text-base leading-6 outline-none placeholder:text-base placeholder:font-thin",
                           isPosting && "text-accent",
-                          textareaRef.current?.value.length! >= 255 &&
-                            "text-desctructive",
+                          textareaRef.current?.value.length! >= 255 && "text-desctructive",
                           ImagePrev ? "pb-1.5" : ""
                         )}
                         disabled={isPosting}
@@ -153,9 +175,9 @@ const CreateReply = ({
                         />
                       )}
                     </div>
-                  </Comp.FormControl>
-                  <Comp.FormMessage className="absolute bottom-2 cursor-default select-none text-accent" />
-                </Comp.FormItem>
+                  </FormControl>
+                  <FormMessage className="absolute bottom-2 cursor-default select-none text-accent" />
+                </FormItem>
               </div>
             </div>
           )}
@@ -171,12 +193,12 @@ const CreateReply = ({
             textareaRef.current?.value.trim().length === 0
           }
           field={
-            <Comp.FormField
+            <FormField
               control={form.control}
               name="image.secure_url"
               render={({ field }) => (
-                <Comp.FormItem className="space-y-0">
-                  <Comp.FormLabel className="relative cursor-pointer">
+                <FormItem className="space-y-0">
+                  <FormLabel className="relative cursor-pointer">
                     <Button
                       size={"icon"}
                       variant={"ghost"}
@@ -188,8 +210,8 @@ const CreateReply = ({
                       <span className="sr-only">add image</span>
                       <ImageIcon className="h-5 w-5 fill-current" />
                     </Button>
-                  </Comp.FormLabel>
-                  <Comp.FormControl ref={inputImageRef}>
+                  </FormLabel>
+                  <FormControl ref={inputImageRef}>
                     <input
                       accept="image/*"
                       {...field}
@@ -199,8 +221,8 @@ const CreateReply = ({
                       disabled={isPosting || form.formState.isSubmitting}
                       className="hidden"
                     />
-                  </Comp.FormControl>
-                </Comp.FormItem>
+                  </FormControl>
+                </FormItem>
               )}
             />
           }
@@ -208,7 +230,7 @@ const CreateReply = ({
           Reply
         </FormButtons>
       </form>
-    </Comp.Form>
+    </Form>
   );
 };
 

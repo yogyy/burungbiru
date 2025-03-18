@@ -4,28 +4,28 @@ import { PageLayout } from "./root-layout";
 import { cn } from "~/lib/utils";
 import { userMenu } from "~/constant";
 import { api } from "~/utils/api";
-import { ImageModal } from "../modal";
+import { ImageModal } from "../modal/image-modal";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SEO } from "../simple-seo";
 import { Badge } from "../ui/badge";
-import { UserDetail } from "~/types";
-import { FollowUser } from "../follow-user-sticky";
 import { UserDetails } from "./user-details";
 import { authClient } from "~/lib/auth-client";
+import { useProfileContext } from "~/context";
 
-interface UserLayoutProps extends UserDetail {
+interface UserLayoutProps {
   children: React.ReactNode;
   topbar?: React.ReactNode;
-  title: string;
+  title?: string;
 }
 
-export const UserLayout = (props: UserLayoutProps) => {
-  const { children, topbar, user, title } = props;
+export const UserLayout = ({ children, topbar, title }: UserLayoutProps) => {
+  const user = useProfileContext();
   const { data } = authClient.useSession();
   const pathname = usePathname();
-  const { data: posts, isLoading: userpostLoading } =
-    api.profile.userPosts.useQuery({ userId: user?.id });
+  const { data: posts, isLoading: userpostLoading } = api.feed.userPosts.useQuery({
+    userId: user?.id,
+  });
 
   const ScrollToTop = () => {
     if (window !== undefined) {
@@ -35,13 +35,26 @@ export const UserLayout = (props: UserLayoutProps) => {
     }
   };
 
+  const shouldShowMenu = (menu: { name: string }) => {
+    if (menu.name === "Likes" && user.id !== data?.user.id) return false;
+    if (menu.name === "Highlights" && user.type === "user" && user.id !== data?.user.id)
+      return false;
+    return true;
+  };
+
   return (
     <>
-      <SEO title={title} />
-      <PageLayout className="flex">
+      <SEO
+        title={
+          title
+            ? title + ` by ${user?.name} (${user?.username}) / burbir`
+            : `${user?.name} (${user?.username}) / burbir`
+        }
+      />
+      <PageLayout>
         <div className="flex h-full w-full max-w-[600px] flex-col border-x border-border">
           <div
-            className="sticky top-0 z-[25] flex h-auto w-full items-center scroll-smooth bg-background/[.65] px-4 font-semibold backdrop-blur-md hover:cursor-pointer"
+            className="flex h-auto w-full items-center scroll-smooth bg-background/[.65] px-4 font-semibold hover:cursor-pointer"
             onClick={ScrollToTop}
           >
             <div className="relative flex h-[53px] w-full items-center md:max-w-[600px]">
@@ -59,16 +72,13 @@ export const UserLayout = (props: UserLayoutProps) => {
                 ) : (
                   <p className="text-[13px] font-thin leading-4 text-accent">
                     {userpostLoading ? (
-                      <span className="select-none text-background">
-                        loading
-                      </span>
+                      <span className="select-none text-background">loading</span>
                     ) : (
                       <span>{posts?.posts.length} posts</span>
                     )}
                   </p>
                 )}
               </div>
-              <FollowUser user={user} />
             </div>
           </div>
           <div className="relative aspect-[3/1] w-full overflow-hidden">
@@ -85,11 +95,11 @@ export const UserLayout = (props: UserLayoutProps) => {
               <div className="h-full w-full bg-border"></div>
             )}
           </div>
-          <UserDetails user={user} />
-          <div className="hide-scrollbar flex h-fit w-full items-center overflow-x-scroll border-b border-border">
+          <UserDetails />
+          <div className="hide-scrollbar sticky top-0 z-[25] flex h-fit w-full items-center overflow-x-scroll border-b border-border bg-background/[.65] backdrop-blur-md">
             {userMenu.map(
               (menu) =>
-                (menu.name !== "Likes" || user.id === data?.user.id) && (
+                shouldShowMenu(menu) && (
                   <Link
                     key={menu.name}
                     href={`/p/${user.username}${menu.href}`}
@@ -102,8 +112,7 @@ export const UserLayout = (props: UserLayoutProps) => {
                   >
                     <div className="relative flex justify-center px-2 py-4">
                       {menu.name}
-                      {`${user.username}${menu.href}` ===
-                      pathname.substring(3) ? (
+                      {`${user.username}${menu.href}` === pathname.substring(3) ? (
                         <div className="absolute bottom-0 h-1 w-full rounded-md bg-primary" />
                       ) : null}
                     </div>
@@ -111,9 +120,7 @@ export const UserLayout = (props: UserLayoutProps) => {
                 )
             )}
           </div>
-          <div className="flex min-h-[40dvh] w-full flex-col items-center">
-            {children}
-          </div>
+          <div className="flex min-h-[40dvh] w-full flex-col items-center">{children}</div>
         </div>
       </PageLayout>
     </>

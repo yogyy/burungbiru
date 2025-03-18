@@ -1,15 +1,17 @@
 import { LoadingSpinner } from "../loading";
-import { RouterOutputs } from "~/utils/api";
 import { cn } from "~/lib/utils";
-import { TweetParentPost, TweetPost } from "../tweet";
 import React from "react";
+import { TweetProps } from "../tweet/types";
+import { TweetPost } from "../tweet/tweet-post";
+import { TweetParentPost } from "../tweet/tweet-parent-post";
 
 interface FeedProps {
-  post: RouterOutputs["post"]["timeline"]["posts"] | undefined;
+  posts: TweetProps[] | undefined;
   postLoading: boolean;
   showParent?: boolean;
 }
-export const Feed = ({ post, postLoading, showParent = false }: FeedProps) => {
+
+export const Feed = ({ posts, postLoading, showParent = false }: FeedProps) => {
   return (
     <div className="h-auto w-full">
       {postLoading ? (
@@ -17,11 +19,11 @@ export const Feed = ({ post, postLoading, showParent = false }: FeedProps) => {
           <LoadingSpinner size={24} />
         </div>
       ) : (
-        post?.map((fullPost) => (
-          <React.Fragment key={fullPost.post.id}>
-            {fullPost.post.parentId && fullPost.post.type === "COMMENT" && (
+        posts?.map((post) => (
+          <React.Fragment key={post.id}>
+            {post.type === "COMMENT" && post.parentId && (
               <TweetParentPost
-                id={fullPost.post.parentId}
+                parentId={post.parentId}
                 showParent={showParent}
                 className={cn(
                   "focus-wihtin:bg-white/[.03] hover:bg-white/[.03]",
@@ -31,7 +33,7 @@ export const Feed = ({ post, postLoading, showParent = false }: FeedProps) => {
             )}
             <TweetPost
               variant="default"
-              {...fullPost}
+              post={post}
               showParent={showParent}
               className={cn(
                 "focus-wihtin:bg-white/[.03] hover:bg-white/[.03]",

@@ -1,38 +1,24 @@
-import React from "react";
-import { BalloonIcon, CalendarIcon, LocationIcon } from "../icons";
-import { RiLinkM } from "react-icons/ri";
-import { getUserFollower } from "~/hooks/queries";
-import {
-  Dialog,
-  DialogContent,
-  DialogOverlay,
-  DialogTrigger,
-} from "~/components/ui/dialog";
+import { BalloonIcon, CalendarIcon, LocationIcon } from "../icons/twitter-icons";
+import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "~/components/ui/dialog";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import Link from "next/link";
 import { FollowButton } from "../button-follow";
-import { TweetText as Website } from "../tweet";
+import { TweetText as Website } from "../tweet/tweet-text";
 import { renderText } from "~/lib/tweet";
 import { Badge } from "../ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
 import { EditUserModal } from "../modal/edit-profile-modal";
-import { UserDetail } from "~/types";
 import { authClient } from "~/lib/auth-client";
 import { featureNotReady } from "~/lib/utils";
+import { api } from "~/utils/api";
+import { useProfileContext } from "~/context";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { LinkMini } from "../icons";
 
-// TODO: change badge from Tooltip to Popover
+export const UserDetails = () => {
+  const user = useProfileContext();
 
-export const UserDetails = ({ user }: UserDetail) => {
   const { data, isPending } = authClient.useSession();
-  const { data: follow, isLoading: LoadingFollow } = getUserFollower({
-    userId: user.id,
-  });
+  const { data: follow } = api.profile.userFollow.useQuery({ userId: user.id });
 
   return (
     <div className="px-4 pb-3 pt-3">
@@ -67,52 +53,49 @@ export const UserDetails = ({ user }: UserDetail) => {
         {isPending ? null : data?.user.id === user.id ? (
           <EditUserModal />
         ) : (
-          <FollowButton user={user} />
+          <FollowButton userId={user.id} />
         )}
       </div>
       <div className="-mt-1 mb-1 flex flex-col">
         <div className="inline-flex items-end text-xl font-extrabold leading-6">
           <h2>{user.name}</h2>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger className="relative flex">
+          <Popover>
+            <PopoverTrigger className="relative flex">
+              <Badge variant={user.type} />
+            </PopoverTrigger>
+            <PopoverContent
+              side="bottom"
+              className="flex w-full max-w-[360px] flex-col gap-3 border-none bg-background p-5 font-normal text-white duration-100"
+            >
+              <h1 className="text-[21px] font-bold leading-7 text-[rgb(231,233,234)]">
+                {user.type === "developer" ? "Developer Account" : "Verified Account"}
+              </h1>
+              <p className="inline-flex gap-3 text-[15px] leading-5 text-accent">
                 <Badge variant={user.type} />
-              </TooltipTrigger>
-              <TooltipContent
-                side="bottom"
-                className="flex max-w-[360px] flex-col gap-3 border-none bg-background p-5 font-normal text-white shadow-x duration-100"
+                <span>
+                  {user.type === "developer" &&
+                    "This account is verified because it's an official developer on burbir."}
+                  {user.type === "verified" && "This account is verified."}
+                </span>
+              </p>
+              <p className="inline-flex gap-3 text-[15px] leading-5 text-accent">
+                <CalendarIcon size={20} fill="white" /> Verified since undefined undefined
+              </p>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() =>
+                  featureNotReady("switch-to-pro", "This feature won't be implemented")
+                }
               >
-                <h1 className="text-[21px] font-bold leading-7 text-[rgb(231,233,234)]">
-                  Verified account
-                </h1>
-                <p className="inline-flex gap-3 text-[15px] leading-5 text-accent">
-                  <Badge variant={user.type} />
-                  <span>
-                    {user.type === "developer" &&
-                      "This account is verified because it's an official organization on burbir."}
-                    {user.type === "verified" && "This account is verified."}
-                  </span>
-                </p>
-                <p className="inline-flex gap-3 text-[15px] leading-5 text-accent">
-                  <CalendarIcon size={20} fill="white" /> Verified since
-                  undefined undefined
-                </p>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => console.info("not available")}
-                >
-                  Upgrade to get verified
-                </Button>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+                Upgrade to get verified
+              </Button>
+            </PopoverContent>
+          </Popover>
         </div>
-        <p className="flex text-[15px] leading-6 text-accent">
-          @{user.username}
-        </p>
+        <p className="flex text-[15px] leading-6 text-accent">@{user.username}</p>
       </div>
-      {user.bio && <div className="mb-3">{user.bio}</div>}
+      <div className="mb-3">{user.bio}</div>
       <div className="mb-3 flex w-full flex-wrap items-center justify-start gap-x-2.5 break-words text-base leading-3 text-accent">
         {user.location && (
           <span className="flex items-center gap-1">
@@ -122,11 +105,8 @@ export const UserDetails = ({ user }: UserDetail) => {
         )}
         {user.website && (
           <span className="flex items-center gap-1">
-            <RiLinkM size="1.25em" />
-            <Website
-              className="text-base leading-3"
-              content={renderText(user.website)}
-            />
+            <LinkMini size="1.25em" />
+            <Website className="text-base leading-3" content={renderText(user.website)} />
           </span>
         )}
 
@@ -150,28 +130,26 @@ export const UserDetails = ({ user }: UserDetail) => {
         </span>
       </div>
       <div className="flex flex-wrap text-base leading-5 text-accent">
-        <Link
-          href={`/p/${user.username}#following`}
+        <button
           onClick={() => featureNotReady("following-route")}
           className="mr-5 break-words text-[15px] leading-4 hover:underline"
         >
           <span className="font-bold text-[rgb(231,233,234)]">
-            {LoadingFollow ? user.following.length : follow?.following.length}
+            {follow?.total_following}
             &nbsp;
           </span>
           Following
-        </Link>
-        <Link
-          href={`/p/${user.username}#follower`}
+        </button>
+        <button
           onClick={() => featureNotReady("follower-route")}
           className="break-words text-[15px] leading-4 hover:underline"
         >
           <span className="font-bold text-[rgb(231,233,234)]">
-            {LoadingFollow ? user.followers.length : follow?.followers.length}
+            {follow?.total_follower}
             &nbsp;
           </span>
           Follower
-        </Link>
+        </button>
       </div>
     </div>
   );

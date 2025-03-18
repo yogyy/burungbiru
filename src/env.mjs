@@ -11,7 +11,6 @@ const server = z.object({
   CLOUDINARY_API_KEY: z.string(),
   CLOUDINARY_API_SECRET: z.string(),
   CLOUDINARY_CLOUD_PRESET: z.string(),
-  WEBHOOK_SECRET: z.string(),
 });
 
 /**
@@ -20,7 +19,6 @@ const server = z.object({
  */
 const client = z.object({
   // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
-  NEXT_PUBLIC_DEFAULT_BANNER: z.string(),
   NEXT_PUBLIC_UMAMI_ID: z.string(),
 });
 
@@ -37,9 +35,6 @@ const processEnv = {
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
   CLOUDINARY_CLOUD_PRESET: process.env.CLOUDINARY_CLOUD_PRESET,
-  WEBHOOK_SECRET: process.env.WEBHOOK_SECRET,
-  // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
-  NEXT_PUBLIC_DEFAULT_BANNER: process.env.NEXT_PUBLIC_DEFAULT_BANNER,
   NEXT_PUBLIC_UMAMI_ID: process.env.NEXT_PUBLIC_UMAMI_ID,
 };
 
@@ -64,10 +59,7 @@ if (!!process.env.SKIP_ENV_VALIDATION == false) {
   );
 
   if (parsed.success === false) {
-    console.error(
-      "❌ Invalid environment variables:",
-      parsed.error.flatten().fieldErrors
-    );
+    console.error("❌ Invalid environment variables:", parsed.error.flatten().fieldErrors);
     throw new Error("Invalid environment variables");
   }
 

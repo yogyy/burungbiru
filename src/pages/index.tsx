@@ -6,12 +6,12 @@ import { authClient } from "~/lib/auth-client";
 
 const IndexPage = () => {
   const { push } = useRouter();
-  const { data: session, isPending } = authClient.useSession();
+  const { isPending } = authClient.useSession();
 
   useEffect(() => {
     push("/home");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
+  }, []);
 
   if (isPending)
     return (

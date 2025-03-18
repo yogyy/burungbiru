@@ -1,66 +1,25 @@
 import { z } from "zod";
-import {
-  createTRPCRouter,
-  privateProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { tweetSchema } from "~/utils/validation";
 import { ratelimit } from "~/server/helper/ratelimit";
+import { generateRandId } from "~/lib/utils";
 
 export const actionRouter = createTRPCRouter({
   likePost: privateProcedure
     .input(z.object({ postId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.like.create({
-        data: {
-          userId: ctx.userId,
-          postId: input.postId,
-        },
+        data: { userId: ctx.userId, postId: input.postId },
       });
     }),
 
-  unlikePost: privateProcedure
+  unLikePost: privateProcedure
     .input(z.object({ postId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.like.deleteMany({
         where: { postId: input.postId, userId: ctx.userId },
       });
-    }),
-
-  reposts: publicProcedure
-    .input(z.object({ postId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const repost = await ctx.prisma.repost.findMany({
-        where: { postId: input.postId },
-      });
-      if (!repost) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return repost;
-    }),
-
-  likes: publicProcedure
-    .input(z.object({ postId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const likes = await ctx.prisma.like.findMany({
-        where: { postId: input.postId },
-      });
-      if (!likes) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return likes;
-    }),
-
-  replies: publicProcedure
-    .input(z.object({ postId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const replies = await ctx.prisma.reply.findMany({
-        where: {
-          parentId: input.postId,
-        },
-      });
-      if (!replies) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return replies;
     }),
 
   bookmarkPost: privateProcedure
@@ -91,61 +50,49 @@ export const actionRouter = createTRPCRouter({
       await ctx.prisma.repost.create({
         data: { userId: authorId, postId: input.postId },
       });
-      const sourcePost = await ctx.prisma.post.findUnique({
-        where: { id: input.postId },
-      });
 
-      if (sourcePost) {
-        return await ctx.prisma.post.create({
-          data: {
-            authorId: sourcePost.authorId,
-            content: sourcePost.content,
-            image: sourcePost.image,
-            imageId: sourcePost.imageId,
-            parentId: sourcePost.id,
-            type: "REPOST",
-            authorParentId: authorId,
-          },
-        });
-      }
+      return await ctx.prisma.post.create({
+        data: {
+          id: generateRandId(),
+          authorId,
+          parentId: input.postId,
+          type: "REPOST",
+        },
+      });
     }),
 
   unretweetPost: privateProcedure
     .input(z.object({ postId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.post.deleteMany({
-        where: {
-          parentId: input.postId,
-          authorParentId: ctx.userId,
-          AND: { type: "REPOST" },
-        },
+      const reposted = await ctx.prisma.repost.delete({
+        where: { userId_postId: { userId: ctx.userId, postId: input.postId } },
+        include: { post: { include: { children: { where: { authorId: ctx.userId } } } } },
       });
-      return await ctx.prisma.repost.deleteMany({
-        where: { postId: input.postId, userId: ctx.userId },
-      });
+
+      await ctx.prisma.post.delete({ where: { id: reposted.post.children[0]?.id } });
+
+      return { success: true };
     }),
 
   replyPost: privateProcedure
-    .input(
-      tweetSchema.extend({ postId: z.string(), authorParentId: z.string() })
-    )
+    .input(tweetSchema.extend({ postId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const authorId = ctx.userId;
-      const { success } = await ratelimit.limit(authorId);
+      const { success } = await ratelimit.limit(ctx.userId);
       if (!success)
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
           message: "Too Many Request",
         });
+
       const post = await ctx.prisma.post.create({
         data: {
-          authorId,
+          id: generateRandId(),
+          authorId: ctx.userId,
           content: input.content,
           image: input.image?.secure_url,
           imageId: input.image?.public_id,
           type: input.type,
           parentId: input.postId,
-          authorParentId: input.authorParentId,
         },
       });
 

@@ -1,46 +1,69 @@
 import { z } from "zod";
-import {
-  createTRPCRouter,
-  privateProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { tweetSchema } from "~/utils/validation";
 import { ratelimit } from "~/server/helper/ratelimit";
-import { addUserDataToPosts } from "~/server/helper/dbHelper";
+import { generateRandId } from "~/lib/utils";
 
 export const postRouter = createTRPCRouter({
-  detailPost: publicProcedure
+  detailPost: privateProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    const post = await ctx.prisma.post.findUnique({
+      where: { id: input.id },
+      include: {
+        author: { select: { username: true, image: true, name: true, type: true } },
+        parent: {
+          select: {
+            id: true,
+            image: true,
+            imageId: true,
+            content: true,
+            createdAt: true,
+            author: { select: { username: true, image: true, name: true, type: true } },
+          },
+        },
+      },
+    });
+
+    if (!post) throw new TRPCError({ code: "NOT_FOUND" });
+
+    return post;
+  }),
+
+  detailParentPost: privateProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const post = await ctx.prisma.post.findUnique({
+      const parent = await ctx.prisma.post.findUnique({
         where: { id: input.id },
         include: {
-          bookmarks: true,
-          likes: true,
-          repost: true,
-          replies: true,
+          author: { select: { username: true, image: true, name: true, type: true } },
         },
       });
 
-      if (!post) throw new TRPCError({ code: "NOT_FOUND" });
+      if (!parent) throw new TRPCError({ code: "NOT_FOUND" });
 
-      await ctx.prisma.post.update({
-        where: { id: input.id },
-        data: { view: { increment: 1 } },
-      });
-
-      return (await addUserDataToPosts([post]))[0];
+      return parent;
     }),
 
-  postViews: privateProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.prisma.post.findUnique({
-        where: { id: input.id },
-        select: { view: true, createdAt: true },
+  createPost: privateProcedure.input(tweetSchema).mutation(async ({ ctx, input }) => {
+    const { success } = await ratelimit.limit(ctx.userId);
+    if (!success)
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Too Many Request",
       });
-    }),
+
+    const post = await ctx.prisma.post.create({
+      data: {
+        id: generateRandId(),
+        authorId: ctx.userId,
+        content: input.content,
+        image: input.image?.secure_url,
+        imageId: input.image?.public_id,
+        type: input.type,
+      },
+    });
+    return post;
+  }),
 
   deletePost: privateProcedure
     .input(z.object({ id: z.string() }))
@@ -49,120 +72,69 @@ export const postRouter = createTRPCRouter({
         where: { id: input.id },
       });
 
-      if (post.type === "COMMENT") {
-        await ctx.prisma.reply.deleteMany({
-          where: { postId: input.id, userId: ctx.userId },
-        });
-      }
-
-      if (post) {
-        await ctx.prisma.post.deleteMany({
-          where: {
-            parentId: input.id,
-            authorId: ctx.userId,
-            AND: { type: "REPOST" },
-          },
-        });
-      } else {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      if (post.type !== "COMMENT") {
-        await ctx.prisma.repost.deleteMany({
-          where: { postId: post.parentId ?? input.id, userId: ctx.userId },
+      if (post.type === "REPOST") {
+        await ctx.prisma.repost.delete({
+          where: { userId_postId: { userId: post.authorId, postId: post.parentId! } },
         });
       }
 
       return post;
     }),
 
-  bookmarks: publicProcedure
+  reposts: privateProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const reposts = await ctx.prisma.repost.findMany({
+        where: { postId: input.postId },
+        select: { id: true },
+      });
+
+      const reposted = await ctx.prisma.repost.findUnique({
+        where: { userId_postId: { userId: ctx.userId, postId: input.postId } },
+        select: { id: true },
+      });
+
+      return { is_reposted: Boolean(reposted?.id), total_reposts: reposts.length };
+    }),
+
+  likes: privateProcedure.input(z.object({ postId: z.string() })).query(async ({ ctx, input }) => {
+    const likes = await ctx.prisma.like.findMany({
+      where: { postId: input.postId },
+      select: { id: true },
+    });
+
+    const liked = await ctx.prisma.like.findUnique({
+      where: { userId_postId: { userId: ctx.userId, postId: input.postId } },
+      select: { id: true },
+    });
+
+    return { is_liked: Boolean(liked?.id), total_likes: likes.length };
+  }),
+
+  bookmarks: privateProcedure
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
       const bookmarks = await ctx.prisma.bookmark.findMany({
         where: { postId: input.postId },
-      });
-      if (!bookmarks) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return bookmarks;
-    }),
-
-  timeline: publicProcedure
-    .input(
-      z.object({
-        limit: z.number().optional(),
-        cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
-      })
-    )
-    .query(async ({ ctx, input: { limit = 10, cursor } }) => {
-      const posts = await ctx.prisma.post
-        .findMany({
-          take: limit + 1,
-          cursor: cursor ? { createdAt_id: cursor } : undefined,
-          orderBy: [{ createdAt: "desc" }],
-        })
-        .then(addUserDataToPosts);
-
-      let nextCursor: typeof cursor | undefined;
-      if (posts.length > limit) {
-        const nextItem = posts.pop();
-        if (nextItem != null) {
-          nextCursor = {
-            id: nextItem?.post.id,
-            createdAt: nextItem?.post?.createdAt,
-          };
-        }
-      }
-      return {
-        posts,
-        nextCursor,
-      };
-    }),
-
-  parentPost: privateProcedure
-    .input(z.object({ parentId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const parent = await ctx.prisma.post.findUnique({
-        where: { id: input.parentId },
+        select: { id: true },
       });
 
-      if (!parent) throw new TRPCError({ code: "NOT_FOUND" });
-
-      return (await addUserDataToPosts([parent]))[0];
-    }),
-
-  createPost: privateProcedure
-    .input(tweetSchema)
-    .mutation(async ({ ctx, input }) => {
-      const authorId = ctx.userId;
-
-      const { success } = await ratelimit.limit(authorId);
-      if (!success)
-        throw new TRPCError({
-          code: "TOO_MANY_REQUESTS",
-          message: "Too Many Request",
-        });
-
-      const post = await ctx.prisma.post.create({
-        data: {
-          authorId,
-          content: input.content,
-          image: input.image?.secure_url,
-          imageId: input.image?.public_id,
-          type: input.type,
-        },
+      const bookmarked = await ctx.prisma.bookmark.findUnique({
+        where: { userId_postId: { userId: ctx.userId, postId: input.postId } },
+        select: { id: true },
       });
-      return post;
+
+      return { is_bookmarked: Boolean(bookmarked?.id), total_bookmarks: bookmarks.length };
     }),
 
-  postReplies: publicProcedure
+  replies: privateProcedure
     .input(z.object({ postId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.post
-        .findMany({
-          where: { parentId: input.postId, type: "COMMENT" },
-          orderBy: [{ createdAt: "desc" }],
-        })
-        .then(addUserDataToPosts);
+      const replies = await ctx.prisma.reply.findMany({
+        where: { parentId: input.postId },
+        select: { postId: true },
+      });
+
+      return { total_replies: replies.length };
     }),
 });

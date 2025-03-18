@@ -23,18 +23,13 @@ import { prisma } from "~/server/db";
  *
  * @see https://trpc.io/docs/context
  */
-type Session = typeof auth.$Infer.Session;
 
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { session, user } = (await auth.api.getSession({
+  const data = await auth.api.getSession({
     headers: fromNodeHeaders(opts.req.headers),
-  })) as Session;
+  });
 
-  if (!session || !user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  return { prisma, session, user };
+  return { prisma, session: data?.session, user: data?.user };
 };
 
 /**
@@ -57,8 +52,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+        zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
     };
   },
@@ -88,9 +82,7 @@ export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
 const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.session) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
+  if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED" });
 
   return next({ ctx: { userId: ctx.user.id } });
 });

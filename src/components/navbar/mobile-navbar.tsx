@@ -1,5 +1,5 @@
 import React from "react";
-import { BellIcon, MessageIcon, SearchIcon } from "../icons";
+import { BellIcon, MessageIcon, SearchIcon } from "../icons/twitter-icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { cn } from "~/lib/utils";
@@ -38,19 +38,11 @@ export const MobileNav = () => {
       <nav className="relative">
         <ul className="flex items-center justify-between">
           {mobileNavbar.map((nav) => (
-            <li
-              key={nav.name}
-              className="my-1 flex flex-1 items-center justify-center"
-            >
-              <Link
-                href={nav.link}
-                className="rounded-full p-2 hover:bg-white/5"
-              >
+            <li key={nav.name} className="my-1 flex flex-1 items-center justify-center">
+              <Link href={nav.link} className="rounded-full p-2 hover:bg-white/5">
                 <nav.icon
                   size={26.25}
-                  className={cn(
-                    baseRoute === nav.link && "w-6 fill-current stroke-none"
-                  )}
+                  className={cn(baseRoute === nav.link && "w-6 fill-current stroke-none")}
                 />
                 <span className="sr-only">{nav.name}</span>
               </Link>

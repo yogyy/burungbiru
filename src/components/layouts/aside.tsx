@@ -1,27 +1,27 @@
-import { LuSearch } from "react-icons/lu";
 import { api } from "~/utils/api";
 import { UserAvatar } from "../avatar";
 import { LoadingSpinner } from "../loading";
 import { useRouter } from "next/router";
 import { FollowButton } from "../button-follow";
+import Footer from "./footer";
+import { Search } from "../icons";
+import { authClient } from "~/lib/auth-client";
 
 export const RightAside = () => {
-  const { data: peoples, isLoading } = api.profile.getUserRandomUserDB.useQuery(
+  const { data } = authClient.useSession();
+
+  const { data: peoples, isLoading } = api.profile.getUserRandomUser.useQuery(
     {},
-    { refetchOnWindowFocus: false, refetchOnMount: false }
+    { enabled: !!data }
   );
   const { push } = useRouter();
 
   return (
-    <aside className="sticky top-1 mr-2.5 hidden h-[100.5vh] bg-background lg:block lg:w-[290px] xl:w-[350px]">
+    <aside className="sticky top-1 mr-2.5 hidden h-fit bg-background lg:block lg:w-[290px] xl:w-[350px]">
       <div className="sticky top-1 z-20 mb-3 bg-background pb-1">
-        {" "}
         <div className="group flex w-full overflow-hidden rounded-full border bg-background text-accent focus-within:border-primary">
           <div className="flex w-10 flex-shrink items-center">
-            <LuSearch
-              className="h-[1.25em] min-w-[32px] pl-3 group-focus-within:text-primary"
-              size={16}
-            />
+            <Search className="h-[1.25em] min-w-[32px] pl-3 group-focus-within:text-primary" />
           </div>
           <input
             placeholder="Search"
@@ -30,7 +30,7 @@ export const RightAside = () => {
           />
         </div>
       </div>
-      <div className="mb-4 min-h-[15rem] w-full overflow-hidden rounded-2xl border bg-background">
+      <div className="mb-3 min-h-[15rem] w-full overflow-hidden rounded-2xl border bg-background">
         {isLoading ? (
           <div className="flex min-h-[15rem] w-full items-center justify-center">
             <LoadingSpinner size={24} />
@@ -55,13 +55,11 @@ export const RightAside = () => {
                     className="mr-3 aspect-square h-10 rounded-full"
                   />
                   <div className="flex min-w-full flex-shrink flex-col">
-                    <span className="text-[15px] font-bold leading-5">
-                      {ppl.name}
-                    </span>
+                    <span className="text-[15px] font-bold leading-5">{ppl.name}</span>
                     <span className="text-accent">@{ppl.username}</span>
                   </div>
                 </div>
-                <FollowButton user={ppl} className="ml-3" />
+                <FollowButton userId={ppl.id} className="ml-3" />
               </div>
             ))}
             <button
@@ -73,6 +71,7 @@ export const RightAside = () => {
           </>
         )}
       </div>
+      <Footer />
     </aside>
   );
 };

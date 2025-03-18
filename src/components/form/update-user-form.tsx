@@ -1,24 +1,28 @@
 import { z } from "zod";
-import axios from "axios";
 import Image from "next/image";
 import { useRef } from "react";
-import { IoClose } from "react-icons/io5";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TbCameraPlus } from "react-icons/tb";
-import { api, RouterOutputs } from "~/utils/api";
-import * as Comp from "~/components/ui/form";
+import { api } from "~/utils/api";
+import {
+  Form,
+  FormControl,
+  FormLabel,
+  FormMessage,
+  FormField,
+  FormItem,
+} from "~/components/ui/form";
 import { featureNotReady } from "~/lib/utils";
 import { updateUserSchema } from "./form";
 import { Input } from "../ui/input";
 import { useUpdateUserModal } from "~/hooks/store";
-import { env } from "~/env.mjs";
+import { useProfileContext } from "~/context";
+import { CameraPlus, X } from "../icons";
+import { toast } from "sonner";
 
-interface FormProps {
-  user: RouterOutputs["profile"]["getCurrentUser"] | undefined;
-}
+export const UpdateUserForm = () => {
+  const user = useProfileContext();
 
-export const UpdateUserForm = ({ user }: FormProps) => {
   const nameFieldRef = useRef<HTMLInputElement | null>(null);
   const bioFieldRef = useRef<HTMLTextAreaElement | null>(null);
   const locationFieldRef = useRef<HTMLInputElement | null>(null);
@@ -36,12 +40,17 @@ export const UpdateUserForm = ({ user }: FormProps) => {
     },
   });
 
-  const { mutate } = api.profile.updateUserInfo.useMutation({
+  const { mutate, isLoading } = api.profile.updateUserProfile.useMutation({
     onSuccess: () => {
-      console.log(`update user ${user?.username} success`);
-      ctx.profile.getUserByUsernameDB
+      ctx.profile.getUserByUsername
         .invalidate({ username: user?.username })
         .then(() => closeUpdateuserModal(false));
+    },
+    onError(err) {
+      toast.error(err.message, {
+        position: "top-center",
+        style: { backgroundColor: "hsl(var(--desctructive))" },
+      });
     },
   });
 
@@ -49,7 +58,7 @@ export const UpdateUserForm = ({ user }: FormProps) => {
     try {
       mutate(values);
     } catch (error) {
-      console.log(error);
+      console.log("Something went wrong");
     }
   }
 
@@ -61,7 +70,7 @@ export const UpdateUserForm = ({ user }: FormProps) => {
   ];
 
   return (
-    <Comp.Form {...form}>
+    <Form {...form}>
       <div className="relative">
         <div className="relative flex aspect-[3/1] w-full items-center justify-center">
           {user?.banner ? (
@@ -81,27 +90,24 @@ export const UpdateUserForm = ({ user }: FormProps) => {
               <button
                 className="button-edit-picture rounded-full border backdrop-blur-sm transition-colors duration-200"
                 title="Add photo"
-                onClick={() => {
-                  featureNotReady("change-user-banner");
-                  console.log(user);
-                }}
+                onClick={() => featureNotReady("change-user-banner")}
               >
-                <TbCameraPlus className="text-white" size={22} />
+                <CameraPlus className="text-white" size={22} />
               </button>
               <button
                 className="button-edit-picture ml-5 rounded-full border backdrop-blur-sm transition-colors duration-200"
                 title="Remove photo"
                 onClick={() => featureNotReady("delete-user-banner")}
               >
-                <IoClose className="text-white" size={24} />
+                <X className="text-white" size={22} />
               </button>
             </div>
           </div>
         </div>
         <div className="relative -mt-12 ml-4 flex h-auto w-fit items-center justify-center overflow-hidden rounded-full bg-background">
           <Image
-            src={user?.image || ""}
-            alt={`${user?.username ?? user?.name}'s profile pic`}
+            src={user?.image!}
+            alt={`${user?.username}'s profile pic`}
             width="120"
             height="120"
             className="aspect-square rounded-full object-cover p-1 opacity-75"
@@ -112,46 +118,48 @@ export const UpdateUserForm = ({ user }: FormProps) => {
             title="Add photo"
             onClick={() => featureNotReady("change-user-picture")}
           >
-            <TbCameraPlus className="text-white" size={22} />
+            <CameraPlus className="text-white" size={22} />
           </button>
         </div>
       </div>
       <form onSubmit={form.handleSubmit(onSubmit)} id="edit_user_form">
         {editUserField.map((item) => (
           <div className="group/item px-4 py-3" key={item.name}>
-            <Comp.FormField
+            <FormField
               control={form.control}
               name={item.name as any}
               render={({ field }) => (
-                <Comp.FormItem
+                <FormItem
                   className="space-y-0 rounded-[4px] border p-2 focus-within:border-primary"
                   onClick={() => item.ref.current?.focus()}
                 >
-                  <Comp.FormLabel className="text-[small] capitalize text-accent group-focus-within/item:text-primary">
+                  <FormLabel className="text-[small] capitalize text-accent group-focus-within/item:text-primary">
                     {item.name}
-                  </Comp.FormLabel>
-                  <Comp.FormControl ref={item.ref}>
+                  </FormLabel>
+                  <FormControl ref={item.ref}>
                     {item.type === "input" ? (
                       <Input
-                        className="h-5 border-none p-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
                         {...field}
+                        className="h-5 border-none p-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+                        disabled={isLoading}
                       />
                     ) : (
                       <textarea
-                        className="hide-scrollbar w-full flex-1 resize-none bg-transparent leading-6 outline-none"
                         {...field}
+                        disabled={isLoading}
+                        className="hide-scrollbar w-full flex-1 resize-none bg-transparent leading-6 outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         maxLength={160}
                       />
                     )}
-                  </Comp.FormControl>
-                  <Comp.FormMessage className="absolute" />
-                </Comp.FormItem>
+                  </FormControl>
+                  <FormMessage className="absolute" />
+                </FormItem>
               )}
             />
             <div className="pt-1"></div>
           </div>
         ))}
       </form>
-    </Comp.Form>
+    </Form>
   );
 };

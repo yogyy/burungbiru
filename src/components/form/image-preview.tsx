@@ -1,7 +1,7 @@
 import { MouseEventHandler } from "react";
-import { LuX } from "react-icons/lu";
-import { ImageModal } from "../modal";
+import { ImageModal } from "../modal/image-modal";
 import { Button } from "../ui/button";
+import { X } from "../icons";
 
 interface ImagePreviewProps {
   image: string;
@@ -18,7 +18,7 @@ export const ImagePreview = ({ image, onClick }: ImagePreviewProps) => {
         className="absolute right-1 top-1 rounded-full bg-background p-1 opacity-70 transition-opacity hover:bg-background hover:opacity-100"
         onClick={onClick}
       >
-        <LuX size={20} />
+        <X size={20} />
         <span className="sr-only">close preview image</span>
       </Button>
       <ImageModal

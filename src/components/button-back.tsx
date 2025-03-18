@@ -1,10 +1,8 @@
 import { useRouter } from "next/router";
-import React from "react";
-import { LuArrowLeft } from "react-icons/lu";
 import { cn } from "~/lib/utils";
+import { ArrowLeft } from "./icons";
 
-interface ButtonBackProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+interface ButtonBackProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
 export const ButtonBack = ({ className, ...props }: ButtonBackProps) => {
   const router = useRouter();
@@ -19,7 +17,7 @@ export const ButtonBack = ({ className, ...props }: ButtonBackProps) => {
       )}
       {...props}
     >
-      <LuArrowLeft size={24} />
+      <ArrowLeft size={24} />
       <span className="sr-only">back</span>
     </button>
   );
