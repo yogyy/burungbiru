@@ -56,7 +56,7 @@ const SinglePostPage = ({ id }: InferGetStaticPropsType<typeof getStaticProps>) 
     <>
       <SEO title={`${detail.author.username} on burbir: "${detail?.content}" / burbir`} />
       <PageLayout>
-        <div className="flex h-full min-h-screen w-full max-w-[600px] flex-col border-x border-border">
+        <div className="relative flex h-full min-h-screen w-full max-w-[600px] flex-col border-x border-border">
           <div className="sticky top-0 z-20 flex h-[53px] w-full items-center bg-background/[.65] px-4 font-semibold backdrop-blur-md">
             <div className="w-16">
               <ButtonBack />
