@@ -10,15 +10,19 @@ import { EditUserModal } from "../modal/edit-profile-modal";
 import { authClient } from "~/lib/auth-client";
 import { featureNotReady } from "~/lib/utils";
 import { api } from "~/utils/api";
-import { useProfileContext } from "~/context";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { LinkMini } from "../icons";
 
-export const UserDetails = () => {
-  const user = useProfileContext();
-
+export const UserDetails = ({ username }: { username: string }) => {
+  const { data: user } = api.profile.getUserByUsername.useQuery({ username });
   const { data, isPending } = authClient.useSession();
-  const { data: follow } = api.profile.userFollow.useQuery({ userId: user.id });
+
+  if (!user) return null;
+
+  const { data: follow } = api.profile.userFollow.useQuery(
+    { userId: user?.id },
+    { enabled: !!user }
+  );
 
   return (
     <div className="px-4 pb-3 pt-3">
@@ -51,7 +55,7 @@ export const UserDetails = () => {
           </Dialog>
         </div>
         {isPending ? null : data?.user.id === user.id ? (
-          <EditUserModal />
+          <EditUserModal username={username} />
         ) : (
           <FollowButton userId={user.id} />
         )}

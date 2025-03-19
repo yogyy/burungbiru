@@ -7,22 +7,10 @@ import { Feed } from "~/components/layouts/feed";
 import UserNotFound from "~/components/user-not-found";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
-import { ProfileContext } from "~/context";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({ username });
   const { ref, inView } = useInView({ rootMargin: "40% 0px" });
-
-  const {
-    data: posts,
-    isLoading: userpostLoading,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = api.feed.userPosts.useInfiniteQuery(
-    { userId: user!.id },
-    { getNextPageParam: (lastPage) => lastPage.nextCursor }
-  );
 
   useEffect(() => {
     if (inView) {
@@ -33,15 +21,24 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
   if (!user) return <UserNotFound username={username} />;
 
+  const {
+    data: posts,
+    isLoading: userpostLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = api.feed.userPosts.useInfiniteQuery(
+    { userId: user?.id },
+    { getNextPageParam: (lastPage) => lastPage.nextCursor, enabled: !!user }
+  );
+
   return (
-    <ProfileContext.Provider value={user}>
-      <UserLayout>
-        <Feed posts={posts?.pages.flatMap((page) => page.posts)} postLoading={userpostLoading} />
-        <div className="h-[100dvh]"></div>
-        {inView && isFetchingNextPage && <LoadingItem />}
-        {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
-      </UserLayout>
-    </ProfileContext.Provider>
+    <UserLayout username={username}>
+      <Feed posts={posts?.pages.flatMap((page) => page.posts)} postLoading={userpostLoading} />
+      <div className="h-[100dvh]"></div>
+      {inView && isFetchingNextPage && <LoadingItem />}
+      {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
+    </UserLayout>
   );
 };
 

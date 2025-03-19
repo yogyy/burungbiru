@@ -5,13 +5,21 @@ import { UserLayout } from "~/components/layouts/user-layout";
 import { Feed } from "~/components/layouts/feed";
 import { LoadingItem } from "~/components/loading";
 import UserNotFound from "~/components/user-not-found";
-import { ProfileContext } from "~/context";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { api } from "~/utils/api";
 
 const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({ username });
   const { ref, inView } = useInView({ rootMargin: "40% 0px" });
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView]);
+
+  if (!user) return <UserNotFound username={username} />;
 
   const {
     data: posts,
@@ -20,30 +28,20 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
     fetchNextPage,
     isFetchingNextPage,
   } = api.feed.userReplies.useInfiniteQuery(
-    { userId: user!.id },
-    { getNextPageParam: (lastPage) => lastPage.nextCursor }
+    { userId: user?.id },
+    { getNextPageParam: (lastPage) => lastPage.nextCursor, enabled: !!user }
   );
 
-  useEffect(() => {
-    if (inView) {
-      fetchNextPage();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView]);
-  if (!user) return <UserNotFound username={username} />;
-
   return (
-    <ProfileContext.Provider value={user}>
-      <UserLayout title="Posts with replies">
-        <Feed
-          posts={posts?.pages.flatMap((page) => page.comments)}
-          postLoading={isLoading}
-          showParent={true}
-        />
-        {inView && isFetchingNextPage && <LoadingItem />}
-        {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
-      </UserLayout>
-    </ProfileContext.Provider>
+    <UserLayout username={username} title="Posts with replies">
+      <Feed
+        posts={posts?.pages.flatMap((page) => page.comments)}
+        postLoading={isLoading}
+        showParent={true}
+      />
+      {inView && isFetchingNextPage && <LoadingItem />}
+      {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
+    </UserLayout>
   );
 };
 

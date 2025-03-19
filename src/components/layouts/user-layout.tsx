@@ -11,21 +11,23 @@ import { SEO } from "../simple-seo";
 import { Badge } from "../ui/badge";
 import { UserDetails } from "./user-details";
 import { authClient } from "~/lib/auth-client";
-import { useProfileContext } from "~/context";
 
 interface UserLayoutProps {
   children: React.ReactNode;
   topbar?: React.ReactNode;
   title?: string;
+  username: string;
 }
 
-export const UserLayout = ({ children, topbar, title }: UserLayoutProps) => {
-  const user = useProfileContext();
+export const UserLayout = ({ children, topbar, title, username }: UserLayoutProps) => {
+  const { data: user } = api.profile.getUserByUsername.useQuery({ username });
+
   const { data } = authClient.useSession();
   const pathname = usePathname();
-  const { data: posts, isLoading: userpostLoading } = api.feed.userPosts.useQuery({
-    userId: user?.id,
-  });
+  const { data: count, isLoading: countLoading } = api.profile.userPostsCount.useQuery(
+    { userId: user?.id! },
+    { enabled: !!user }
+  );
 
   const ScrollToTop = () => {
     if (window !== undefined) {
@@ -36,8 +38,8 @@ export const UserLayout = ({ children, topbar, title }: UserLayoutProps) => {
   };
 
   const shouldShowMenu = (menu: { name: string }) => {
-    if (menu.name === "Likes" && user.id !== data?.user.id) return false;
-    if (menu.name === "Highlights" && user.type === "user" && user.id !== data?.user.id)
+    if (menu.name === "Likes" && user?.id !== data?.user.id) return false;
+    if (menu.name === "Highlights" && user?.type === "user" && user.id !== data?.user.id)
       return false;
     return true;
   };
@@ -64,17 +66,17 @@ export const UserLayout = ({ children, topbar, title }: UserLayoutProps) => {
 
               <div className="flex w-max flex-shrink flex-col justify-center">
                 <h1 className="inline-flex h-auto items-end font-sans text-lg font-bold leading-6">
-                  {user.name}
-                  <Badge variant={user.type} />
+                  {user?.name}
+                  <Badge variant={user?.type!} />
                 </h1>
                 {topbar ? (
                   topbar
                 ) : (
                   <p className="text-[13px] font-thin leading-4 text-accent">
-                    {userpostLoading ? (
+                    {countLoading ? (
                       <span className="select-none text-background">loading</span>
                     ) : (
-                      <span>{posts?.posts.length} posts</span>
+                      <span>{count} posts</span>
                     )}
                   </p>
                 )}
@@ -82,7 +84,7 @@ export const UserLayout = ({ children, topbar, title }: UserLayoutProps) => {
             </div>
           </div>
           <div className="relative aspect-[3/1] w-full overflow-hidden">
-            {user.banner ? (
+            {user?.banner ? (
               <ImageModal
                 alt={`${user?.username}'s banner`}
                 src={user.banner}
@@ -95,24 +97,24 @@ export const UserLayout = ({ children, topbar, title }: UserLayoutProps) => {
               <div className="h-full w-full bg-border"></div>
             )}
           </div>
-          <UserDetails />
+          <UserDetails username={username} />
           <div className="hide-scrollbar sticky top-0 z-[25] flex h-fit w-full items-center overflow-x-scroll border-b border-border bg-background/[.65] backdrop-blur-md">
             {userMenu.map(
               (menu) =>
                 shouldShowMenu(menu) && (
                   <Link
                     key={menu.name}
-                    href={`/p/${user.username}${menu.href}`}
+                    href={`/p/${user?.username}${menu.href}`}
                     className={cn(
                       "flex flex-1 justify-center px-4 text-[16px] leading-5 text-accent",
                       "-outline-offset-1 hover:bg-white/[.03] focus-visible:bg-white/[.03] focus-visible:outline-2",
-                      user.username + menu.href === pathname.substring(3) &&
+                      user?.username + menu.href === pathname.substring(3) &&
                         "font-semibold text-white"
                     )}
                   >
                     <div className="relative flex justify-center px-2 py-4">
                       {menu.name}
-                      {`${user.username}${menu.href}` === pathname.substring(3) ? (
+                      {`${user?.username}${menu.href}` === pathname.substring(3) ? (
                         <div className="absolute bottom-0 h-1 w-full rounded-md bg-primary" />
                       ) : null}
                     </div>

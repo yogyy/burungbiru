@@ -7,7 +7,6 @@ import { authClient } from "~/lib/auth-client";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
-import { ProfileContext } from "~/context";
 import { UserLayout } from "~/components/layouts/user-layout";
 import { Feed } from "~/components/layouts/feed";
 
@@ -33,21 +32,6 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
   const { push } = useRouter();
 
-  const { data: totalLikes, isLoading: totalLikesLoading } = api.profile.userLikesCount.useQuery({
-    userId: user!.id,
-  });
-
-  const {
-    data: posts,
-    isLoading,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = api.feed.userLikes.useInfiniteQuery(
-    { userId: user!.id },
-    { getNextPageParam: (lastPage) => lastPage.nextCursor, enabled: !!totalLikes }
-  );
-
   useEffect(() => {
     if (inView) {
       fetchNextPage();
@@ -64,38 +48,52 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
   if (!user) return <UserNotFound username={username} />;
 
+  const { data: totalLikes, isLoading: totalLikesLoading } = api.profile.userLikesCount.useQuery(
+    { userId: user.id },
+    { enabled: !!user }
+  );
+
+  const {
+    data: posts,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = api.feed.userLikes.useInfiniteQuery(
+    { userId: user.id },
+    { getNextPageParam: (lastPage) => lastPage.nextCursor, enabled: !!totalLikes }
+  );
+
   return (
-    <ProfileContext.Provider value={user}>
-      <UserLayout
-        title="Posts liked"
-        topbar={
-          <p className="text-[13px] font-thin leading-4 text-accent">
-            {totalLikesLoading ? (
-              <span className="select-none text-background">loading</span>
-            ) : (
-              <span>{totalLikes} Likes</span>
-            )}
-          </p>
-        }
-      >
-        <div className="flex w-full flex-col items-center">
-          {totalLikes! > 0 ? (
-            <>
-              <Feed
-                posts={posts?.pages.flatMap((page) => page.likes)}
-                postLoading={isLoading}
-                showParent={false}
-              />
-              {inView && isFetchingNextPage && <LoadingItem />}
-              {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
-            </>
+    <UserLayout
+      username={username}
+      title="Posts liked"
+      topbar={
+        <p className="text-[13px] font-thin leading-4 text-accent">
+          {totalLikesLoading ? (
+            <span className="select-none text-background">loading</span>
           ) : (
-            <UserHasnoLikes />
+            <span>{totalLikes} Likes</span>
           )}
-          <div style={{ height: "50dvh" }}></div>
-        </div>
-      </UserLayout>
-    </ProfileContext.Provider>
+        </p>
+      }
+    >
+      <div className="flex w-full flex-col items-center">
+        {totalLikes! > 0 ? (
+          <>
+            <Feed
+              posts={posts?.pages.flatMap((page) => page.likes)}
+              postLoading={isLoading}
+              showParent={false}
+            />
+            {inView && isFetchingNextPage && <LoadingItem />}
+            {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
+          </>
+        ) : (
+          <UserHasnoLikes />
+        )}
+      </div>
+    </UserLayout>
   );
 };
 

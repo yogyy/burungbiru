@@ -16,12 +16,11 @@ import { featureNotReady } from "~/lib/utils";
 import { updateUserSchema } from "./form";
 import { Input } from "../ui/input";
 import { useUpdateUserModal } from "~/hooks/store";
-import { useProfileContext } from "~/context";
 import { CameraPlus, X } from "../icons";
 import { toast } from "sonner";
 
-export const UpdateUserForm = () => {
-  const user = useProfileContext();
+export const UpdateUserForm = ({ username }: { username: string }) => {
+  const { data: user } = api.profile.getUserByUsername.useQuery({ username });
 
   const nameFieldRef = useRef<HTMLInputElement | null>(null);
   const bioFieldRef = useRef<HTMLTextAreaElement | null>(null);

@@ -8,7 +8,6 @@ import UserNotFound from "~/components/user-not-found";
 import { authClient } from "~/lib/auth-client";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
-import { ProfileContext } from "~/context";
 
 const UserHasNoMedia = ({ userId, username }: { userId: string; username: string }) => {
   const { data } = authClient.useSession();
@@ -32,10 +31,20 @@ const UserHasNoMedia = ({ userId, username }: { userId: string; username: string
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({ username });
-  const { data: totalMedia, isLoading: totalMediaLoading } = api.profile.userMediaCount.useQuery({
-    userId: user!.id,
-  });
   const { ref, inView } = useInView({ rootMargin: "40% 0px" });
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView]);
+  if (!user) return <UserNotFound username={username} />;
+
+  const { data: totalMedia, isLoading: totalMediaLoading } = api.profile.userMediaCount.useQuery(
+    { userId: user.id },
+    { enabled: !!user }
+  );
 
   const {
     data: posts,
@@ -48,39 +57,30 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     { getNextPageParam: (lastPage) => lastPage.nextCursor, enabled: !!totalMedia }
   );
 
-  useEffect(() => {
-    if (inView) {
-      fetchNextPage();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView]);
-  if (!user) return <UserNotFound username={username} />;
-
   return (
-    <ProfileContext.Provider value={user}>
-      <UserLayout
-        title="Media posts"
-        topbar={
-          <p className="text-[13px] font-thin leading-4 text-accent">
-            {totalMediaLoading ? (
-              <span className="select-none text-background">loading</span>
-            ) : (
-              <span>{totalMedia} Photos & videos</span>
-            )}
-          </p>
-        }
-      >
-        {totalMedia ? (
-          <>
-            <Feed posts={posts?.pages.flatMap((page) => page.media)} postLoading={isLoading} />
-            {inView && isFetchingNextPage && <LoadingItem />}
-            {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
-          </>
-        ) : (
-          <UserHasNoMedia userId={user.id} username={user.username} />
-        )}
-      </UserLayout>
-    </ProfileContext.Provider>
+    <UserLayout
+      username={username}
+      title="Media posts"
+      topbar={
+        <p className="text-[13px] font-thin leading-4 text-accent">
+          {totalMediaLoading ? (
+            <span className="select-none text-background">loading</span>
+          ) : (
+            <span>{totalMedia} Photos & videos</span>
+          )}
+        </p>
+      }
+    >
+      {totalMedia ? (
+        <>
+          <Feed posts={posts?.pages.flatMap((page) => page.media)} postLoading={isLoading} />
+          {inView && isFetchingNextPage && <LoadingItem />}
+          {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
+        </>
+      ) : (
+        <UserHasNoMedia userId={user.id} username={user.username} />
+      )}
+    </UserLayout>
   );
 };
 

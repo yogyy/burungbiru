@@ -11,17 +11,17 @@ import {
 import { featureNotReady } from "~/lib/utils";
 import { useUpdateUserModal } from "~/hooks/store";
 import { Button } from "../ui/button";
-import { useProfileContext } from "~/context";
 import { authClient } from "~/lib/auth-client";
 import { ArrowLeft, ChevronRight, X } from "../icons";
 import { UpdateUserForm } from "../form/update-user-form";
+import { api } from "~/utils/api";
 
-export const EditUserModal = () => {
+export const EditUserModal = ({ username }: { username: string }) => {
   const { show, setShow } = useUpdateUserModal();
   const { data } = authClient.useSession();
-  const user = useProfileContext();
+  const { data: user } = api.profile.getUserByUsername.useQuery({ username });
 
-  if (data?.user.id !== user.id) return null;
+  if (data?.user.id !== user?.id) return null;
 
   return (
     <Dialog open={show} onOpenChange={setShow}>
@@ -55,7 +55,7 @@ export const EditUserModal = () => {
               </Button>
             </div>
           </DialogDescription>
-          <UpdateUserForm />
+          <UpdateUserForm username={username} />
           <div className="flex flex-col p-4 leading-6">
             <div className="flex h-5 ">
               <p className="text-accent">Birth Date</p>
