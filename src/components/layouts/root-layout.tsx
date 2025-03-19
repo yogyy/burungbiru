@@ -6,10 +6,10 @@ import { useRouter } from "next/router";
 
 type PageLayoutProps = Pick<React.HTMLAttributes<HTMLElement>, "children">;
 export const PageLayout = ({ children }: PageLayoutProps) => {
-  const { data } = authClient.useSession();
+  const { data, isPending } = authClient.useSession();
   const { push } = useRouter();
 
-  if (!data && typeof window !== "undefined") {
+  if (!isPending && !data && typeof window !== "undefined") {
     push("/auth/sign-in");
   }
 
