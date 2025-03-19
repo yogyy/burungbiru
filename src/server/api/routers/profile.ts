@@ -50,7 +50,7 @@ export const profileRouter = createTRPCRouter({
       });
     }),
 
-  getUserRandomUser: publicProcedure.input(z.object({})).query(async ({ ctx }) => {
+  getRecommendationToFollow: publicProcedure.input(z.object({})).query(async ({ ctx }) => {
     return await ctx.prisma.user.findMany({
       take: 3,
       where: { id: { not: { equals: ctx.user?.id ?? "" } } },

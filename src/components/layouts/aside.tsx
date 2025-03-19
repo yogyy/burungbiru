@@ -6,13 +6,15 @@ import { FollowButton } from "../button-follow";
 import Footer from "./footer";
 import { Search } from "../icons";
 import { authClient } from "~/lib/auth-client";
+import { useMediaQuery } from "usehooks-ts";
 
 export const RightAside = () => {
   const { data } = authClient.useSession();
+  const showRecommend = useMediaQuery("(min-width: 1024px)");
 
-  const { data: peoples, isLoading } = api.profile.getUserRandomUser.useQuery(
+  const { data: peoples, isLoading } = api.profile.getRecommendationToFollow.useQuery(
     {},
-    { enabled: !!data }
+    { enabled: !!data && !!showRecommend }
   );
   const { push } = useRouter();
 
