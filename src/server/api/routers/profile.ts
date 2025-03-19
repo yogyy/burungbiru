@@ -37,12 +37,7 @@ export const profileRouter = createTRPCRouter({
         where: { username: input.username },
       });
 
-      if (!user) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "User not found",
-        });
-      }
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
       return user;
     }),
@@ -74,6 +69,12 @@ export const profileRouter = createTRPCRouter({
           image: { not: "" },
         },
       });
+    }),
+
+  userPostsCount: privateProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.post.count({ where: { authorId: input.userId } });
     }),
 
   userLikesCount: privateProcedure

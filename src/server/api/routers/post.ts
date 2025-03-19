@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { createTRPCRouter, privateProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { tweetSchema } from "~/utils/validation";
 import { ratelimit } from "~/server/helper/ratelimit";
 import { generateRandId } from "~/lib/utils";
 
 export const postRouter = createTRPCRouter({
-  detailPost: privateProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+  detailPost: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
     const post = await ctx.prisma.post.findUnique({
       where: { id: input.id },
       include: {
@@ -29,7 +29,7 @@ export const postRouter = createTRPCRouter({
     return post;
   }),
 
-  detailParentPost: privateProcedure
+  detailParentPost: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const parent = await ctx.prisma.post.findUnique({
