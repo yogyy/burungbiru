@@ -29,7 +29,7 @@ import { TweetText } from "~/components/tweet/tweet-text";
 import { TweetAction } from "~/components/tweet/tweet-action";
 
 const SinglePostPage = ({ id }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const { data: detail, error, isLoading, isSuccess } = api.post.detailPost.useQuery({ id });
+  const { data: detail, error, isLoading } = api.post.detailPost.useQuery({ id });
   const { ref, inView } = useInView({ rootMargin: "40% 0px" });
   const {
     data: replies,
@@ -63,13 +63,14 @@ const SinglePostPage = ({ id }: InferGetStaticPropsType<typeof getStaticProps>) 
             </div>
             <p>Post</p>
           </div>
-          <div className="relative w-full max-w-full border-b border-border outline-none">
-            {detail.type === "COMMENT" && detail.parentId && (
-              <TweetParentPost parentId={detail.parentId} showParent={true} />
-            )}
-            {isLoading ? (
-              <LoadingItem />
-            ) : (
+          {isLoading ? (
+            <LoadingItem />
+          ) : (
+            <div className="relative w-full max-w-full border-b border-border outline-none">
+              {detail.type === "COMMENT" && detail.parentId && (
+                <TweetParentPost parentId={detail.parentId} showParent={true} />
+              )}
+
               <article
                 className="relative flex w-full scroll-mt-[52px] flex-col"
                 id={detail.type.toLowerCase()}
@@ -160,8 +161,8 @@ const SinglePostPage = ({ id }: InferGetStaticPropsType<typeof getStaticProps>) 
                 </div>
                 <CreateReply post={detail} />
               </article>
-            )}
-          </div>
+            </div>
+          )}
 
           <Feed
             posts={replies?.pages.flatMap((page) => page.comments!)}
