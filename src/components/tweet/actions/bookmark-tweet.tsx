@@ -57,7 +57,7 @@ export const BookmarkTweet = ({ variant, post }: BookmarkProps) => {
           size="icon"
           disabled={loadingMutate || loadingUnmutate || isLoading}
           className={cn(
-            "group/button z-10 flex border-2 transition-all ease-in xs:-mr-2",
+            "group/button z-10 flex border-2 transition-[border-color] xs:-mr-2",
             "hover:bg-primary/10 focus-visible:border-primary/50 focus-visible:bg-primary/10 group-hover:bg-primary/10"
           )}
         >
@@ -85,7 +85,7 @@ export const BookmarkTweet = ({ variant, post }: BookmarkProps) => {
           <span
             className={cn(
               "h-fit overflow-hidden pl-0.5 font-sans text-[13px] leading-4 xs:px-2 md:cursor-pointer",
-              "font-normal transition duration-300 group-hover:text-primary group-focus:text-primary",
+              "font-normal transition-colors duration-300 group-hover:text-primary group-focus:text-primary",
               variant === "default" ? "hidden" : "block"
             )}
           >

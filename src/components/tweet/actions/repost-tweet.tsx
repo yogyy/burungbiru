@@ -50,14 +50,14 @@ export const RepostTweet = ({ variant, post }: RepostProps) => {
           onClick={retweetPost}
           disabled={loadingRepost || loadingUnrepost || isLoading}
           className={cn(
-            "group/button z-10 -mr-2 flex overflow-hidden border-2",
+            "group/button z-10 -mr-2 flex overflow-hidden border-2 transition-[border-color]",
             "hover:bg-[#00BA7C]/10 focus-visible:border-[#00BA7C]/50 focus-visible:bg-[#00BA7C]/10 group-hover:bg-[#00BA7C]/10"
           )}
         >
           <RetweetIcon
             className={cn(
               variant === "details" ? "h-5 w-5" : "h-[18px] w-[18px]",
-              "fill-accent transition duration-300 group-hover:fill-[#00BA7C] group-focus-visible/button:fill-[#00BA7C]",
+              "fill-accent transition-colors duration-300 group-hover:fill-[#00BA7C] group-focus-visible/button:fill-[#00BA7C]",
               repost?.is_reposted && "fill-[#00BA7C]"
             )}
           />
@@ -67,7 +67,7 @@ export const RepostTweet = ({ variant, post }: RepostProps) => {
           <span
             className={cn(
               "flex-1 overflow-hidden pl-0.5 font-sans text-[13px] leading-4 xs:px-2 md:cursor-pointer",
-              "font-normal transition duration-300 group-hover:text-[#00BA7C] group-focus:text-[#00BA7C]",
+              "font-normal transition-colors duration-300 group-hover:text-[#00BA7C] group-focus:text-[#00BA7C]",
               repost?.is_reposted && "text-[#00BA7C]"
             )}
           >
