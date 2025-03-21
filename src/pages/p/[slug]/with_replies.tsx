@@ -45,6 +45,10 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   );
 };
 
+ProfilePageReplies.getLayout = function getLayout(page: ReactElement) {
+  return <PageLayout>{page}</PageLayout>;
+};
+
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = generateSSGHelper();
   const username = context.params?.slug;

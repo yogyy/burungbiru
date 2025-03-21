@@ -97,6 +97,10 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   );
 };
 
+UserLikesPage.getLayout = function getLayout(page: ReactElement) {
+  return <PageLayout>{page}</PageLayout>;
+};
+
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = generateSSGHelper();
   const username = context.params?.slug;

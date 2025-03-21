@@ -43,7 +43,6 @@ const Home: NextPage = () => {
   return (
     <>
       <SEO title="Home / burbir" />
-      <PageLayout>
         <div className="flex w-full max-w-[600px] flex-shrink flex-col overflow-hidden border-x border-border">
           {showBurgerMenu && <BurgerMenu />}
           <div className="sticky top-0 z-[25] h-auto w-full border-b border-border bg-background/[.65] backdrop-blur-md">
@@ -78,6 +77,10 @@ const Home: NextPage = () => {
       </PageLayout>
     </>
   );
+};
+
+Home.getLayout = function getLayout(page: ReactElement) {
+  return <PageLayout>{page}</PageLayout>;
 };
 
 export default Home;
