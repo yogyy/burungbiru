@@ -1,13 +1,15 @@
-import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import { api } from "~/utils/api";
+import { GetStaticPaths, GetStaticProps } from "next";
+import { api, RouterOutputs } from "~/utils/api";
 import { LoadingItem } from "~/components/loading";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { UserLayout } from "~/components/layouts/user-layout";
-import { Feed } from "~/components/layouts/feed";
 import UserNotFound from "~/components/user-not-found";
 import { authClient } from "~/lib/auth-client";
 import { useInView } from "react-intersection-observer";
-import { useEffect } from "react";
+import { ReactElement, useEffect } from "react";
+import { PageLayout } from "~/components/layouts/root-layout";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import { TweetPost } from "~/components/tweet/tweet-post";
 
 const UserHasNoMedia = ({ userId, username }: { userId: string; username: string }) => {
   const { data } = authClient.useSession();
@@ -29,9 +31,26 @@ const UserHasNoMedia = ({ userId, username }: { userId: string; username: string
   );
 };
 
-const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user } = api.profile.getUserByUsername.useQuery({ username });
+interface UserMediaProps {
+  userId: string;
+}
+
+const UserPostsWithMedia = ({ userId }: UserMediaProps) => {
   const { ref, inView } = useInView({ rootMargin: "40% 0px" });
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    api.feed.userPostsWithMedia.useInfiniteQuery(
+      { userId },
+      { getNextPageParam: (lastPage) => lastPage.nextCursor }
+    );
+
+  const allPosts = data ? data.pages.flatMap((d) => d.media) : [];
+  const rowVirtualizer = useWindowVirtualizer({
+    count: hasNextPage ? allPosts.length + 1 : allPosts.length,
+    estimateSize: () => 150,
+    overscan: 4,
+  });
+
+  const virtualItems = rowVirtualizer.getVirtualItems();
 
   useEffect(() => {
     if (inView) {
@@ -39,23 +58,47 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView]);
+
+  if (isLoading) return <LoadingItem />;
+
+  return (
+    <div className="relative w-full" style={{ height: `${rowVirtualizer.getTotalSize()}px` }}>
+      <div
+        className="absolute left-0 top-0 w-full"
+        style={{ transform: `translateY(${virtualItems[0]?.start ?? 0}px)` }}
+      >
+        {virtualItems.map(({ index, key }) => {
+          const post = allPosts[index]!;
+          return (
+            <div
+              key={key}
+              data-index={index}
+              className="w-full"
+              ref={rowVirtualizer.measureElement}
+            >
+              <TweetPost
+                variant="default"
+                post={post}
+                showParent={false}
+                className="focus-wihtin:bg-white/[.03] group/post h-full transition-colors duration-200 ease-linear hover:bg-white/[.03]"
+              />
+            </div>
+          );
+        })}
+        <div ref={ref}>{inView && isFetchingNextPage && <LoadingItem />}</div>
+      </div>
+    </div>
+  );
+};
+
+const UserMediaPage = ({ username }: { username: string }) => {
+  const { data: user } = api.profile.getUserByUsername.useQuery({ username });
+
   if (!user) return <UserNotFound username={username} />;
 
-  const { data: totalMedia, isLoading: totalMediaLoading } = api.profile.userMediaCount.useQuery(
-    { userId: user.id },
-    { enabled: !!user }
-  );
-
-  const {
-    data: posts,
-    isLoading,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = api.feed.userPostsWithMedia.useInfiniteQuery(
-    { userId: user!.id },
-    { getNextPageParam: (lastPage) => lastPage.nextCursor, enabled: !!totalMedia }
-  );
+  const { data: totalMedia, isLoading: totalMediaLoading } = api.profile.userMediaCount.useQuery({
+    userId: user.id,
+  });
 
   return (
     <UserLayout
@@ -71,15 +114,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         </p>
       }
     >
-      {totalMedia ? (
-        <>
-          <Feed posts={posts?.pages.flatMap((page) => page.media)} postLoading={isLoading} />
-          {inView && isFetchingNextPage && <LoadingItem />}
-          {hasNextPage && !isFetchingNextPage && <div ref={ref}></div>}
-        </>
-      ) : (
-        <UserHasNoMedia userId={user.id} username={user.username} />
-      )}
+      {totalMedia === 0 && <UserHasNoMedia userId={user.id} username={user.username} />}
+      <UserPostsWithMedia userId={user.id} />
     </UserLayout>
   );
 };
@@ -107,4 +143,4 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths: [], fallback: "blocking" };
 };
 
-export default ProfilePage;
+export default UserMediaPage;
