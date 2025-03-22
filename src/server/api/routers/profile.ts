@@ -74,7 +74,7 @@ export const profileRouter = createTRPCRouter({
   userPostsCount: privateProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.post.count({ where: { authorId: input.userId } });
+      return await ctx.prisma.post.count({ where: { authorId: input.userId, type: "POST" } });
     }),
 
   userLikesCount: privateProcedure
