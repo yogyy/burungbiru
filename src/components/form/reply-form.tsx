@@ -82,9 +82,8 @@ const CreateReply = ({ variant = "default", setShowReplyModal, post }: CommentFo
       form.reset();
       utils.feed.postReplies.invalidate({ postId });
       utils.post.replies.invalidate({ postId });
-      utils.post.detailPost.invalidate({ id: postId }).then(() => {
-        adjustTextareaHeight();
-      });
+
+      adjustTextareaHeight();
       toast.success(() => <ToastReplySuccess id={id} />);
       if (variant === "modal") {
         setShowReplyModal?.((prev) => !prev);

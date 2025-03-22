@@ -12,6 +12,7 @@ import { featureNotReady } from "~/lib/utils";
 import { api } from "~/utils/api";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { LinkMini } from "../icons";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export const UserDetails = ({ username }: { username: string }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({ username });
@@ -30,14 +31,18 @@ export const UserDetails = ({ username }: { username: string }) => {
         <div className="-mt-[15%] mb-3 h-auto w-1/4 min-w-[48px]">
           <Dialog>
             <DialogTrigger className="rounded-full">
-              <Image
-                src={user?.image!}
-                alt={`${user?.username ?? user?.name}'s profile pic`}
-                width="140"
-                height="140"
-                className="aspect-square cursor-pointer rounded-full border-background bg-background object-cover p-1"
-                draggable={false}
-              />
+              <Avatar className="aspect-square h-[140px] w-[140px] cursor-pointer ">
+                <AvatarImage
+                  width="140"
+                  height="140"
+                  draggable={false}
+                  src={user?.image!}
+                  className="rounded-full border-background bg-background object-cover p-1"
+                />
+                <AvatarFallback className="bg-secondary text-xl font-semibold text-primary">
+                  {user?.username.slice(0, 8)}
+                </AvatarFallback>
+              </Avatar>
             </DialogTrigger>
             <DialogOverlay className="bg-background/90 duration-75" />
             <DialogContent
