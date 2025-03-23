@@ -3,7 +3,7 @@ import { api } from "~/utils/api";
 import { useMediaQuery } from "usehooks-ts";
 import { SEO } from "~/components/simple-seo";
 import { useInView } from "react-intersection-observer";
-import { LoadingItem, LoadingPage } from "~/components/loading";
+import { LoadingItem } from "~/components/loading";
 import { authClient } from "~/lib/auth-client";
 import { PageLayout } from "~/components/layouts/root-layout";
 import { BurgerMenu } from "~/components/layouts/hamburger-menu";
@@ -42,8 +42,6 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView]);
 
-  if (isPending) return <LoadingPage />;
-
   return (
     <>
       <SEO title="Home / burbir" />
@@ -74,7 +72,7 @@ const Home = () => {
             <LazyForm />
           </div>
         )}
-        {isLoading ? (
+        {isPending || isLoading ? (
           <LoadingItem />
         ) : (
           <div className="relative" style={{ height: `${rowVirtualizer.getTotalSize()}px` }}>
