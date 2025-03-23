@@ -21,7 +21,9 @@ const getBaseUrl = () => {
 export const api = createTRPCNext<AppRouter>({
   config() {
     return {
-      queryClientConfig: { defaultOptions: { queries: { refetchOnWindowFocus: false } } },
+      queryClientConfig: {
+        defaultOptions: { queries: { refetchOnWindowFocus: false, refetchOnMount: false } },
+      },
       /**
        * Transformer used for data de-serialization from the server.
        *
@@ -36,11 +38,7 @@ export const api = createTRPCNext<AppRouter>({
        */
       links: [
         loggerLink({
-          enabled: (opts) =>
-            process.env.NODE_ENV === "production"
-              ? false
-              : typeof window !== "undefined" ||
-                (opts.direction === "down" && opts.result instanceof Error),
+          enabled: (opts) => opts.direction === "down" && opts.result instanceof Error,
         }),
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
