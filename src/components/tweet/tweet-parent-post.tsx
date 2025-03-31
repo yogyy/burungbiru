@@ -1,4 +1,4 @@
-import { api } from "~/utils/api";
+import { RouterOutputs } from "~/utils/api";
 import { cn } from "~/lib/utils";
 import { renderText } from "~/lib/tweet";
 import { UserCard } from "../user-hover-card";
@@ -8,49 +8,31 @@ import dayjs from "dayjs";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
 import { useRouter } from "next/router";
 import { TweetTypeVariant } from "./types";
-import { ReplyTweet } from "./actions/reply-tweet";
-import { RepostTweet } from "./actions/repost-tweet";
-import { LikeTweet } from "./actions/like-tweet";
-import { BookmarkTweet } from "./actions/bookmark-tweet";
-import { ShareTweet } from "./actions/share-tweet";
 import { TweetText } from "./tweet-text";
 import { TweetTitle } from "./tweet-title";
 import { TweetMenu } from "./tweet-menu";
-import { TweetAction } from "./tweet-action";
 dayjs.extend(LocalizedFormat);
 
-interface TweetParentProps extends React.HTMLAttributes<HTMLDivElement>, TweetTypeVariant {
-  parentId: string;
+interface ParentProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    TweetTypeVariant,
+    Pick<RouterOutputs["post"]["detailPost"], "parent"> {
   showParent?: boolean;
-  enabled?: boolean;
 }
+
 export const TweetParentPost = ({
-  parentId,
+  parent,
   className,
   type = "default",
   variant = "parent",
-  enabled = true,
   showParent,
   ...props
-}: TweetParentProps) => {
+}: ParentProps) => {
   const { push, pathname } = useRouter();
-  const { data: parent, isLoading } = api.post.detailParentPost.useQuery(
-    { id: parentId },
-    {
-      enabled: !!parentId && enabled,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      retry(failureCount, error) {
-        if (error.data?.code === "NOT_FOUND") {
-          return false;
-        }
-        return true;
-      },
-    }
-  );
+
   if (!showParent) return null;
   if (!parent) {
-    if (pathname !== "/post/[id]" || isLoading) return null;
+    if (pathname !== "/post/[id]") return null;
     return (
       <article className="px-4 py-3" aria-label="post parent">
         <div className="flex items-center justify-between rounded-2xl border border-[rgb(32,35,39)] bg-[rgb(22,24,28)] px-1 py-3">
@@ -70,22 +52,6 @@ export const TweetParentPost = ({
     );
   }
 
-  const toPostDetails = () => {
-    switch (true) {
-      case type === "default" && parent?.type === "COMMENT":
-        push(`/post/${parent?.id}/#comment`);
-        break;
-      case type === "default" && parent?.type === "REPOST" && parent?.parentId !== null:
-        push(`/post/${parent?.parentId}#comment`);
-        break;
-      case type === "default" && parent?.type === "REPOST":
-        push(`/post/${parent?.parentId}`);
-        break;
-      default:
-        push(`/post/${parent?.id}`);
-    }
-  };
-
   return (
     <article
       key={parent.id}
@@ -94,7 +60,7 @@ export const TweetParentPost = ({
         "md:cursor-pointer",
         className
       )}
-      onClick={toPostDetails}
+      onClick={() => push(`/post/${parent.id}`)}
       aria-label="post parent"
       {...props}
     >
@@ -153,13 +119,7 @@ export const TweetParentPost = ({
               </button>
             </div>
           )}
-          <TweetAction>
-            <ReplyTweet post={parent} variant={variant} />
-            <RepostTweet post={parent} variant={variant} />
-            <LikeTweet post={parent} variant={variant} />
-            <BookmarkTweet post={parent} variant="default" />
-            <ShareTweet author={parent.author} variant={variant} postId={parent.id} />
-          </TweetAction>
+          <div className="h-2 w-full"></div>
         </div>
       </div>
     </article>

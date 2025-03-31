@@ -20,9 +20,7 @@ export const feedsRouter = createTRPCRouter({
         take: limit + 1,
         cursor: cursor ? { createdAt_id: cursor } : undefined,
         orderBy: [{ createdAt: "desc" }],
-        include: {
-          author: { select: { username: true, image: true, name: true, type: true } },
-        },
+        include: { author: { select: { username: true, image: true, name: true, type: true } } },
       });
 
       let nextCursor: typeof cursor | undefined;
@@ -65,7 +63,7 @@ export const feedsRouter = createTRPCRouter({
 
   postReplies: publicProcedure
     .input(commentsPaginationSchema.extend({ postId: z.string() }))
-    .query(async ({ ctx, input: { postId, limit = 10, cursor } }) => {
+    .query(async ({ ctx, input: { postId, limit = 5, cursor } }) => {
       const data = await ctx.prisma.reply.findMany({
         where: { parentId: postId },
         select: {
@@ -92,7 +90,7 @@ export const feedsRouter = createTRPCRouter({
 
   userPosts: privateProcedure
     .input(paginationSchema.extend({ userId: z.string() }))
-    .query(async ({ ctx, input: { limit = 10, cursor, userId } }) => {
+    .query(async ({ ctx, input: { limit = 5, cursor, userId } }) => {
       const posts = await ctx.prisma.post.findMany({
         where: { authorId: userId, type: { not: "COMMENT" } },
         take: limit + 1,
@@ -172,16 +170,6 @@ export const feedsRouter = createTRPCRouter({
         cursor: cursor ? { createdAt_id: cursor } : undefined,
         include: {
           author: { select: { username: true, image: true, name: true, type: true } },
-          parent: {
-            select: {
-              id: true,
-              image: true,
-              imageId: true,
-              content: true,
-              createdAt: true,
-              author: { select: { username: true, image: true, name: true, type: true } },
-            },
-          },
         },
       });
 
@@ -208,9 +196,16 @@ export const feedsRouter = createTRPCRouter({
           post: {
             include: {
               author: { select: { username: true, image: true, name: true, type: true } },
-              bookmarks: { where: { userId }, select: { id: true } },
-              likes: { where: { userId }, select: { id: true } },
-              reposts: { where: { userId }, select: { id: true } },
+              parent: {
+                select: {
+                  id: true,
+                  image: true,
+                  imageId: true,
+                  content: true,
+                  createdAt: true,
+                  author: { select: { username: true, image: true, name: true, type: true } },
+                },
+              },
             },
           },
         },

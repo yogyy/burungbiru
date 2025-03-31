@@ -1,6 +1,6 @@
-import { GetStaticPaths, GetStaticProps, NextPage } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { buttonVariants } from "~/components/ui/button";
 import UserNotFound from "~/components/user-not-found";
 import { api } from "~/utils/api";
@@ -8,8 +8,9 @@ import { cn, featureNotReady } from "~/lib/utils";
 import { generateSSGHelper } from "~/server/helper/ssgHelper";
 import { authClient } from "~/lib/auth-client";
 import { UserLayout } from "~/components/layouts/user-layout";
+import { PageLayout } from "~/components/layouts/root-layout";
 
-const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
+const HighlightsPage = ({ username }: { username: string }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({ username });
   const { data } = authClient.useSession();
   const { push } = useRouter();
@@ -47,6 +48,10 @@ const ProfilePageReplies: NextPage<{ username: string }> = ({ username }) => {
   );
 };
 
+HighlightsPage.getLayout = function getLayout(page: ReactElement) {
+  return <PageLayout>{page}</PageLayout>;
+};
+
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = generateSSGHelper();
   const username = context.params?.slug;
@@ -66,4 +71,4 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths: [], fallback: "blocking" };
 };
 
-export default ProfilePageReplies;
+export default HighlightsPage;

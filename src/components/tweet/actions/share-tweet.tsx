@@ -30,7 +30,7 @@ export const ShareTweet = ({ variant, author, postId }: ShareTweetProps) => {
           disabled={data?.user.username === author?.username}
           onClick={copyPostUrl}
           className={cn(
-            "group/button z-10 flex border-2 transition-all ease-in",
+            "group/button z-10 flex border-2 transition-colors",
             data?.user.username === author?.username
               ? "hover:bg-none"
               : "hover:bg-primary/10 focus-visible:border-primary/50 focus-visible:bg-primary/10 group-hover:bg-primary/10"
@@ -39,7 +39,7 @@ export const ShareTweet = ({ variant, author, postId }: ShareTweetProps) => {
           <ShareIcon
             className={cn(
               variant === "details" ? "h-5 w-5" : "h-[18px] w-[18px]",
-              "fill-accent transition duration-300",
+              "fill-accent transition-colors duration-300",
               data?.user.username !== author?.username &&
                 "group-hover:fill-primary group-focus-visible/button:fill-primary"
             )}

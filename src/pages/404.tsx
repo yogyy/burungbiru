@@ -6,7 +6,7 @@ import { authClient } from "~/lib/auth-client";
 import { cn, featureNotReady } from "~/lib/utils";
 
 export default function Custom404() {
-  const { data } = authClient.useSession();
+  const { data, isPending } = authClient.useSession();
   function searching() {
     return featureNotReady("searching-page");
   }
@@ -32,7 +32,7 @@ export default function Custom404() {
               </div>
             </div>
           </div>
-          {!data && (
+          {!data && !isPending && (
             <div className="fixed bottom-0 left-0 flex w-full justify-center bg-primary">
               <div className="my-3 flex w-full flex-col items-center justify-between md:w-[600px] md:flex-row lg:w-[920px] xl:w-[990px]">
                 <div className="hidden flex-col md:flex">

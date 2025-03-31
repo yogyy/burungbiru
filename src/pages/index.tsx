@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { LoadingPage } from "~/components/loading";
+import { LoadingSpinner } from "~/components/loading";
 import { authClient } from "~/lib/auth-client";
 
 const IndexPage = () => {
@@ -28,7 +28,11 @@ const IndexPage = () => {
       </div>
     );
 
-  return <LoadingPage />;
+  return (
+    <div className="fixed right-0 top-0 flex h-[100dvh] w-screen items-center justify-center">
+      <LoadingSpinner size={25} />
+    </div>
+  );
 };
 
 export default IndexPage;

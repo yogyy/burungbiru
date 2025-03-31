@@ -35,12 +35,4 @@ const LoadingItem = () => {
   );
 };
 
-const LoadingPage = () => {
-  return (
-    <div className="fixed right-0 top-0 flex h-[100dvh] w-screen items-center justify-center">
-      <LoadingSpinner size={25} />
-    </div>
-  );
-};
-
-export { LoadingItem, LoadingPage, LoadingSpinner };
+export { LoadingItem, LoadingSpinner };

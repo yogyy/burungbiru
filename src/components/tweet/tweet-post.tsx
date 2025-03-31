@@ -54,6 +54,8 @@ export const TweetPost = ({
     }
   };
 
+  if (!post) return null;
+
   const currentPost = post.type === "REPOST" ? post.parent! : post;
 
   const shouldShowReplyingTo =
@@ -154,11 +156,11 @@ export const TweetPost = ({
               <div className="-mt-1 text-sm text-accent">
                 Replying to&nbsp;
                 <Link
-                  href={`/p/${post.author.username}`}
+                  href={`/p/${post.parent?.author.username}`}
                   className="text-primary hover:underline"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  @{post.type === "REPOST" ? post.parent?.author.username! : post.author.username}
+                  @{post.parent?.author.username}
                 </Link>
               </div>
             ) : null}

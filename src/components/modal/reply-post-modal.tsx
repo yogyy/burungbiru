@@ -31,7 +31,7 @@ export const ReplyPostModal = ({ children, post }: ReplyModalProps) => {
           variant="ghost"
           type="button"
           size="icon"
-          className="group/button z-10 -mr-2 flex border-2 transition-all ease-in last:mr-0 hover:bg-primary/10 focus-visible:border-primary/50 focus-visible:bg-primary/10 group-hover:bg-primary/10"
+          className="group/button z-10 -mr-2 flex border-2 last:mr-0 hover:bg-primary/10 focus-visible:border-primary/50 focus-visible:bg-primary/10 group-hover:bg-primary/10"
         >
           {children}
         </Button>

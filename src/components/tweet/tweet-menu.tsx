@@ -20,7 +20,7 @@ import { TweetProps } from "./types";
 import { Dots, Trash, UserPlus } from "../icons";
 
 interface MenuProps extends Pick<TweetProps, "author"> {
-  post: Pick<TweetProps, "id" | "parentId" | "imageId">;
+  post: Pick<TweetProps, "id" | "imageId">;
 }
 
 export const TweetMenu = ({ post, author }: MenuProps) => {
@@ -33,7 +33,7 @@ export const TweetMenu = ({ post, author }: MenuProps) => {
         if (query.id === `${post.id}`) {
           back();
         } else {
-          ctx.feed.postReplies.invalidate({ postId: post.parentId! });
+          ctx.feed.postReplies.invalidate({ postId: query.id as string });
         }
       }
 

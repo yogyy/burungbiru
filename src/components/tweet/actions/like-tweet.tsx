@@ -41,7 +41,7 @@ export const LikeTweet = ({ variant, post }: LikeProps) => {
 
   return (
     <div className="flex w-full flex-1 text-accent" aria-label="like post">
-      <div className="group flex w-full items-center" onClick={(e) => e.stopPropagation()}>
+      <div className="group flex items-center" onClick={(e) => e.stopPropagation()}>
         <Button
           variant="ghost"
           disabled={loadingLike || loadingUnlike || isLoading}
@@ -49,7 +49,7 @@ export const LikeTweet = ({ variant, post }: LikeProps) => {
           type="button"
           size="icon"
           className={cn(
-            "group/button z-10 -mr-2 flex border-2 transition-colors duration-300",
+            "group/button z-10 -mr-2 flex border-2 transition-[border-color]",
             "hover:bg-[#F91880]/10 focus-visible:border-[#F91880]/50 focus-visible:bg-[#F91880]/10 group-hover:bg-[#F91880]/10"
           )}
         >
@@ -75,8 +75,8 @@ export const LikeTweet = ({ variant, post }: LikeProps) => {
         {like?.total_likes! > 0 ? (
           <span
             className={cn(
-              "h-fit flex-1 overflow-hidden pl-0.5 font-sans text-[13px] font-normal leading-4 transition duration-300 xs:px-2 md:cursor-pointer",
-              "group-hover:text-[#F91880] group-focus:text-[#F91880]",
+              "h-fit flex-1 overflow-hidden pl-0.5 font-sans text-[13px] font-normal leading-4 xs:px-2 md:cursor-pointer",
+              "transition-colors duration-300 group-hover:text-[#F91880] group-focus:text-[#F91880]",
               like?.is_liked && "text-[#F91880]"
             )}
           >

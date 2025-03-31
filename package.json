@@ -25,6 +25,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-query": "^4.20.2",
+    "@tanstack/react-virtual": "^3.13.4",
     "@trpc/client": "^10.9.0",
     "@trpc/next": "^10.9.0",
     "@trpc/react-query": "^10.9.0",
