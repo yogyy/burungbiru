@@ -1,7 +1,8 @@
 {
   "git": {
     "deploymentEnabled": {
-      "main": false
+      "main": true,
+      "fix-verified-icon": false
     }
   }
 }
