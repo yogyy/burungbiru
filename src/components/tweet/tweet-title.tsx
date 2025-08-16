@@ -23,7 +23,7 @@ export const TweetTitle = ({ children, post, author, type, variant }: TitleProps
               <div className="flex w-fit">
                 <Link
                   onClick={(e) => e.stopPropagation()}
-                  className="-mt-0.5 flex w-fit flex-shrink-0 items-end text-base font-[500] outline-none focus-within:underline hover:underline"
+                  className="-mt-0.5 flex w-fit flex-shrink-0 items-center text-base font-[500] outline-none focus-within:underline hover:underline"
                   href={`/p/${author.username}`}
                 >
                   {author.name}

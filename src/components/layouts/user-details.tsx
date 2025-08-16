@@ -13,6 +13,7 @@ import { api } from "~/utils/api";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { LinkMini } from "../icons";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import Link from "next/link";
 
 export const UserDetails = ({ username }: { username: string }) => {
   const { data: user } = api.profile.getUserByUsername.useQuery({ username });
@@ -66,7 +67,7 @@ export const UserDetails = ({ username }: { username: string }) => {
         )}
       </div>
       <div className="-mt-1 mb-1 flex flex-col">
-        <div className="inline-flex items-end text-xl font-extrabold leading-6">
+        <div className="inline-flex items-center text-xl font-extrabold leading-6">
           <h2>{user.name}</h2>
           <Popover>
             <PopoverTrigger className="relative flex">
@@ -84,11 +85,18 @@ export const UserDetails = ({ username }: { username: string }) => {
                 <span>
                   {user.type === "developer" &&
                     "This account is verified because it's an official developer on burbir."}
-                  {user.type === "verified" && "This account is verified."}
+                  {user.type === "verified" && "This account is verified."}{" "}
+                  <Link
+                    href="https://github.com/yogyy/burungbiru/issues"
+                    target="_blank"
+                    className="text-primary hover:underline"
+                  >
+                    Learn more
+                  </Link>
                 </span>
               </p>
               <p className="inline-flex gap-3 text-[15px] leading-5 text-accent">
-                <CalendarIcon size={20} fill="white" /> Verified since undefined undefined
+                <CalendarIcon size={20} fill="white" /> Verified since March 2023
               </p>
               <Button
                 type="button"
