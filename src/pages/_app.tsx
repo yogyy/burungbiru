@@ -22,9 +22,10 @@ const MyApp: AppType = ({ Component, pageProps }: AppPropsWithLayout) => {
   const component = getLayout(<Component {...pageProps} />);
   return (
     <>
-      <Script src="https://unpkg.com/react-scan/dist/auto.global.js" />
-      {process.env.NODE_ENV === "production" && (
+      {process.env.NODE_ENV === "production" ? (
         <Script defer src="/script.analytics.js" data-website-id={env.NEXT_PUBLIC_UMAMI_ID} />
+      ) : (
+        <Script src="https://unpkg.com/react-scan/dist/auto.global.js" />
       )}
       <SEO />
       {component}
