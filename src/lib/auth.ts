@@ -11,6 +11,9 @@ export const auth = betterAuth({
       usernameSet: { type: "boolean", required: true },
     },
   },
+  session: {
+    expiresIn: 60 * 60 * 24 * 30,
+  },
   databaseHooks: {
     user: {
       create: {
